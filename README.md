@@ -2,7 +2,9 @@
 CS 541 Project
 
 Group E Project Proposal - Lift Smarter
+
 Kevin DeWire
+
 Winston Shields
 
 
@@ -29,7 +31,7 @@ Functionality -
 a. Workout Logs: Allow the user to create workout sessions.
 
 b. Log predefined metrics for each workout (Sets performed for each exercise, Weight/Repetitions per set, rate per exertion (RPE))
-	
+
 c. Display user performance over week and month: use graphs and other visualization techniques.
 
 4. Allow the ability to add friends and see their workouts.
