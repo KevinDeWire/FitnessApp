@@ -26,11 +26,11 @@ Functionality -
 
 3. For strength training workouts (weightlifting/bodyweights), do the following:
 
-  a. Workout Logs: Allow the user to create workout sessions.
+a. Workout Logs: Allow the user to create workout sessions.
 
-  b. Log predefined metrics for each workout (Sets performed for each exercise, Weight/Repetitions per set, rate per exertion (RPE))
+b. Log predefined metrics for each workout (Sets performed for each exercise, Weight/Repetitions per set, rate per exertion (RPE))
 	
-  c. Display user performance over week and month: use graphs and other visualization techniques.
+c. Display user performance over week and month: use graphs and other visualization techniques.
 
 4. Allow the ability to add friends and see their workouts.
 
