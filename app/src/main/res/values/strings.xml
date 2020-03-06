@@ -9,4 +9,6 @@
     <string name="charts">Charts</string>
     <string name="friends">Friends</string>
     <string name="step_counter">Step Counter</string>
+    <string name="title_activity_schedule">Schedule</string>
+    <string name="title_activity_friends">Friends</string>
 </resources>
