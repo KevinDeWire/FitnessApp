@@ -1,3 +1,12 @@
 <resources>
-    <string name="app_name">FitnessApp</string>
+    <string name="app_name">Lift Smarter</string>
+    <string name="steps_taken_today">Steps Taken Today</string>
+    <string name="time_active_today">Time Active Today</string>
+    <string name="steps">Steps</string>
+    <string name="hh_mm_ss">HH:MM:SS</string>
+    <string name="schedule">Schedule</string>
+    <string name="log_exercise">Log Exercise</string>
+    <string name="charts">Charts</string>
+    <string name="friends">Friends</string>
+    <string name="step_counter">Step Counter</string>
 </resources>
