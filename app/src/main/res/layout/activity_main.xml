@@ -17,16 +17,16 @@
             android:layout_weight="0.25">
 
             <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
+                android:id="@+id/textViewStepLabel"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
                 android:gravity="center"
                 android:hint="@string/steps_taken_today" />
 
             <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
+                android:id="@+id/textViewTimeActiveLabel"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
                 android:gravity="center"
@@ -40,16 +40,16 @@
             android:layout_weight="0.25">
 
             <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
+                android:id="@+id/textViewStepsValue"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
                 android:gravity="center"
                 android:hint="@string/steps"/>
 
             <TextView
-                android:id="@+id/textView4"
-                android:layout_width="wrap_content"
+                android:id="@+id/textViewActiveValue"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
                 android:gravity="center"
@@ -66,6 +66,7 @@
             android:id="@+id/button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="0.25"
             android:text="@string/schedule" />
 
         <Space
@@ -74,9 +75,10 @@
             android:layout_weight="0.25"/>
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/buttonLog"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="0.25"
             android:text="@string/log_exercise" />
 
         <Space
@@ -85,9 +87,10 @@
             android:layout_weight="0.25"/>
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/buttonCharts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="0.25"
             android:text="@string/charts" />
 
         <Space
@@ -99,6 +102,7 @@
             android:id="@+id/button4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="0.25"
             android:text="@string/friends" />
 
         <Space
@@ -107,9 +111,10 @@
             android:layout_weight="0.25"/>
 
         <Button
-            android:id="@+id/button5"
+            android:id="@+id/buttonStepCounter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="0.25"
             android:text="@string/step_counter" />
 
         <Space
