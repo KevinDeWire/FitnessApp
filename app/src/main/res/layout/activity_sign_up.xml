@@ -55,6 +55,7 @@
         <EditText
             android:id="@+id/create_password"
             android:layout_width="wrap_content"
+            android:inputType="textPassword"
             android:ems="10"
             android:layout_height="wrap_content"/>
         <TextView
@@ -66,6 +67,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:id="@+id/reentered_password"
+            android:inputType="textPassword"
             android:layout_marginBottom="50dp"/>
         <Button
             android:id="@+id/signUpButton"
