@@ -15,4 +15,21 @@
     <string name="start">Start</string>
     <string name="stop">Stop</string>
     <string name="reset_counters">Reset Counters</string>
+    <string name="title_activity_friends">Friends</string>
+    <string name="title_activity_schedule">Schedule</string>
+    <string name="title_activity_sign_in">Sign In</string>
+    <string name="sign_in_name">Username/Email</string>
+    <string name="password">Password</string>
+    <string name="not_signed_up">Don\'t have an account?</string>
+    <string name="stay_signed_in">Stay signed in</string>
+    <string name="sign_in_page_info">You need to be logged in to access the friends
+    page.</string>
+    <string name="title_activity_sign_up">Sign Up</string>
+    <string name="email">Email</string>
+    <string name="username">Username</string>
+    <string name="reenter_password">Re-enter Password</string>
+    <string name="sign_up_button">Sign Up</string>
+    <string name="sign_up_link"><u>Sign Up</u></string>
+    <string name="already_registered">Already registered?</string>
+    <string name="sign_in_link"><u>Sign In</u></string>
 </resources>
