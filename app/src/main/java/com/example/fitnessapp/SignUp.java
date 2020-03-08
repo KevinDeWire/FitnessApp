@@ -63,11 +63,15 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         String email = mEmail.getText().toString().trim();
+        String username = mUsername.getText().toString().trim();
         String password = mPassword.getText().toString().trim();
+        String reenteredPassword = mReentredPassword.toString().trim();
 
 
         switch (v.getId()) {
             case R.id.signUpButton:
+
+                // Validate registration information.
                 if (TextUtils.isEmpty(email)) {
                     mEmail.setError("Email is required.");
                     return;
@@ -78,9 +82,19 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                     return;
                 }
 
+                if (TextUtils.isEmpty(username)) {
+                    mUsername.setError("Username is required.");
+                }
+
                 if (password.length() < 6) {
                     mPassword.setError("Password must have at least 6 " +
                             "characters.");
+                    return;
+                }
+
+                if (reenteredPassword != password) {
+                    mReentredPassword.setError("The re-entered password" +
+                            " doesn't match the password.");
                     return;
                 }
 
