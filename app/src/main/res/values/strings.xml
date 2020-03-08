@@ -32,4 +32,5 @@
     <string name="sign_up_link"><u>Sign Up</u></string>
     <string name="already_registered">Already registered?</string>
     <string name="sign_in_link"><u>Sign In</u></string>
+    <string name="sign_out">Sign Out</string>
 </resources>

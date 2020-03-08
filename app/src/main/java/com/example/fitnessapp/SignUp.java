@@ -9,6 +9,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,6 +28,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
     Button signUpButton;
     TextView signInLink;
     FirebaseAuth firebaseAuth;
+    FirebaseDatabase mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +54,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
             Intent friendActivity = new Intent(this, Friends.class);
             startActivity(friendActivity);
         }
+
 
         signUpButton.setOnClickListener(this);
         signInLink.setOnClickListener(this);
@@ -106,6 +109,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
             case R.id.signInLink:
                 Intent signInActivity = new Intent(this, SignIn.class);
                 startActivity(signInActivity);
+                break;
         }
     }
 }
