@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:orientation="vertical"
-        android:paddingTop="50dp">
+        android:layout_marginTop="50dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -58,14 +58,16 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPassword"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:layout_marginBottom="50dp"/>
 
         <Button
             android:id="@+id/signInButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/title_activity_sign_in"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:layout_marginBottom="50dp"/>
 
         <CheckBox
             android:layout_width="wrap_content"
@@ -77,6 +79,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_gravity="center"
             android:paddingTop="50dp">
 
             <TextView
