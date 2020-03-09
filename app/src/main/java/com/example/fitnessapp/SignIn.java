@@ -71,6 +71,8 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
         String password = mPassword.getText().toString().trim();
 
         switch (v.getId()) {
+
+            // Validate sign in information.
             case R.id.signInButton:
                 if (TextUtils.isEmpty(logInName)) {
                     mLogInName.setError("Email is required.");
