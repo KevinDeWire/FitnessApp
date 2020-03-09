@@ -108,7 +108,8 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                                     Toast.makeText(SignIn.this, "Signed In!",
                                             Toast.LENGTH_SHORT).show();
 
-                                    Intent friendsActivity = new Intent(getApplicationContext(), Friends.class);
+                                    Intent friendsActivity = new Intent(getApplicationContext(),
+                                            Friends.class);
                                     startActivity(friendsActivity);
                                 } else {
                                     Toast.makeText(SignIn.this, "Sign In Error! " +
@@ -135,31 +136,34 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                         "it.");
                 resetPasswordDialog.setView(sendToEmail);
 
-                resetPasswordDialog.setPositiveButton("Send", new DialogInterface.OnClickListener() {
+                resetPasswordDialog.setPositiveButton("Send",
+                        new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // If send is clicked, send the reset link to the user's email.
                         String sendEmail = sendToEmail.getText().toString().trim();
-                        firebaseAuth.sendPasswordResetEmail(sendEmail).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        firebaseAuth.sendPasswordResetEmail(sendEmail).addOnSuccessListener(
+                                new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
                                 // If successful, let user know that the link has been sent to their
                                 // email.
-                                Toast.makeText(getApplicationContext(), "Reset link has been sent, check" +
-                                        " your email", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Reset link has been" +
+                                        " sent, check your email", Toast.LENGTH_SHORT).show();
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 // If the link fails to send, display error message.
-                                Toast.makeText(getApplicationContext(), "Error! Link failed to send " +
-                                        e.getMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Error! Link failed" +
+                                        " to send " + e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
                 });
 
-                resetPasswordDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                resetPasswordDialog.setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // Cancel the dialog if cancel is pressed.

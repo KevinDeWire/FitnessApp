@@ -21,10 +21,16 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/notVerified"
+        android:textColor="@color/red"
+        android:visibility="gone"
+        android:text="@string/not_verified"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/sign_out"
-        android:id="@+id/signOutButton"
-        android:onClick="signOut"/>
+        android:id="@+id/signOutButton"/>
 </LinearLayout>
