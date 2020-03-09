@@ -1,5 +1,6 @@
 package com.example.fitnessapp;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -8,6 +9,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -15,6 +18,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -29,7 +33,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
     EditText mLogInName, mPassword;
     Button signInButton;
-    TextView signUpLink;
+    TextView signUpLink, resetPassword;
     FirebaseAuth firebaseAuth;
 
     @Override
@@ -43,6 +47,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
         mPassword = findViewById(R.id.password);
         signInButton = findViewById(R.id.signInButton);
         signUpLink = findViewById(R.id.signUpLink);
+        resetPassword = findViewById(R.id.resetPassword);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -55,6 +60,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
         signInButton.setOnClickListener(this);
         signUpLink.setOnClickListener(this);
+        resetPassword.setOnClickListener(this);
 
     }
 
@@ -72,8 +78,9 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
         switch (v.getId()) {
 
-            // Validate sign in information.
             case R.id.signInButton:
+
+                // If sign in button is pressed, validate sign in information.
                 if (TextUtils.isEmpty(logInName)) {
                     mLogInName.setError("Email is required.");
                     return;
@@ -90,6 +97,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                     return;
                 }
 
+                // Authenticate the FireBase sign in.
                 firebaseAuth.signInWithEmailAndPassword(logInName, password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
@@ -112,8 +120,55 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
                 break;
             case R.id.signUpLink:
+                // If the sign up link is clicked, go to the sign up activity.
                 Intent signUpActivity = new Intent(this, SignUp.class);
                 startActivity(signUpActivity);
+                break;
+            case R.id.resetPassword:
+                // If reset password link is clicked, open up dialog alert
+                // asking the user to input the email for which the reset
+                // link will be sent to.
+                final EditText sendToEmail = new EditText(v.getContext());
+                AlertDialog.Builder resetPasswordDialog = new AlertDialog.Builder(v.getContext());
+                resetPasswordDialog.setTitle("Reset password?");
+                resetPasswordDialog.setMessage("Enter your email so we can send a reset link to " +
+                        "it.");
+                resetPasswordDialog.setView(sendToEmail);
+
+                resetPasswordDialog.setPositiveButton("Send", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // If send is clicked, send the reset link to the user's email.
+                        String sendEmail = sendToEmail.getText().toString().trim();
+                        firebaseAuth.sendPasswordResetEmail(sendEmail).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                // If successful, let user know that the link has been sent to their
+                                // email.
+                                Toast.makeText(getApplicationContext(), "Reset link has been sent, check" +
+                                        " your email", Toast.LENGTH_SHORT).show();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                // If the link fails to send, display error message.
+                                Toast.makeText(getApplicationContext(), "Error! Link failed to send " +
+                                        e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                });
+
+                resetPasswordDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Cancel the dialog if cancel is pressed.
+                        dialog.cancel();
+                    }
+                });
+
+                // Display the dialog.
+                resetPasswordDialog.create().show();
                 break;
         }
     }

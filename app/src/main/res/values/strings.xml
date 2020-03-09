@@ -33,4 +33,6 @@
     <string name="already_registered">Already registered?</string>
     <string name="sign_in_link"><u>Sign In</u></string>
     <string name="sign_out">Sign Out</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="reset_link"><u>Send Reset Link</u></string>
 </resources>
