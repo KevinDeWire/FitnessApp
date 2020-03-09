@@ -97,7 +97,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                     return;
                 }
 
-                // Authenticate the FireBase sign in.
+                // Initiate the FireBase sign in.
                 firebaseAuth.signInWithEmailAndPassword(logInName, password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override

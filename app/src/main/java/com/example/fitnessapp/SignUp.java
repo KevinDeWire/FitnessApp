@@ -4,14 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
     EditText mEmail, mUsername, mPassword, mReenteredPassword;
@@ -32,7 +33,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
     FirebaseAuth firebaseAuth;
 
-    private DatabaseReference mDatabase;
+    FirebaseFirestore firebaseFirestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +49,8 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         signUpButton = findViewById(R.id.signUpButton);
         signInLink = findViewById(R.id.signInLink);
 
-        // Get current instance of FireBase database.
         firebaseAuth = FirebaseAuth.getInstance();
-
+        firebaseFirestore = FirebaseFirestore.getInstance();
 
         // If user is already logged in, redirect them to the
         // friends page.
@@ -103,28 +103,35 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                 }
 
 
-                // Register the user in FireBase
+                // Register the user in FireBase.
                 firebaseAuth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
-                                // If user is successfully registered to FireBase,
-                                // redirect them to the Friends activity.
                                 if (task.isSuccessful()) {
-                                    Toast.makeText(SignUp.this, "Account Successfully Registered!",
-                                            Toast.LENGTH_SHORT).show();
-
                                     FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
-                                    // Save user's name, email, and ID to database.
-                                    writeNewUser(username, firebaseUser.getEmail(), firebaseUser.getUid());
+                                    // Send verification email.
+                                    verifyEmail(firebaseUser);
 
-                                    Intent friendsActivity = new Intent(getApplicationContext(), Friends.class);
+                                    // If user is successfully registered, display it on the screen.
+                                    Toast.makeText(SignUp.this, "Account " +
+                                            "Successfully" + " Registered!", Toast.LENGTH_SHORT)
+                                            .show();
+
+
+                                    // Save user's name, email, and ID to database.
+                                    writeNewUser(username, firebaseUser.getEmail(),
+                                            firebaseUser.getUid());
+
+                                    // Redirect the user to the friends activity.
+                                    Intent friendsActivity = new Intent(getApplicationContext(),
+                                            Friends.class);
                                     startActivity(friendsActivity);
                                 } else {
-                                    Toast.makeText(SignUp.this, "Registration Error! " +
-                                                    task.getException().getMessage(),
-                                            Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(SignUp.this,
+                                            "Registration Error! " + task.getException().
+                                                    getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
@@ -138,25 +145,50 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
     }
 
     /**
+     * When registered, send the user a verification link to their email address.
+     *
+     * @param user FireBase user
+     */
+    private void verifyEmail(FirebaseUser user) {
+        user.sendEmailVerification().addOnSuccessListener(
+                new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // If email is successfully sent to the user, tell
+                        // the user to check their email.
+                        Toast.makeText(getApplicationContext(), "Verification" +
+                                " link sent to your email.", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(), "Error! Email was not " +
+                        "sent " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /**
      * Write a new user to the user database.
+     *
      * @param username Username
-     * @param email Email
-     * @param userId User ID
+     * @param email    Email
+     * @param userId   User ID
      */
     private void writeNewUser(String username, String email, String userId) {
-
+        // Make a new instance of the user.
         User user = new User();
 
-        // Set the registered user's username, email, and ID.
+        // Set the registered user's username, email, and ID to the user.
         user.setUsername(username);
         user.setEmail(email);
         user.setUserId(userId);
 
-        // Make a reference to the database to enable writing to the
-        // database.
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        // Create a document reference for the user collection.
+        DocumentReference documentReference = firebaseFirestore.collection("users")
+                .document(userId);
 
-        // Add the username, email, and ID to the database.
-        mDatabase.child("users").child(userId).setValue(user);
+        // Set the user and their information to the FireStore database.
+        documentReference.set(user);
     }
 }
