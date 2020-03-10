@@ -16,13 +16,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class Friends extends AppCompatActivity implements View.OnClickListener {
 
-    Button signOutButton;
+    TextView username;
     TextView resendVerification;
 
     FirebaseAuth firebaseAuth;
@@ -35,14 +38,14 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        signOutButton = findViewById(R.id.signOutButton);
         resendVerification = findViewById(R.id.notVerified);
+        username = findViewById(R.id.display_username);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
 
-        signOutButton.setOnClickListener(this);
         resendVerification.setOnClickListener(this);
+        username.setOnClickListener(this);
 
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
@@ -50,18 +53,15 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
             // If the user's email address is not verified, display resend
             // verification email link.
             resendVerification.setVisibility(View.VISIBLE);
+
+            // Set the profile link to false as well.
+            username.setEnabled(false);
         }
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.signOutButton:
-                // If sign out is pressed, sign out of the FireBase account.
-                FirebaseAuth.getInstance().signOut();
-                Intent signInActivity = new Intent(this, SignIn.class);
-                startActivity(signInActivity);
-                break;
             case R.id.notVerified:
                 FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
                 firebaseUser.sendEmailVerification().addOnSuccessListener(
@@ -80,8 +80,13 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
                         Toast.makeText(getApplicationContext(), "Verification Email failed" +
                                 "to send, please try again.", Toast.LENGTH_SHORT).show();
                     }
+
                 });
                 break;
+            case R.id.display_username:
+                // Go to the user's profile if the user clicks on the profile name.
+                Intent profileActivity = new Intent(this, UserProfile.class);
+                startActivity(profileActivity);
         }
     }
 }

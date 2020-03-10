@@ -21,16 +21,45 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/gray"
+        android:gravity="right"
+        android:orientation="horizontal">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:innerRadius="0dp"
+            android:shape="ring"
+            app:cardCornerRadius="75dp">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:background="@drawable/default_picture" />
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/display_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:entries="@array/user_array"
+            android:text="@string/actual_username"
+            android:textColor="@color/white"
+            android:textSize="20dp" />
+    </LinearLayout>
+
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/notVerified"
-        android:textColor="@color/red"
-        android:visibility="gone"
-        android:text="@string/not_verified"/>
-    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/sign_out"
-        android:id="@+id/signOutButton"/>
+        android:text="@string/not_verified"
+        android:textColor="@color/red"
+        android:visibility="gone" />
 </LinearLayout>
