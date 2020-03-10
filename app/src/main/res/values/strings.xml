@@ -36,7 +36,6 @@
     <string name="forgot_password">Forgot password?</string>
     <string name="reset_link"><u>Send Reset Link</u></string>
     <string name="not_verified">Email Not Verified! <u>Resend Verification</u></string>
-    <string name="actual_username">Guest</string>
 
     <string-array name="user_array">
         <item>Your Profile</item>
