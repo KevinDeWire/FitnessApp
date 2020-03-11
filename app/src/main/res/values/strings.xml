@@ -34,7 +34,9 @@
     <string name="sign_out">Sign Out</string>
     <string name="forgot_password">Forgot password?</string>
     <string name="reset_link"><u>Send Reset Link</u></string>
-    <string name="not_verified">Email Not Verified! <u>Resend Verification</u></string>
+    <string name="not_verified">Email Not Verified! <u>Resend Verification.</u> Refresh
+    the page after verified.</string>
     <string name="title_activity_user_profile">UserProfile</string>
     <string name="add_friend">Add Friend</string>
+    <string name="refresh">Refresh</string>
 </resources>

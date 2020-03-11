@@ -18,25 +18,29 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import javax.annotation.Nullable;
 
-public class Friends extends AppCompatActivity implements View.OnClickListener {
+public class Friends extends AppCompatActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     Button addFriendButton;
 
     TextView username;
     TextView resendVerification;
     ImageView profilePicture;
+
+    SwipeRefreshLayout swipeRefreshLayout;
 
     FirebaseAuth firebaseAuth;
     FirebaseFirestore firebaseFirestore;
@@ -51,7 +55,7 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
         setSupportActionBar(toolbar);
 
         addFriendButton = findViewById(R.id.addFriendButton);
-
+        swipeRefreshLayout = findViewById(R.id.swipeToRefresh);
         resendVerification = findViewById(R.id.notVerified);
         username = findViewById(R.id.display_username);
         profilePicture = findViewById(R.id.profilePicture);
@@ -96,6 +100,9 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
                 }
             });
         }
+
+        // Refresh the page if swiped.
+        swipeRefreshLayout.setOnRefreshListener(this);
     }
 
     @Override
@@ -127,5 +134,14 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
                 Intent profileActivity = new Intent(this, UserProfile.class);
                 startActivity(profileActivity);
         }
+    }
+
+    @Override
+    public void onRefresh() {
+        // Reload the activity.
+        finish();
+        Intent refresh = new Intent(this, Friends.class);
+        startActivity(refresh);
+        swipeRefreshLayout.setRefreshing(false);
     }
 }
