@@ -60,36 +60,36 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
 
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
-        // Get the user's ID.
-        userId = firebaseUser.getUid();
+        if (firebaseUser != null) {
+            if (!firebaseUser.isEmailVerified()) {
+                // If the user's email address is not verified, display resend
+                // verification email link.
+                resendVerification.setVisibility(View.VISIBLE);
 
+                // Set the profile link to false as well.
+                username.setEnabled(false);
 
-        if (!firebaseUser.isEmailVerified()) {
-            // If the user's email address is not verified, display resend
-            // verification email link.
-            resendVerification.setVisibility(View.VISIBLE);
-
-            // Set the profile link to false as well.
-            username.setEnabled(false);
-
-            // If the user's email is not verified, make the profile picture
-            // invisible.
-            profilePicture.setVisibility(View.INVISIBLE);
-        }
-
-        DocumentReference documentReference = firebaseFirestore.collection("users")
-                .document(userId);
-
-        // Listen to the data in the FireBase database.
-        documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
-                                @Nullable FirebaseFirestoreException e) {
-                // Set the username from the database on the screen.
-                username.setText(documentSnapshot.getString("username"));
+                // If the user's email is not verified, make the profile picture
+                // invisible.
+                profilePicture.setVisibility(View.INVISIBLE);
             }
-        });
 
+            // Get the user's ID.
+            userId = firebaseUser.getUid();
+
+            DocumentReference documentReference = firebaseFirestore.collection("users")
+                    .document(userId);
+
+            // Listen to the data in the FireBase database.
+            documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
+                                    @Nullable FirebaseFirestoreException e) {
+                    // Set the username from the database on the screen.
+                    username.setText(documentSnapshot.getString("username"));
+                }
+            });
+        }
     }
 
     @Override
