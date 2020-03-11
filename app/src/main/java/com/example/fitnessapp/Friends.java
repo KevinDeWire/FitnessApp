@@ -32,6 +32,8 @@ import javax.annotation.Nullable;
 
 public class Friends extends AppCompatActivity implements View.OnClickListener {
 
+    Button addFriendButton;
+
     TextView username;
     TextView resendVerification;
     ImageView profilePicture;
@@ -48,6 +50,8 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        addFriendButton = findViewById(R.id.addFriendButton);
+
         resendVerification = findViewById(R.id.notVerified);
         username = findViewById(R.id.display_username);
         profilePicture = findViewById(R.id.profilePicture);
@@ -57,6 +61,7 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
 
         resendVerification.setOnClickListener(this);
         username.setOnClickListener(this);
+        addFriendButton.setOnClickListener(this);
 
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
@@ -65,13 +70,14 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
                 // If the user's email address is not verified, display resend
                 // verification email link.
                 resendVerification.setVisibility(View.VISIBLE);
-
                 // Set the profile link to false as well.
                 username.setEnabled(false);
-
                 // If the user's email is not verified, make the profile picture
                 // invisible.
                 profilePicture.setVisibility(View.INVISIBLE);
+                // If the user's email is not verified, make the add friends
+                // button disappear.
+                addFriendButton.setVisibility(View.GONE);
             }
 
             // Get the user's ID.

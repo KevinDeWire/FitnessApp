@@ -70,9 +70,7 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
                 }
             });
         }
-
         signOutButton.setOnClickListener(this);
-
     }
 
     @Override
