@@ -32,8 +32,8 @@ public class SearchUsers extends AppCompatActivity {
     }
 
     private void setUpRecyclerView() {
-        // Arrange collection order by email in ascending order.
-        Query query = collectionReference.orderBy("email", Query.Direction.ASCENDING);
+        // Arrange collection order by username in ascending order.
+        Query query = collectionReference.orderBy("username", Query.Direction.ASCENDING);
 
         // Set the newly ordered list into a recycler options variable.
         FirestoreRecyclerOptions<User> options = new FirestoreRecyclerOptions.Builder<User>()

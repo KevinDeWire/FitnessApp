@@ -24,7 +24,7 @@ public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.User
             @NonNull UserViewHolder userViewHolder, int i, @NonNull User user
     ) {
         userViewHolder.username.setText(user.getUsername());
-        userViewHolder.username.setText(user.getEmail());
+        userViewHolder.email.setText(user.getEmail());
     }
 
     @NonNull
