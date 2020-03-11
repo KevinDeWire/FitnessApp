@@ -5,8 +5,6 @@ import android.os.Bundle;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -21,12 +19,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -133,6 +127,13 @@ public class Friends extends AppCompatActivity implements View.OnClickListener, 
                 // Go to the user's profile if the user clicks on the profile name.
                 Intent profileActivity = new Intent(this, UserProfile.class);
                 startActivity(profileActivity);
+                break;
+            case R.id.addFriendButton:
+                // If add friend button is pressed, go to activity for searching users to add as
+                // a friend.
+                Intent searchUsers = new Intent(this, SearchUsers.class);
+                startActivity(searchUsers);
+                break;
         }
     }
 
