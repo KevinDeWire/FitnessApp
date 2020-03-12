@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.fitnessapp">
 
+    <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -12,9 +13,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".OtherUser"
+            android:label="@string/title_activity_other_user"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".SearchUsers"
             android:label="@string/title_activity_add_friends"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".UserProfile"
             android:label="@string/title_activity_user_profile"

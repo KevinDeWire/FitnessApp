@@ -1,7 +1,8 @@
 package com.example.fitnessapp;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -10,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -20,6 +20,7 @@ public class SearchUsers extends AppCompatActivity {
     private FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
     private CollectionReference collectionReference = firebaseFirestore
             .collection("users");
+    public static Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +28,8 @@ public class SearchUsers extends AppCompatActivity {
         setContentView(R.layout.activity_search_users);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mContext = getApplicationContext();
 
         setUpRecyclerView();
     }
@@ -58,5 +61,9 @@ public class SearchUsers extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         userAdapter.stopListening();
+    }
+
+    public static Context getContext() {
+        return mContext;
     }
 }
