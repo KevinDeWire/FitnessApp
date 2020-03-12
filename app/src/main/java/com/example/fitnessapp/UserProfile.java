@@ -42,7 +42,7 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
 
         username = findViewById(R.id.display_username);
         email = findViewById(R.id.display_email);
-        signOutButton = findViewById(R.id.signOutButton);
+        signOutButton = findViewById(R.id.multipleUseButton);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
