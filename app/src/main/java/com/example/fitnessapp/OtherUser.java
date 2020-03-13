@@ -5,8 +5,6 @@ import android.os.Bundle;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -41,7 +39,7 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
     FirebaseUser currentUser;
 
     // 0 for not friends, 1 for friend request sent, 2 for friends.
-    int mCurrentState;
+    int friendshipState;
 
     String userId;
 
@@ -70,7 +68,7 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
         friendButton = findViewById(R.id.multipleUseButton);
         friendButton.setText("Add Friend");
 
-        mCurrentState = 0;
+        friendshipState = 0;
 
         setText();
         friendButton.setOnClickListener(this);
@@ -78,9 +76,16 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
 
     @Override
     public void onClick(View v) {
-        if (mCurrentState == 0) {
+        // Disable the button once it is clicked so that it cannot be clicked multiple times before
+        // the request is sent.
+        friendButton.setEnabled(false);
+        if (friendshipState == 0) {
             // If current user is not friends with the other user, a friend request can be sent.
             sendFriendRequest();
+        }
+        if (friendshipState == 1) {
+            // Cancel the friend request.
+            cancelFriendRequest();
         }
     }
 
@@ -121,6 +126,13 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
+                                            // Enable the button again.
+                                            friendButton.setEnabled(true);
+                                            // Change the current state to "sent"
+                                            friendshipState = 1;
+
+                                            // Change the button text to "Cancel Friend Request"
+                                            friendButton.setText("Cancel Friend Request");
                                             Toast.makeText(OtherUser.this,
                                                     "Request sent successfully",
                                                     Toast.LENGTH_SHORT).show();
@@ -130,6 +142,30 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                             Toast.makeText(OtherUser.this,
                                     "Request failed to send", Toast.LENGTH_SHORT).show();
                         }
+                    }
+                });
+    }
+
+    public void cancelFriendRequest() {
+        // Delete the sender's collection and document of the receiver.
+        friendRequestRef.document(currentUser.getUid()).collection(userId)
+                .document("request_type").delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        friendRequestRef.document(userId).collection(currentUser.getUid())
+                                .document("request_type").delete()
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        // Enable the button again.
+                                        friendButton.setEnabled(true);
+                                        // Set the state back to not friends.
+                                        friendshipState = 0;
+                                        // Set the button text back to "Add Friend".
+                                        friendButton.setText("Add Friend");
+                                    }
+                                });
                     }
                 });
     }
