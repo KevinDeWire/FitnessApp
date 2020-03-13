@@ -102,39 +102,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                     return;
                 }
 
-
-                // Register the user in FireBase.
-                firebaseAuth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-
-                                    // Send verification email.
-                                    verifyEmail(firebaseUser);
-
-                                    // If user is successfully registered, display it on the screen.
-                                    Toast.makeText(SignUp.this, "Account " +
-                                            "Successfully" + " Registered!", Toast.LENGTH_SHORT)
-                                            .show();
-
-
-                                    // Save user's name, email, and ID to database.
-                                    writeNewUser(username, firebaseUser.getEmail(),
-                                            firebaseUser.getUid());
-
-                                    // Redirect the user to the friends activity.
-                                    Intent friendsActivity = new Intent(getApplicationContext(),
-                                            Friends.class);
-                                    startActivity(friendsActivity);
-                                } else {
-                                    Toast.makeText(SignUp.this,
-                                            "Registration Error! " + task.getException().
-                                                    getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+                signUp(email, password, username);
 
                 break;
             case R.id.signInLink:
@@ -166,6 +134,47 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                         "sent " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    /**
+     * FireBase sign up function is called.
+     * @param email email of the user.
+     * @param password password of the user.
+     * @param username username of the user.
+     */
+    private void signUp(String email, String password, final String username) {
+        // Register the user in FireBase.
+        firebaseAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+
+                            // Send verification email.
+                            verifyEmail(firebaseUser);
+
+                            // If user is successfully registered, display it on the screen.
+                            Toast.makeText(SignUp.this, "Account " +
+                                    "Successfully" + " Registered!", Toast.LENGTH_SHORT)
+                                    .show();
+
+
+                            // Save user's name, email, and ID to database.
+                            writeNewUser(username, firebaseUser.getEmail(),
+                                    firebaseUser.getUid());
+
+                            // Redirect the user to the friends activity.
+                            Intent friendsActivity = new Intent(getApplicationContext(),
+                                    Friends.class);
+                            startActivity(friendsActivity);
+                        } else {
+                            Toast.makeText(SignUp.this,
+                                    "Registration Error! " + task.getException().
+                                            getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     /**

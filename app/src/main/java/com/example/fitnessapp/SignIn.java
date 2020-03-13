@@ -31,7 +31,7 @@ import android.widget.Toast;
 
 public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
-    EditText mLogInName, mPassword;
+    EditText mLogInMail, mPassword;
     Button signInButton;
     TextView signUpLink, resetPassword;
     FirebaseAuth firebaseAuth;
@@ -43,7 +43,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mLogInName = findViewById(R.id.loginName);
+        mLogInMail = findViewById(R.id.loginName);
         mPassword = findViewById(R.id.password);
         signInButton = findViewById(R.id.signInButton);
         signUpLink = findViewById(R.id.signUpLink);
@@ -73,7 +73,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
     @Override
     public void onClick(View v) {
 
-        String logInName = mLogInName.getText().toString().trim();
+        String logInMail = mLogInMail.getText().toString().trim();
         String password = mPassword.getText().toString().trim();
 
         switch (v.getId()) {
@@ -81,8 +81,8 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
             case R.id.signInButton:
 
                 // If sign in button is pressed, validate sign in information.
-                if (TextUtils.isEmpty(logInName)) {
-                    mLogInName.setError("Email is required.");
+                if (TextUtils.isEmpty(logInMail)) {
+                    mLogInMail.setError("Email is required.");
                     return;
                 }
 
@@ -97,27 +97,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                     return;
                 }
 
-                // Initiate the FireBase sign in.
-                firebaseAuth.signInWithEmailAndPassword(logInName, password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                // If user is successfully registered to FireBase,
-                                // redirect them to the Friends activity.
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(SignIn.this, "Signed In!",
-                                            Toast.LENGTH_SHORT).show();
-
-                                    Intent friendsActivity = new Intent(getApplicationContext(),
-                                            Friends.class);
-                                    startActivity(friendsActivity);
-                                } else {
-                                    Toast.makeText(SignIn.this, "Sign In Error! " +
-                                                    task.getException().getMessage(),
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+                signIn(logInMail, password);
 
                 break;
             case R.id.signUpLink:
@@ -126,32 +106,72 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                 startActivity(signUpActivity);
                 break;
             case R.id.resetPassword:
-                // If reset password link is clicked, open up dialog alert
-                // asking the user to input the email for which the reset
-                // link will be sent to.
-                final EditText sendToEmail = new EditText(v.getContext());
-                AlertDialog.Builder resetPasswordDialog = new AlertDialog.Builder(v.getContext());
-                resetPasswordDialog.setTitle("Reset password?");
-                resetPasswordDialog.setMessage("Enter your email so we can send a reset link to " +
-                        "it.");
-                resetPasswordDialog.setView(sendToEmail);
+                passwordReset(v);
+                break;
+        }
+    }
 
-                resetPasswordDialog.setPositiveButton("Send",
-                        new DialogInterface.OnClickListener() {
+    /**
+     * FireBase sign in function.
+     * @param email user email
+     * @param password user password
+     */
+    public void signIn(String email, String password) {
+        // Initiate the FireBase sign in.
+        firebaseAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        // If user is successfully registered to FireBase,
+                        // redirect them to the Friends activity.
+                        if (task.isSuccessful()) {
+                            Toast.makeText(SignIn.this, "Signed In!",
+                                    Toast.LENGTH_SHORT).show();
+
+                            Intent friendsActivity = new Intent(getApplicationContext(),
+                                    Friends.class);
+                            startActivity(friendsActivity);
+                        } else {
+                            Toast.makeText(SignIn.this, "Sign In Error! " +
+                                            task.getException().getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    /**
+     * If the user clicks on the "Reset Password" link, open up a dialog that asks what email
+     * to send the request link to.
+     * @param v
+     */
+    public void passwordReset(View v) {
+        // If reset password link is clicked, open up dialog alert
+        // asking the user to input the email for which the reset
+        // link will be sent to.
+        final EditText sendToEmail = new EditText(v.getContext());
+        AlertDialog.Builder resetPasswordDialog = new AlertDialog.Builder(v.getContext());
+        resetPasswordDialog.setTitle("Reset password?");
+        resetPasswordDialog.setMessage("Enter your email so we can send a reset link to " +
+                "it.");
+        resetPasswordDialog.setView(sendToEmail);
+
+        resetPasswordDialog.setPositiveButton("Send",
+                new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // If send is clicked, send the reset link to the user's email.
                         String sendEmail = sendToEmail.getText().toString().trim();
                         firebaseAuth.sendPasswordResetEmail(sendEmail).addOnSuccessListener(
                                 new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                // If successful, let user know that the link has been sent to their
-                                // email.
-                                Toast.makeText(getApplicationContext(), "Reset link has been" +
-                                        " sent, check your email", Toast.LENGTH_SHORT).show();
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        // If successful, let user know that the link has been sent to their
+                                        // email.
+                                        Toast.makeText(getApplicationContext(), "Reset link has been" +
+                                                " sent, check your email", Toast.LENGTH_SHORT).show();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 // If the link fails to send, display error message.
@@ -162,8 +182,8 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                     }
                 });
 
-                resetPasswordDialog.setNegativeButton("Cancel",
-                        new DialogInterface.OnClickListener() {
+        resetPasswordDialog.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // Cancel the dialog if cancel is pressed.
@@ -171,9 +191,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                     }
                 });
 
-                // Display the dialog.
-                resetPasswordDialog.create().show();
-                break;
-        }
+        // Display the dialog.
+        resetPasswordDialog.create().show();
     }
 }

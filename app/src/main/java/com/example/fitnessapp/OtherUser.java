@@ -2,30 +2,48 @@ package com.example.fitnessapp;
 
 import android.os.Bundle;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.HashMap;
 
 import javax.annotation.Nullable;
 
-public class OtherUser extends AppCompatActivity {
+public class OtherUser extends AppCompatActivity implements View.OnClickListener {
 
     Button friendButton;
     TextView username;
     TextView email;
 
     DocumentReference documentReference;
+    CollectionReference friendRequestRef;
+
+    FirebaseUser currentUser;
+
+    // 0 for not friends, 1 for friend request sent, 2 for friends.
+    int mCurrentState;
+
+    String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,11 +53,15 @@ public class OtherUser extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // Retrieve the user ID collected from the user list.
-        String userId = getIntent().getStringExtra("id");
+        userId = getIntent().getStringExtra("id");
 
-        // Get the document reference based off of the user ID.
+        // Get the user document reference based off of the user ID.
         documentReference = FirebaseFirestore.getInstance().collection("users")
                 .document(userId);
+
+        friendRequestRef = FirebaseFirestore.getInstance().collection("friend_request");
+
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         username = findViewById(R.id.display_username);
         email = findViewById(R.id.display_email);
@@ -48,6 +70,21 @@ public class OtherUser extends AppCompatActivity {
         friendButton = findViewById(R.id.multipleUseButton);
         friendButton.setText("Add Friend");
 
+        mCurrentState = 0;
+
+        setText();
+        friendButton.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (mCurrentState == 0) {
+            // If current user is not friends with the other user, a friend request can be sent.
+            sendFriendRequest();
+        }
+    }
+
+    public void setText() {
         // Listen to the data in the FireBase database.
         documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
@@ -61,4 +98,39 @@ public class OtherUser extends AppCompatActivity {
         });
     }
 
+    public void sendFriendRequest() {
+        // Hash map for friend request is created.
+        final HashMap<String, String> friendRequest = new HashMap<>();
+
+        // Create a document with the current user ID and add a collection
+        // of the other user ID with a document containing the request type.
+        friendRequest.put("type", "sent");
+        friendRequestRef.document(currentUser.getUid()).collection(userId)
+                .document("request_type").set(friendRequest)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            // If successful, create a document of the other user's ID with a
+                            // collection of the current user containing a document with the
+                            // request type.
+                            friendRequest.put("type", "received");
+                            friendRequestRef.document(userId).collection(currentUser.getUid())
+                                    .document("request_type")
+                                    .set(friendRequest)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Toast.makeText(OtherUser.this,
+                                                    "Request sent successfully",
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        } else {
+                            Toast.makeText(OtherUser.this,
+                                    "Request failed to send", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
 }

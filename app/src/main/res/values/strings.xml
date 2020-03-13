@@ -18,7 +18,7 @@
     <string name="title_activity_friends">Friends</string>
     <string name="title_activity_schedule">Schedule</string>
     <string name="title_activity_sign_in">Sign In</string>
-    <string name="sign_in_name">Username/Email</string>
+    <string name="sign_in_name">Email</string>
     <string name="password">Password</string>
     <string name="not_signed_up">Don\'t have an account?</string>
     <string name="sign_in_page_info">You need to be logged in to access the friends
