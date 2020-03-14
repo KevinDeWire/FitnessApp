@@ -24,6 +24,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
 import javax.annotation.Nullable;
@@ -34,10 +36,9 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
     Button declineRequestButton;
     TextView username;
     TextView email;
-    boolean contained = false;
 
     DocumentReference documentReference;
-    CollectionReference friendRequestRef;
+    CollectionReference friendRequestRef, currentFriendsReference, otherFriendsReference;
 
     FirebaseUser currentUser;
 
@@ -56,13 +57,18 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
         // Retrieve the user ID collected from the user list.
         userId = getIntent().getStringExtra("id");
 
-        // Get the user document reference based off of the user ID.
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
         documentReference = FirebaseFirestore.getInstance().collection("users")
                 .document(userId);
-
-        friendRequestRef = FirebaseFirestore.getInstance().collection("friend_request");
-
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        friendRequestRef = FirebaseFirestore.getInstance()
+                .collection("friend_request");
+        // Current user's friends list.
+        currentFriendsReference = FirebaseFirestore.getInstance().collection("users")
+                .document(currentUser.getUid()).collection("friends");
+        // Other user's friends list.
+        otherFriendsReference = FirebaseFirestore.getInstance().collection("users")
+                .document(userId).collection("friends");
 
         username = findViewById(R.id.display_username);
         email = findViewById(R.id.display_email);
@@ -88,18 +94,30 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                 // Disable the button once it is clicked so that it cannot be clicked multiple times before
                 // the request is sent.
                 friendButton.setEnabled(false);
+                // If in the not friend state.
                 if (friendshipState == 0) {
                     // If current user is not friends with the other user, a friend request can be sent.
                     sendFriendRequest();
                 }
+                // If in the sent friend request state.
                 if (friendshipState == 1) {
-                    // Cancel the friend request.
-                    cancelFriendRequest();
+                    // Cancel the friend request if cancel friend request is pressed.
+                    cancelFriendRequest(1);
+                }
+                // If in the received friend request state.
+                if (friendshipState == 2) {
+                    // Accept the friend request if pressed.
+                    acceptFriendRequest();
+                }
+                // If in the friends state.
+                if (friendshipState == 3) {
+                    // Remove the friend if pressed.
+                    removeFriend();
                 }
                 break;
             case R.id.declineRequestButton:
                 // If the decline request button is clicked, cancel the request.
-                cancelFriendRequest();
+                cancelFriendRequest(1);
                 // Also make the decline request button disappear again.
                 declineRequestButton.setVisibility(View.GONE);
                 break;
@@ -135,7 +153,8 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                             String requestType = documentSnapshot.getString("type");
 
                             if (requestType.equals("received")) {
-                                // Set state to received friend request if request type is received.
+                                // Set state to received friend request if request type is
+                                // received.
                                 friendshipState = 2;
                                 // Set the button text to accept friend request.
                                 friendButton.setText("Accept Friend Request");
@@ -151,7 +170,6 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                         }
                     }
                 });
-
     }
 
     public void sendFriendRequest() {
@@ -177,8 +195,6 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            // Enable the button again.
-                                            friendButton.setEnabled(true);
                                             // Change the current state to "sent"
                                             friendshipState = 1;
 
@@ -195,9 +211,11 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                         }
                     }
                 });
+        // Enable the button again.
+        friendButton.setEnabled(true);
     }
 
-    public void cancelFriendRequest() {
+    public void cancelFriendRequest(final int option) {
         // Delete the sender's collection and document of the receiver.
         friendRequestRef.document(currentUser.getUid()).collection(userId)
                 .document("request_type").delete()
@@ -209,16 +227,76 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        // Enable the button again.
-                                        friendButton.setEnabled(true);
-                                        // Set the state back to not friends.
-                                        friendshipState = 0;
-                                        // Set the button text back to "Add Friend".
-                                        friendButton.setText("Add Friend");
+                                        if (option == 1) {
+                                            // Option 1 is for canceling friend requests and
+                                            // declining them.
+                                            // Set the state back to not friends.
+                                            friendshipState = 0;
+                                            // Set the button text back to "Add Friend".
+                                            friendButton.setText("Add Friend");
+                                        }
+                                        if (option == 2) {
+                                            // Option 2 is for accepting friend requests.
+                                            // Set the friendship state to friends.
+                                            friendshipState = 3;
+                                            // Set the text to remove friend.
+                                            friendButton.setText("Remove Friend");
+                                            // Set the decline request button to gone.
+                                            declineRequestButton.setVisibility(View.GONE);
+                                        }
                                     }
                                 });
                     }
                 });
+        // Enable the button again.
+        friendButton.setEnabled(true);
+    }
+
+    public void acceptFriendRequest() {
+        // Get the current timestamp.
+        String timestamp = DateFormat.getDateTimeInstance().format(new Date());
+        final HashMap<String, String> timeMap = new HashMap<>();
+        timeMap.put("friends since", timestamp);
+
+        // Store document of other user into current user's friends collection.
+        currentFriendsReference.document(userId).set(timeMap).addOnSuccessListener(
+                new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // If successful, store the document of current user into other user's
+                        // friend collection.
+                        otherFriendsReference.document(currentUser.getUid()).set(timeMap)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        // Delete the friend requests.
+                                        cancelFriendRequest(2);
+                                    }
+                                });
+                    }
+                }
+        );
+
+    }
+
+    public void removeFriend() {
+        currentFriendsReference.document(userId).delete().addOnSuccessListener(
+                new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        otherFriendsReference.document(currentUser.getUid()).delete()
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        // Set the friendship state back to not friends.
+                                        friendshipState = 0;
+                                        // Set the button text to add friend.
+                                        friendButton.setText("Add Friend");
+                                    }
+                                });
+                    }
+                }
+        );
     }
 
 }

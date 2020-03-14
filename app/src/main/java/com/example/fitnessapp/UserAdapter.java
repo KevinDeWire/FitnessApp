@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.UserViewHolder> {
     Context context;
@@ -32,14 +33,24 @@ public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.User
         // Get the user's ID.
         final String id = getItem(i).getUserId();
 
+        // Get the current user's ID.
+        final String currentId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
         userViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Intent otherProfile = new Intent(SearchUsers.getContext(), OtherUser.class);
-                otherProfile.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                otherProfile.putExtra("id", id);
-                SearchUsers.getContext().startActivity(otherProfile);
+                if (id.equals(currentId)) {
+                    // If the ID that is clicked is the same as the user's who is currently logged
+                    // in, start up the user profile activity.
+                    Intent userProfile = new Intent(SearchUsers.getContext(), UserProfile.class);
+                    userProfile.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    SearchUsers.getContext().startActivity(userProfile);
+                } else {
+                    Intent otherProfile = new Intent(SearchUsers.getContext(), OtherUser.class);
+                    otherProfile.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    otherProfile.putExtra("id", id);
+                    SearchUsers.getContext().startActivity(otherProfile);
+                }
             }
         });
     }
