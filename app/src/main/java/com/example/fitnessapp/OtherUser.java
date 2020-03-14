@@ -31,6 +31,7 @@ import javax.annotation.Nullable;
 public class OtherUser extends AppCompatActivity implements View.OnClickListener {
 
     Button friendButton;
+    Button declineRequestButton;
     TextView username;
     TextView email;
     boolean contained = false;
@@ -69,27 +70,39 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
         // Set the text of the button to "Add Friend" as it is initially "Sign Out."
         friendButton = findViewById(R.id.multipleUseButton);
         friendButton.setText("Add Friend");
+        declineRequestButton = findViewById(R.id.declineRequestButton);
 
         friendshipState = 0;
 
         setText();
         friendButton.setOnClickListener(this);
+        declineRequestButton.setOnClickListener(this);
 
         getFriendshipState();
     }
 
     @Override
     public void onClick(View v) {
-        // Disable the button once it is clicked so that it cannot be clicked multiple times before
-        // the request is sent.
-        friendButton.setEnabled(false);
-        if (friendshipState == 0) {
-            // If current user is not friends with the other user, a friend request can be sent.
-            sendFriendRequest();
-        }
-        if (friendshipState == 1) {
-            // Cancel the friend request.
-            cancelFriendRequest();
+        switch (v.getId()) {
+            case R.id.multipleUseButton:
+                // Disable the button once it is clicked so that it cannot be clicked multiple times before
+                // the request is sent.
+                friendButton.setEnabled(false);
+                if (friendshipState == 0) {
+                    // If current user is not friends with the other user, a friend request can be sent.
+                    sendFriendRequest();
+                }
+                if (friendshipState == 1) {
+                    // Cancel the friend request.
+                    cancelFriendRequest();
+                }
+                break;
+            case R.id.declineRequestButton:
+                // If the decline request button is clicked, cancel the request.
+                cancelFriendRequest();
+                // Also make the decline request button disappear again.
+                declineRequestButton.setVisibility(View.GONE);
+                break;
         }
     }
 
@@ -126,6 +139,9 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                                 friendshipState = 2;
                                 // Set the button text to accept friend request.
                                 friendButton.setText("Accept Friend Request");
+                                // Make decline friend request visible.
+                                declineRequestButton.setVisibility(View.VISIBLE);
+
                             } else if (requestType.equals("sent")) {
                                 // Set the state to sent if type is sent.
                                 friendshipState = 1;

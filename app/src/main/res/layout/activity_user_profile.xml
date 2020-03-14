@@ -54,6 +54,13 @@
         android:layout_gravity="center"
         android:id="@+id/multipleUseButton"
         android:text="@string/sign_out"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/declineRequestButton"
+        android:text="@string/decline_request"
+        android:visibility="gone"/>
 
 
 </LinearLayout>
