@@ -11,6 +11,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
@@ -32,13 +33,14 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
     Button friendButton;
     TextView username;
     TextView email;
+    boolean contained = false;
 
     DocumentReference documentReference;
     CollectionReference friendRequestRef;
 
     FirebaseUser currentUser;
 
-    // 0 for not friends, 1 for friend request sent, 2 for friends.
+    // 0 for not friends, 1 for friend request sent, 2 for received, 3 for friends.
     int friendshipState;
 
     String userId;
@@ -72,6 +74,8 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
 
         setText();
         friendButton.setOnClickListener(this);
+
+        getFriendshipState();
     }
 
     @Override
@@ -101,6 +105,37 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                 email.setText(documentSnapshot.getString("email"));
             }
         });
+    }
+
+    public void getFriendshipState() {
+        friendRequestRef.document(currentUser.getUid()).collection(userId)
+                .document("request_type").addSnapshotListener(this,
+                new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(
+                            @Nullable DocumentSnapshot documentSnapshot,
+                            @Nullable FirebaseFirestoreException e) {
+                        // If an ID is contained in the user ID, get the request type from
+                        // the document.
+
+                        if (documentSnapshot.exists()) {
+                            String requestType = documentSnapshot.getString("type");
+
+                            if (requestType.equals("received")) {
+                                // Set state to received friend request if request type is received.
+                                friendshipState = 2;
+                                // Set the button text to accept friend request.
+                                friendButton.setText("Accept Friend Request");
+                            } else if (requestType.equals("sent")) {
+                                // Set the state to sent if type is sent.
+                                friendshipState = 1;
+                                // Set the button text to cancel friend request.
+                                friendButton.setText("Cancel Friend Request");
+                            }
+                        }
+                    }
+                });
+
     }
 
     public void sendFriendRequest() {
@@ -169,4 +204,5 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                     }
                 });
     }
+
 }

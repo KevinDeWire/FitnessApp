@@ -140,8 +140,8 @@ public class Friends extends AppCompatActivity implements View.OnClickListener, 
     @Override
     public void onRefresh() {
         // Reload the activity.
+        Intent refresh = getIntent();
         finish();
-        Intent refresh = new Intent(this, Friends.class);
         startActivity(refresh);
         swipeRefreshLayout.setRefreshing(false);
     }
