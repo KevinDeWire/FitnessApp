@@ -43,6 +43,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:id="@+id/friendsSince"
+        android:textColor="@color/green"
+        android:textSize="15dp"
         android:visibility="gone"/>
     <TextView
         android:layout_width="wrap_content"

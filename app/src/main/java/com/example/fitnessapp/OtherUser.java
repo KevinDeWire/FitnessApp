@@ -36,6 +36,7 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
     Button declineRequestButton;
     TextView username;
     TextView email;
+    TextView friendsSince;
 
     DocumentReference documentReference;
     CollectionReference friendRequestRef, currentFriendsReference, otherFriendsReference;
@@ -72,6 +73,7 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
 
         username = findViewById(R.id.display_username);
         email = findViewById(R.id.display_email);
+        friendsSince = findViewById(R.id.friendsSince);
 
         // Set the text of the button to "Add Friend" as it is initially "Sign Out."
         friendButton = findViewById(R.id.multipleUseButton);
@@ -167,6 +169,24 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                                 // Set the button text to cancel friend request.
                                 friendButton.setText("Cancel Friend Request");
                             }
+                        }
+                    }
+                });
+        currentFriendsReference.document(userId).addSnapshotListener(this,
+                new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (documentSnapshot.exists()) {
+                            // If the user ID exists in the current user's friend collection,
+                            // get the timestamp from when the user's became friends.
+                            String timestamp = documentSnapshot.getString("friends since");
+                            // Display that the user is a friend and when they became friends.
+                            friendsSince.setText("Friends Since " + timestamp);
+                            // Set the TextView to visible.
+                            friendsSince.setVisibility(View.VISIBLE);
+                            // Set the friend button's text to Remove Friend.
+                            friendButton.setText("Remove Friend");
                         }
                     }
                 });
