@@ -26,15 +26,13 @@ import android.widget.Toast;
 
 import javax.annotation.Nullable;
 
-public class Friends extends AppCompatActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class Friends extends AppCompatActivity implements View.OnClickListener {
 
-    Button addFriendButton;
+    Button addFriendButton, signInButton;
 
     TextView username;
     TextView resendVerification;
     ImageView profilePicture;
-
-    SwipeRefreshLayout swipeRefreshLayout;
 
     FirebaseAuth firebaseAuth;
     FirebaseFirestore firebaseFirestore;
@@ -49,7 +47,7 @@ public class Friends extends AppCompatActivity implements View.OnClickListener, 
         setSupportActionBar(toolbar);
 
         addFriendButton = findViewById(R.id.addFriendButton);
-        swipeRefreshLayout = findViewById(R.id.swipeToRefresh);
+        signInButton = findViewById(R.id.reSignInButton);
         resendVerification = findViewById(R.id.notVerified);
         username = findViewById(R.id.display_username);
         profilePicture = findViewById(R.id.profilePicture);
@@ -60,6 +58,7 @@ public class Friends extends AppCompatActivity implements View.OnClickListener, 
         resendVerification.setOnClickListener(this);
         username.setOnClickListener(this);
         addFriendButton.setOnClickListener(this);
+        signInButton.setOnClickListener(this);
 
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
@@ -70,6 +69,8 @@ public class Friends extends AppCompatActivity implements View.OnClickListener, 
                 resendVerification.setVisibility(View.VISIBLE);
                 // Set the profile link to false as well.
                 username.setEnabled(false);
+                // Make the sign in button visible.
+                signInButton.setVisibility(View.VISIBLE);
                 // If the user's email is not verified, make the profile picture
                 // invisible.
                 profilePicture.setVisibility(View.INVISIBLE);
@@ -94,9 +95,6 @@ public class Friends extends AppCompatActivity implements View.OnClickListener, 
                 }
             });
         }
-
-        // Refresh the page if swiped.
-        swipeRefreshLayout.setOnRefreshListener(this);
     }
 
     @Override
@@ -134,15 +132,10 @@ public class Friends extends AppCompatActivity implements View.OnClickListener, 
                 Intent searchUsers = new Intent(this, SearchUsers.class);
                 startActivity(searchUsers);
                 break;
+            case R.id.reSignInButton:
+                // If the sign in button is pressed, go to the sign in activity.
+                Intent signIn = new Intent(this, SignIn.class);
+                startActivity(signIn);
         }
-    }
-
-    @Override
-    public void onRefresh() {
-        // Reload the activity.
-        Intent refresh = getIntent();
-        finish();
-        startActivity(refresh);
-        swipeRefreshLayout.setRefreshing(false);
     }
 }

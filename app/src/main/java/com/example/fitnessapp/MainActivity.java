@@ -25,11 +25,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         chartButton.setOnClickListener(this);
         friendButton.setOnClickListener(this);
         stepCounterButton.setOnClickListener(this);
-
     }
 
-    public void onClick(View v){
-        switch (v.getId()){
+    public void onClick(View v) {
+        switch (v.getId()) {
             case R.id.buttonSchedule:
                 Intent intentSchedule = new Intent(this, Schedule.class);
                 startActivity(intentSchedule);

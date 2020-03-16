@@ -16,6 +16,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -23,11 +27,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.HashMap;
 
 public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
@@ -35,6 +42,9 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
     Button signInButton;
     TextView signUpLink, resetPassword;
     FirebaseAuth firebaseAuth;
+    CollectionReference tokenReference;
+
+    private static final String TAG = "SignIn";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +121,28 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
         }
     }
 
+    public void addTokenDevice() {
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.d(TAG, "getInstanceId failed", task.getException());
+                            return;
+                        }
+                        String userId = firebaseAuth.getCurrentUser().getUid();
+
+                        tokenReference = FirebaseFirestore.getInstance().collection("users")
+                                .document(userId).collection("tokens");
+                        // Add token device.
+                        String token = task.getResult().getToken();
+                        HashMap tokenMap = new HashMap();
+                        tokenMap.put("token", token);
+                        tokenReference.document(token).set(tokenMap);
+                    }
+                });
+    }
+
     /**
      * FireBase sign in function.
      * @param email user email
@@ -125,6 +157,8 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                         // If user is successfully registered to FireBase,
                         // redirect them to the Friends activity.
                         if (task.isSuccessful()) {
+                            // Get the device's token.
+                            addTokenDevice();
                             Toast.makeText(SignIn.this, "Signed In!",
                                     Toast.LENGTH_SHORT).show();
 

@@ -67,17 +67,19 @@
         </LinearLayout>
     </LinearLayout>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipeToRefresh"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/notVerified"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/not_verified"
+        android:textColor="@color/red"
+        android:visibility="gone" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/reSignInButton"
+        android:text="@string/title_activity_sign_in"
+        android:visibility="gone"/>
 
-        <TextView
-            android:id="@+id/notVerified"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/not_verified"
-            android:textColor="@color/red"
-            android:visibility="gone" />
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </LinearLayout>

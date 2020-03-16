@@ -39,7 +39,8 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
     TextView friendsSince;
 
     DocumentReference documentReference;
-    CollectionReference friendRequestRef, currentFriendsReference, otherFriendsReference;
+    CollectionReference friendRequestRef, currentFriendsReference, otherFriendsReference,
+            notificationRef;
 
     FirebaseUser currentUser;
 
@@ -64,12 +65,11 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                 .document(userId);
         friendRequestRef = FirebaseFirestore.getInstance()
                 .collection("friend_request");
-        // Current user's friends list.
         currentFriendsReference = FirebaseFirestore.getInstance().collection("users")
                 .document(currentUser.getUid()).collection("friends");
-        // Other user's friends list.
         otherFriendsReference = FirebaseFirestore.getInstance().collection("users")
                 .document(userId).collection("friends");
+        notificationRef = FirebaseFirestore.getInstance().collection("notifications");
 
         username = findViewById(R.id.display_username);
         email = findViewById(R.id.display_email);
@@ -215,9 +215,20 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
+                                            HashMap<String, String> notificationMap =
+                                                    new HashMap<>();
+                                            String timestamp = DateFormat.getDateTimeInstance()
+                                                    .format(new Date());
+                                            notificationMap.put("from", currentUser.getUid());
+                                            notificationMap.put("timestamp", timestamp);
+                                            // Store the current user ID and timestamp of friend
+                                            // request in a document with a unique notification ID
+                                            // in a collection of friend request notifications.
+                                            notificationRef.document(userId)
+                                                    .collection("friend_requests")
+                                                    .add(notificationMap);
                                             // Change the current state to "sent"
                                             friendshipState = 1;
-
                                             // Change the button text to "Cancel Friend Request"
                                             friendButton.setText("Cancel Friend Request");
                                             Toast.makeText(OtherUser.this,
