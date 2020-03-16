@@ -8,7 +8,7 @@ const db = admin.firestore();
 exports.sendNotification = functions.firestore.document('notifications/{userId}' +
     '/{notificationType}/{notificationId}')
     .onWrite((change, context) => {
-        // Store the values based off of their parameters in the collection path.
+        // Store the values based off of their paramaters in the collection path.
         const userId = context.params.userId;
         const notificationType = context.params.notificationType;
         const notificationId = context.params.notificationId;
@@ -27,12 +27,13 @@ exports.sendNotification = functions.firestore.document('notifications/{userId}'
 
                 if (snapshot.empty) {
                     console.log('No documents.');
-                    return;
                 }
                 snapshot.forEach(doc => {
                     // Store each of the device's token ID's in a list.
-                    tokenList.push(doc.val());
-                    console.log('Token IDs: ', tokenList);
+                    console.log("Token: " + doc.data()['token']);
+                    tokenList.push(doc.data()['token']);
+                    tokenList.forEach(token => console.log(token));
+                    return null;
                 });
 
                 var notificationTitle = "";
@@ -56,13 +57,21 @@ exports.sendNotification = functions.firestore.document('notifications/{userId}'
                 };
 
                 // Send a notification to each of the device's token ID's.
-                tokenList.forEach(tokenId => {return admin.messaging().sendToDevice
-                    (tokenId, payload).then(response => {
-                        console.log('The notification has been sent.');
-                    })});
+                tokenList.forEach(tokenId => {
+                    return admin.messaging().sendToDevice
+                        (tokenId, payload).then(response => {
+                            console.log('The notification has been sent.');
+                            return null;
+                        })
+                    return null;
+                });
+
+                return null;
 
             })
             .catch(err => {
                 console.log('Error getting documents', err);
+                return null;
             });
+            return null;
     });
