@@ -323,11 +323,14 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                                         friendshipState = 0;
                                         // Set the button text to add friend.
                                         friendButton.setText("Add Friend");
+                                        friendsSince.setVisibility(View.GONE);
                                     }
                                 });
                     }
                 }
         );
+        // Enable the button again.
+        friendButton.setEnabled(true);
     }
 
 }
