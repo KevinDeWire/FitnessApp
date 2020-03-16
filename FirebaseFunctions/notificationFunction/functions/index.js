@@ -31,7 +31,7 @@ exports.sendNotification = functions.firestore.document('notifications/{userId}'
                 }
                 snapshot.forEach(doc => {
                     // Store each of the device's token ID's in a list.
-                    tokenList.push(doc.data()['tokens']);
+                    tokenList.push(doc.val());
                     console.log('Token IDs: ', tokenList);
                 });
 
