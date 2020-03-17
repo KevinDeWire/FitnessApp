@@ -5,6 +5,7 @@ const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 const db = admin.firestore();
 
+// This will allow background notifications.
 exports.sendNotification = functions.firestore.document('notifications/{userId}' +
     '/{notificationType}/{notificationId}')
     .onWrite((change, context) => {
@@ -62,8 +63,7 @@ exports.sendNotification = functions.firestore.document('notifications/{userId}'
                         (tokenId, payload).then(response => {
                             console.log('The notification has been sent.');
                             return null;
-                        })
-                    return null;
+                        });
                 });
 
                 return null;
