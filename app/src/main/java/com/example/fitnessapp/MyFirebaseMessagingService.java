@@ -1,8 +1,11 @@
 package com.example.fitnessapp;
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -20,7 +23,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-
         // Build the notification.
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -32,5 +34,24 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(notificationId, notificationBuilder.build());
+
+        buildNotificationChannel(notificationManager);
+    }
+
+    private void buildNotificationChannel(NotificationManager notificationManager) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence channelName = "friend_requests";
+            String channelDescription = "Friend request channel.";
+
+            NotificationChannel notificationChannel;
+            notificationChannel = new NotificationChannel(
+                    CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_LOW
+            );
+            notificationChannel.setDescription(channelDescription);
+
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
+        }
     }
 }
