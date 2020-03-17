@@ -10,8 +10,11 @@ import com.google.firebase.messaging.RemoteMessage;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
+    private static final String CHANNEL_ID = "friend_requests";
+
     /**
      * Receive notifications in the foreground.
+     *
      * @param remoteMessage notification message.
      */
     @Override
@@ -20,7 +23,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Build the notification.
         NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this)
+                new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle("Friend Request")
                         .setContentText("You received a friend request.");
