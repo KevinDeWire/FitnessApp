@@ -59,12 +59,19 @@ exports.sendNotification = functions.firestore.document('notifications/{userId}'
                         console.log('Friend request notification');
                     }
 
-                    // Notification body.
                     const payload = {
                         notification: {
+                            // Notification body.
                             title: notificationTitle,
                             body: notificationBody,
-                            icon: "default"
+                            icon: "default",
+
+                            // Send click action to onMessageReceive().
+                            clickAction: "com.example.fitnessapp_NOTIFICATION"
+                        },
+                        data: {
+                            // Send the user's ID to onMessageReceive().
+                            fromUserId: fromUserId
                         }
                     };
 
