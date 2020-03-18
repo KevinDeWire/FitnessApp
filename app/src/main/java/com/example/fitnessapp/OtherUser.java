@@ -141,20 +141,29 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
     }
 
     public void getFriendshipState() {
-        friendRequestRef.document(currentUser.getUid()).collection(userId)
-                .document("request_type").addSnapshotListener(this,
+        friendRequestRef.document(currentUser.getUid()).collection("sent to")
+                .document(userId).addSnapshotListener(this,
                 new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(
                             @Nullable DocumentSnapshot documentSnapshot,
                             @Nullable FirebaseFirestoreException e) {
-                        // If an ID is contained in the user ID, get the request type from
-                        // the document.
-
                         if (documentSnapshot.exists()) {
-                            String requestType = documentSnapshot.getString("type");
-
-                            if (requestType.equals("received")) {
+                            // Set the state to sent if type is sent.
+                            friendshipState = 1;
+                            // Set the button text to cancel friend request.
+                            friendButton.setText("Cancel Friend Request");
+                        }
+                    }
+                });
+        friendRequestRef.document(currentUser.getUid()).collection("received by")
+                .document(userId).addSnapshotListener(this,
+                new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(
+                            @Nullable DocumentSnapshot documentSnapshot,
+                            @Nullable FirebaseFirestoreException e) {
+                        if (documentSnapshot.exists()) {
                                 // Set state to received friend request if request type is
                                 // received.
                                 friendshipState = 2;
@@ -162,13 +171,6 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                                 friendButton.setText("Accept Friend Request");
                                 // Make decline friend request visible.
                                 declineRequestButton.setVisibility(View.VISIBLE);
-
-                            } else if (requestType.equals("sent")) {
-                                // Set the state to sent if type is sent.
-                                friendshipState = 1;
-                                // Set the button text to cancel friend request.
-                                friendButton.setText("Cancel Friend Request");
-                            }
                         }
                     }
                 });
@@ -199,8 +201,8 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
         // Create a document with the current user ID and add a collection
         // of the other user ID with a document containing the request type.
         friendRequest.put("type", "sent");
-        friendRequestRef.document(currentUser.getUid()).collection(userId)
-                .document("request_type").set(friendRequest)
+        friendRequestRef.document(currentUser.getUid()).collection("sent to")
+                .document(userId).set(friendRequest)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -209,8 +211,8 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                             // collection of the current user containing a document with the
                             // request type.
                             friendRequest.put("type", "received");
-                            friendRequestRef.document(userId).collection(currentUser.getUid())
-                                    .document("request_type")
+                            friendRequestRef.document(userId).collection("received by")
+                                    .document(currentUser.getUid())
                                     .set(friendRequest)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
@@ -248,13 +250,13 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
 
     public void cancelFriendRequest(final int option) {
         // Delete the sender's collection and document of the receiver.
-        friendRequestRef.document(currentUser.getUid()).collection(userId)
-                .document("request_type").delete()
+        friendRequestRef.document(currentUser.getUid()).collection("sent to")
+                .document(userId).delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        friendRequestRef.document(userId).collection(currentUser.getUid())
-                                .document("request_type").delete()
+                        friendRequestRef.document(userId).collection("received by")
+                                .document(currentUser.getUid()).delete()
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
