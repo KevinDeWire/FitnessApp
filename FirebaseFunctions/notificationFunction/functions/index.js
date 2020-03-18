@@ -20,58 +20,70 @@ exports.sendNotification = functions.firestore.document('notifications/{userId}'
             return console.log('Notification deleted : ', notificationId);
         }
 
-        const tokenRef = db.collection('users').doc(userId).collection('tokens');
-        const allTokens = tokenRef.get()
-            .then(snapshot => {
+        const fromUser = db.collection('notifications').doc(userId)
+            .collection(notificationType).doc(notificationId).get();
+        return fromUser.then(doc => {
+            // Store the notification sender's user ID.
+            const fromUserId = doc.data()['from'];
+            console.log('from ', fromUserId);
 
-                const tokenList = [];
+            const userQuery = db.collection('users').doc(fromUserId).get();
+            return userQuery.then(doc => {
+                // Store the notification sender's username.
+                const username = doc.data()['username'];
 
-                if (snapshot.empty) {
-                    console.log('No documents.');
-                }
-                snapshot.forEach(doc => {
-                    // Store each of the device's token ID's in a list.
-                    console.log("Token: " + doc.data()['token']);
-                    tokenList.push(doc.data()['token']);
-                    tokenList.forEach(token => console.log(token));
-                    return null;
-                });
+                const tokenRef = db.collection('users').doc(userId).collection('tokens').get();
+                return tokenRef.then(snapshot => {
 
-                var notificationTitle = "";
-                var notificationBody = "";
+                    const tokenList = [];
 
-                // If the notification type is for friend requests, set the notification
-                // values to friend request.
-                if (notificationType == "friend_requests") {
-                    notificationTitle = "Friend Request";
-                    notificationBody = "You've received a new friend request";
-                    console.log('Friend request notification');
-                }
-
-                // Notification body.
-                const payload = {
-                    notification: {
-                        title: "Friend Request",
-                        body: "You've received a new friend request",
-                        icon: "default"
+                    if (snapshot.empty) {
+                        console.log('No documents.');
                     }
-                };
+                    snapshot.forEach(doc => {
+                        // Store each of the device's token ID's in a list.
+                        console.log("Token: " + doc.data()['token']);
+                        tokenList.push(doc.data()['token']);
+                        tokenList.forEach(token => console.log(token));
+                        return null;
+                    });
 
-                // Send a notification to each of the device's token ID's.
-                tokenList.forEach(tokenId => {
-                    return admin.messaging().sendToDevice
-                        (tokenId, payload).then(response => {
-                            console.log('The notification has been sent.');
-                            return null;
-                        });
-                });
+                    var notificationTitle = "";
+                    var notificationBody = "";
 
-                return null;
+                    // If the notification type is for friend requests, set the notification
+                    // values to friend request.
+                    if (notificationType == "friend_requests") {
+                        notificationTitle = "You Have a New Friend Request";
+                        notificationBody = username + " sent you a friend request.";
+                        console.log('Friend request notification');
+                    }
 
+                    // Notification body.
+                    const payload = {
+                        notification: {
+                            title: notificationTitle,
+                            body: notificationBody,
+                            icon: "default"
+                        }
+                    };
+
+                    // Send a notification to each of the device's token ID's.
+                    tokenList.forEach(tokenId => {
+                        return admin.messaging().sendToDevice
+                            (tokenId, payload).then(response => {
+                                console.log('The notification has been sent.');
+                                return null;
+                            });
+                    });
+
+                    return null;
+
+                })
+                    .catch(err => {
+                        console.log('Error getting documents', err);
+                        return null;
+                    });
             })
-            .catch(err => {
-                console.log('Error getting documents', err);
-                return null;
-            });
-            return null;
+        });
     });
