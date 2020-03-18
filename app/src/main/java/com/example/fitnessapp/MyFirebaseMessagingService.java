@@ -23,12 +23,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
+
+        String notificationTitle = remoteMessage.getNotification().getTitle();
+        String notificationMessage = remoteMessage.getNotification().getBody();
         // Build the notification.
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle("Friend Request")
-                        .setContentText("You received a friend request.");
+                        .setContentTitle(notificationTitle)
+                        .setContentText(notificationMessage);
 
         int notificationId = (int) System.currentTimeMillis();
         NotificationManager notificationManager =
