@@ -180,6 +180,8 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                     public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
                                         @Nullable FirebaseFirestoreException e) {
                         if (documentSnapshot.exists()) {
+                            // Set the friendship state to friend.
+                            friendshipState = 3;
                             // If the user ID exists in the current user's friend collection,
                             // get the timestamp from when the user's became friends.
                             String timestamp = documentSnapshot.getString("friends since");
