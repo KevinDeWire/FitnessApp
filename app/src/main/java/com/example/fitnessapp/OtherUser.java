@@ -104,7 +104,7 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                 // If in the sent friend request state.
                 if (friendshipState == 1) {
                     // Cancel the friend request if cancel friend request is pressed.
-                    cancelFriendRequest(1);
+                    cancelFriendRequest();
                 }
                 // If in the received friend request state.
                 if (friendshipState == 2) {
@@ -119,7 +119,7 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                 break;
             case R.id.declineRequestButton:
                 // If the decline request button is clicked, cancel the request.
-                cancelFriendRequest(1);
+                deleteFriendRequest(1);
                 // Also make the decline request button disappear again.
                 declineRequestButton.setVisibility(View.GONE);
                 break;
@@ -164,13 +164,13 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                             @Nullable DocumentSnapshot documentSnapshot,
                             @Nullable FirebaseFirestoreException e) {
                         if (documentSnapshot.exists()) {
-                                // Set state to received friend request if request type is
-                                // received.
-                                friendshipState = 2;
-                                // Set the button text to accept friend request.
-                                friendButton.setText("Accept Friend Request");
-                                // Make decline friend request visible.
-                                declineRequestButton.setVisibility(View.VISIBLE);
+                            // Set state to received friend request if request type is
+                            // received.
+                            friendshipState = 2;
+                            // Set the button text to accept friend request.
+                            friendButton.setText("Accept Friend Request");
+                            // Make decline friend request visible.
+                            declineRequestButton.setVisibility(View.VISIBLE);
                         }
                     }
                 });
@@ -250,7 +250,7 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
         friendButton.setEnabled(true);
     }
 
-    public void cancelFriendRequest(final int option) {
+    public void cancelFriendRequest() {
         // Delete the sender's collection and document of the receiver.
         friendRequestRef.document(currentUser.getUid()).collection("sent to")
                 .document(userId).delete()
@@ -262,23 +262,9 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        if (option == 1) {
-                                            // Option 1 is for canceling friend requests and
-                                            // declining them.
-                                            // Set the state back to not friends.
-                                            friendshipState = 0;
-                                            // Set the button text back to "Add Friend".
-                                            friendButton.setText("Add Friend");
-                                        }
-                                        if (option == 2) {
-                                            // Option 2 is for accepting friend requests.
-                                            // Set the friendship state to friends.
-                                            friendshipState = 3;
-                                            // Set the text to remove friend.
-                                            friendButton.setText("Remove Friend");
-                                            // Set the decline request button to gone.
-                                            declineRequestButton.setVisibility(View.GONE);
-                                        }
+                                        friendshipState = 0;
+                                        // Set the button text back to "Add Friend".
+                                        friendButton.setText("Add Friend");
                                     }
                                 });
                     }
@@ -305,13 +291,12 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         // Delete the friend requests.
-                                        cancelFriendRequest(2);
+                                        deleteFriendRequest(2);
                                     }
                                 });
                     }
                 }
         );
-
     }
 
     public void removeFriend() {
@@ -337,4 +322,37 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
         friendButton.setEnabled(true);
     }
 
+    public void deleteFriendRequest(final int option) {
+        // Delete the sender's collection and document of the receiver.
+        friendRequestRef.document(userId).collection("sent to")
+                .document(currentUser.getUid()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                friendRequestRef.document(currentUser.getUid())
+                        .collection("received by").document(userId).delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                if (option == 1) {
+                                    // Option 1 is for declining friend requests.
+                                    // Set the friendship state back to not friends.
+                                    friendshipState = 0;
+                                    // Set the button text back to "Add Friend".
+                                    friendButton.setText("Add Friend");
+                                }
+                                if (option == 2) {
+                                    // Option 2 is for accepting friend requests.
+                                    // Set the friendship state to friends.
+                                    friendshipState = 3;
+                                    // Set the text to remove friend.
+                                    friendButton.setText("Remove Friend");
+                                    // Set the decline request button to gone.
+                                    declineRequestButton.setVisibility(View.GONE);
+                                }
+                            }
+                        });
+            }
+        });
+
+    }
 }
