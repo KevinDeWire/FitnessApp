@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,6 +27,7 @@ import javax.annotation.Nullable;
 public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.UserViewHolder> {
     Context context;
     FriendRequests friendRequests = new FriendRequests();
+    Friends friends = new Friends();
 
 
     public UserAdapter(@NonNull FirestoreRecyclerOptions<User> options) {
@@ -46,30 +48,58 @@ public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.User
         userViewHolder.username.setText(user.getUsername());
         userViewHolder.email.setText(user.getEmail());
 
-        if (user.getUsername().isEmpty()) {
-            // If there is no username found, get the username from the users collection.
-            userReference.document(id).addSnapshotListener(friendRequests.getActivityContext(),
-                    new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
-                                            @Nullable FirebaseFirestoreException e) {
-                            userViewHolder.username.setText(documentSnapshot
-                                    .getString("username"));
-                        }
-                    });
-        }
+        try {
+            if (user.getUsername().isEmpty()) {
+                // If there is no username found, get the username from the users collection.
+                userReference.document(id).addSnapshotListener(friendRequests.getActivityContext(),
+                        new EventListener<DocumentSnapshot>() {
+                            @Override
+                            public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
+                                                @Nullable FirebaseFirestoreException e) {
+                                userViewHolder.username.setText(documentSnapshot
+                                        .getString("username"));
+                            }
+                        });
+            }
 
-        if (user.getEmail().isEmpty()) {
-            // If there is no email, get the email from the users collection.
-            userReference.document(id).addSnapshotListener(friendRequests.getActivityContext(),
-                    new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
-                                            @Nullable FirebaseFirestoreException e) {
-                            userViewHolder.email.setText(documentSnapshot
-                                    .getString("email"));
-                        }
-                    });
+            if (user.getEmail().isEmpty()) {
+                // If there is no email, get the email from the users collection.
+                userReference.document(id).addSnapshotListener(friendRequests.getActivityContext(),
+                        new EventListener<DocumentSnapshot>() {
+                            @Override
+                            public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
+                                                @Nullable FirebaseFirestoreException e) {
+                                userViewHolder.email.setText(documentSnapshot
+                                        .getString("email"));
+                            }
+                        });
+            }
+        } catch (Exception e) {
+            if (user.getUsername().isEmpty()) {
+                // If there is no username found, get the username from the users collection.
+                userReference.document(id).addSnapshotListener(friends.getActivityContext(),
+                        new EventListener<DocumentSnapshot>() {
+                            @Override
+                            public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
+                                                @Nullable FirebaseFirestoreException e) {
+                                userViewHolder.username.setText(documentSnapshot
+                                        .getString("username"));
+                            }
+                        });
+            }
+
+            if (user.getEmail().isEmpty()) {
+                // If there is no email, get the email from the users collection.
+                userReference.document(id).addSnapshotListener(friends.getActivityContext(),
+                        new EventListener<DocumentSnapshot>() {
+                            @Override
+                            public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
+                                                @Nullable FirebaseFirestoreException e) {
+                                userViewHolder.email.setText(documentSnapshot
+                                        .getString("email"));
+                            }
+                        });
+            }
         }
 
         // Get the current user's ID.
@@ -85,7 +115,6 @@ public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.User
                     Intent userProfile = new Intent(SearchUsers.getContext(), UserProfile.class);
                     userProfile.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     SearchUsers.getContext().startActivity(userProfile);
-
                 } else {
                     try {
                         otherProfile = new Intent(SearchUsers.getContext(), OtherUser.class);
@@ -93,10 +122,17 @@ public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.User
                         otherProfile.putExtra("id", id);
                         SearchUsers.getContext().startActivity(otherProfile);
                     } catch (Exception e) {
-                        otherProfile = new Intent(FriendRequests.getContext(), OtherUser.class);
-                        otherProfile.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        otherProfile.putExtra("id", id);
-                        FriendRequests.getContext().startActivity(otherProfile);
+                        try {
+                            otherProfile = new Intent(FriendRequests.getContext(), OtherUser.class);
+                            otherProfile.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            otherProfile.putExtra("id", id);
+                            FriendRequests.getContext().startActivity(otherProfile);
+                        } catch (Exception err) {
+                            otherProfile = new Intent(Friends.getContext(), OtherUser.class);
+                            otherProfile.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            otherProfile.putExtra("id", id);
+                            Friends.getContext().startActivity(otherProfile);
+                        }
                     }
                 }
             }

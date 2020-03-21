@@ -1,8 +1,10 @@
 package com.example.fitnessapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -13,11 +15,14 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.View;
@@ -38,9 +43,12 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
     FirebaseAuth firebaseAuth;
     FirebaseFirestore firebaseFirestore;
 
-    CollectionReference requestReference;
+    DocumentReference userReference;
 
     String userId;
+
+    private UserAdapter userAdapter;
+    private static Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +95,7 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
             // Get the user's ID.
             userId = firebaseUser.getUid();
 
-            DocumentReference userReference = firebaseFirestore.collection("users")
+            userReference = firebaseFirestore.collection("users")
                     .document(userId);
 
             // Listen to the data in the FireBase database.
@@ -100,8 +108,10 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
                 }
             });
 
-            requestReference = firebaseFirestore.collection("friend_request")
-                    .document(userId).collection("received by");
+            mContext = getActivityContext();
+
+            setUpRecyclerView();
+
         }
     }
 
@@ -150,5 +160,53 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
                 Intent friendRequestList = new Intent(this, FriendRequests.class);
                 startActivity(friendRequestList);
         }
+    }
+
+    private void setUpRecyclerView() {
+        // Arrange collection order by username in ascending order.
+
+        CollectionReference friendsReference = userReference.collection("friends");
+
+        Query query = friendsReference.orderBy("friends since", Query.Direction.ASCENDING);
+
+        // Set the newly ordered list into a recycler options variable.
+        FirestoreRecyclerOptions<User> options = new FirestoreRecyclerOptions.Builder<User>()
+                .setQuery(query, User.class).build();
+
+        // Set the options into the user adapter.
+        userAdapter = new UserAdapter(options);
+
+        RecyclerView recyclerView = findViewById(R.id.friendsList);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(userAdapter);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        userAdapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        userAdapter.stopListening();
+    }
+
+    /**
+     * Get the activity context.
+     * @return activity context
+     */
+    public Friends getActivityContext() {
+        return Friends.this;
+    }
+
+    /**
+     * Get the application context.
+     * @return application context
+     */
+    public static Context getContext() {
+        return mContext;
     }
 }
