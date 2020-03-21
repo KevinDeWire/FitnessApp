@@ -277,17 +277,19 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
     public void acceptFriendRequest() {
         // Get the current timestamp.
         String timestamp = DateFormat.getDateTimeInstance().format(new Date());
-        final HashMap<String, String> timeMap = new HashMap<>();
-        timeMap.put("friends since", timestamp);
+        final HashMap<String, String> friendMap = new HashMap<>();
+        friendMap.put("userId", userId);
+        friendMap.put("friends since", timestamp);
 
         // Store document of other user into current user's friends collection.
-        currentFriendsReference.document(userId).set(timeMap).addOnSuccessListener(
+        currentFriendsReference.document(userId).set(friendMap).addOnSuccessListener(
                 new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         // If successful, store the document of current user into other user's
                         // friend collection.
-                        otherFriendsReference.document(currentUser.getUid()).set(timeMap)
+                        friendMap.put("userId", currentUser.getUid());
+                        otherFriendsReference.document(currentUser.getUid()).set(friendMap)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
@@ -354,6 +356,8 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                         });
             }
         });
+
+        friendButton.setEnabled(true);
 
     }
 }
