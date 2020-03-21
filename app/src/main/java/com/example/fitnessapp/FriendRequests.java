@@ -1,5 +1,6 @@
 package com.example.fitnessapp;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import com.google.firebase.firestore.Query;
 public class FriendRequests extends AppCompatActivity {
 
     private UserAdapter userAdapter;
+    private static Context mContext;
 
     String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -32,6 +34,8 @@ public class FriendRequests extends AppCompatActivity {
         setContentView(R.layout.activity_friend_requests);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mContext = getApplicationContext();
 
         setUpRecyclerView();
     }
@@ -71,6 +75,14 @@ public class FriendRequests extends AppCompatActivity {
      */
     public FriendRequests getActivityContext() {
         return FriendRequests.this;
+    }
+
+    /**
+     * Get the context of the application.
+     * @return application context
+     */
+    public static Context getContext() {
+        return mContext;
     }
 
 }

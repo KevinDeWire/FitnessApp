@@ -25,8 +25,8 @@ import javax.annotation.Nullable;
 
 public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.UserViewHolder> {
     Context context;
-
     FriendRequests friendRequests = new FriendRequests();
+
 
     public UserAdapter(@NonNull FirestoreRecyclerOptions<User> options) {
         super(options);
@@ -59,7 +59,7 @@ public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.User
                     });
         }
 
-        if(user.getEmail().isEmpty()) {
+        if (user.getEmail().isEmpty()) {
             // If there is no email, get the email from the users collection.
             userReference.document(id).addSnapshotListener(friendRequests.getActivityContext(),
                     new EventListener<DocumentSnapshot>() {
@@ -78,17 +78,26 @@ public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.User
         userViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent otherProfile;
                 if (id.equals(currentId)) {
-                    // If the ID that is clicked is the same as the user's who is currently logged
-                    // in, start up the user profile activity.
+                    // If the ID that is clicked is the same as the user's who is currently
+                    // logged in, start up the user profile activity.
                     Intent userProfile = new Intent(SearchUsers.getContext(), UserProfile.class);
                     userProfile.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     SearchUsers.getContext().startActivity(userProfile);
+
                 } else {
-                    Intent otherProfile = new Intent(SearchUsers.getContext(), OtherUser.class);
-                    otherProfile.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    otherProfile.putExtra("id", id);
-                    SearchUsers.getContext().startActivity(otherProfile);
+                    try {
+                        otherProfile = new Intent(SearchUsers.getContext(), OtherUser.class);
+                        otherProfile.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        otherProfile.putExtra("id", id);
+                        SearchUsers.getContext().startActivity(otherProfile);
+                    } catch (Exception e) {
+                        otherProfile = new Intent(FriendRequests.getContext(), OtherUser.class);
+                        otherProfile.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        otherProfile.putExtra("id", id);
+                        FriendRequests.getContext().startActivity(otherProfile);
+                    }
                 }
             }
         });
