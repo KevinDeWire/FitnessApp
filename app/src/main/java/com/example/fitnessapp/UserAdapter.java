@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,9 +14,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+
+import javax.annotation.Nullable;
 
 public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.UserViewHolder> {
     Context context;
+
+    FriendRequests friendRequests = new FriendRequests();
 
     public UserAdapter(@NonNull FirestoreRecyclerOptions<User> options) {
         super(options);
@@ -27,11 +36,41 @@ public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.User
     protected void onBindViewHolder(
             @NonNull final UserViewHolder userViewHolder, int i, @NonNull User user
     ) {
-        userViewHolder.username.setText(user.getUsername());
-        userViewHolder.email.setText(user.getEmail());
+
+        CollectionReference userReference = FirebaseFirestore.getInstance()
+                .collection("users");
 
         // Get the user's ID.
         final String id = getItem(i).getUserId();
+
+        userViewHolder.username.setText(user.getUsername());
+        userViewHolder.email.setText(user.getEmail());
+
+        if (user.getUsername().isEmpty()) {
+            // If there is no username found, get the username from the users collection.
+            userReference.document(id).addSnapshotListener(friendRequests.getActivityContext(),
+                    new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
+                                            @Nullable FirebaseFirestoreException e) {
+                            userViewHolder.username.setText(documentSnapshot
+                                    .getString("username"));
+                        }
+                    });
+        }
+
+        if(user.getEmail().isEmpty()) {
+            // If there is no email, get the email from the users collection.
+            userReference.document(id).addSnapshotListener(friendRequests.getActivityContext(),
+                    new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
+                                            @Nullable FirebaseFirestoreException e) {
+                            userViewHolder.email.setText(documentSnapshot
+                                    .getString("email"));
+                        }
+                    });
+        }
 
         // Get the current user's ID.
         final String currentId = FirebaseAuth.getInstance().getCurrentUser().getUid();

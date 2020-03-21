@@ -199,10 +199,12 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
     public void sendFriendRequest() {
         // Hash map for friend request is created.
         final HashMap<String, String> friendRequest = new HashMap<>();
+        final String timestamp = DateFormat.getDateTimeInstance()
+                .format(new Date());
 
         // Create a document with the current user ID and add a collection
         // of the other user ID with a document containing the request type.
-        friendRequest.put("type", "sent");
+        friendRequest.put("time", timestamp);
         friendRequestRef.document(currentUser.getUid()).collection("sent to")
                 .document(userId).set(friendRequest)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -210,9 +212,10 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
                             // If successful, create a document of the other user's ID with a
-                            // collection of the current user containing a document with the
-                            // request type.
-                            friendRequest.put("type", "received");
+                            // collection of the current user containing a document with a
+                            // timestamp and the user Id of who sent the request.
+                            friendRequest.put("time", timestamp);
+                            friendRequest.put("userId", currentUser.getUid());
                             friendRequestRef.document(userId).collection("received by")
                                     .document(currentUser.getUid())
                                     .set(friendRequest)
@@ -221,8 +224,6 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                                         public void onSuccess(Void aVoid) {
                                             HashMap<String, String> notificationMap =
                                                     new HashMap<>();
-                                            String timestamp = DateFormat.getDateTimeInstance()
-                                                    .format(new Date());
                                             notificationMap.put("from", currentUser.getUid());
                                             notificationMap.put("timestamp", timestamp);
                                             // Store the current user ID and timestamp of friend

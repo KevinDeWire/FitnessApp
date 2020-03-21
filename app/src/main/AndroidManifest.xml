@@ -13,13 +13,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".FriendRequests"
+            android:label="@string/title_activity_friend_requests"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".OtherUser"
             android:label="@string/title_activity_other_user"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action
-                    android:name="com.example.fitnessapp_NOTIFICATION">
-                </action>
+                <action android:name="com.example.fitnessapp_NOTIFICATION"></action>
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -88,4 +91,5 @@
             </intent-filter>
         </service>
     </application>
+
 </manifest>

@@ -13,6 +13,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,14 +30,15 @@ import javax.annotation.Nullable;
 
 public class Friends extends AppCompatActivity implements View.OnClickListener {
 
-    Button addFriendButton, signInButton;
-
+    Button addFriendButton, signInButton, friendRequestButton;
     TextView username;
     TextView resendVerification;
     ImageView profilePicture;
 
     FirebaseAuth firebaseAuth;
     FirebaseFirestore firebaseFirestore;
+
+    CollectionReference requestReference;
 
     String userId;
 
@@ -52,6 +54,7 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
         resendVerification = findViewById(R.id.notVerified);
         username = findViewById(R.id.display_username);
         profilePicture = findViewById(R.id.profilePicture);
+        friendRequestButton = findViewById(R.id.friendRequestsButton);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
@@ -60,6 +63,7 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
         username.setOnClickListener(this);
         addFriendButton.setOnClickListener(this);
         signInButton.setOnClickListener(this);
+        friendRequestButton.setOnClickListener(this);
 
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
@@ -96,8 +100,8 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
                 }
             });
 
-           // DocumentReference requestReference = firebaseFirestore
-           //         .collection("friend_request").document(userId);
+            requestReference = firebaseFirestore.collection("friend_request")
+                    .document(userId).collection("received by");
         }
     }
 
@@ -140,6 +144,11 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
                 // If the sign in button is pressed, go to the sign in activity.
                 Intent signIn = new Intent(this, SignIn.class);
                 startActivity(signIn);
+                break;
+            case R.id.friendRequestsButton:
+                // If friend requests is pressed, go to the list of friend requests.
+                Intent friendRequestList = new Intent(this, FriendRequests.class);
+                startActivity(friendRequestList);
         }
     }
 }
