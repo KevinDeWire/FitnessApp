@@ -56,8 +56,10 @@ public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.User
                             @Override
                             public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
                                                 @Nullable FirebaseFirestoreException e) {
-                                userViewHolder.username.setText(documentSnapshot
-                                        .getString("username"));
+                                if (documentSnapshot != null) {
+                                    userViewHolder.username.setText(documentSnapshot
+                                            .getString("username"));
+                                }
                             }
                         });
             }
@@ -69,8 +71,10 @@ public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.User
                             @Override
                             public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
                                                 @Nullable FirebaseFirestoreException e) {
-                                userViewHolder.email.setText(documentSnapshot
-                                        .getString("email"));
+                                if (documentSnapshot != null) {
+                                    userViewHolder.email.setText(documentSnapshot
+                                            .getString("email"));
+                                }
                             }
                         });
             }
@@ -82,8 +86,10 @@ public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.User
                             @Override
                             public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
                                                 @Nullable FirebaseFirestoreException e) {
-                                userViewHolder.username.setText(documentSnapshot
-                                        .getString("username"));
+                                if (documentSnapshot != null) {
+                                    userViewHolder.username.setText(documentSnapshot
+                                            .getString("username"));
+                                }
                             }
                         });
             }
@@ -95,8 +101,10 @@ public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.User
                             @Override
                             public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
                                                 @Nullable FirebaseFirestoreException e) {
-                                userViewHolder.email.setText(documentSnapshot
-                                        .getString("email"));
+                                if (documentSnapshot != null) {
+                                    userViewHolder.email.setText(documentSnapshot
+                                            .getString("email"));
+                                }
                             }
                         });
             }

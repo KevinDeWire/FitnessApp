@@ -1,5 +1,6 @@
 package com.example.fitnessapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -60,6 +61,14 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
         userId = getIntent().getStringExtra("id");
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (userId.equals(currentUser.getUid())) {
+            // If the profile is the same as the current user's profile,
+            // redirect to the UserProfile activity.
+            Intent redirect = new Intent(this, UserProfile.class);
+            startActivity(redirect);
+            finish();
+        }
 
         documentReference = FirebaseFirestore.getInstance().collection("users")
                 .document(userId);
