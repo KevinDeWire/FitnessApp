@@ -165,6 +165,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                             Intent friendsActivity = new Intent(getApplicationContext(),
                                     Friends.class);
                             startActivity(friendsActivity);
+                            finish();
                         } else {
                             Toast.makeText(SignIn.this, "Sign In Error! " +
                                             task.getException().getMessage(),

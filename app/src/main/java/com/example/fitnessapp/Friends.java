@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -27,6 +30,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,12 +40,13 @@ import javax.annotation.Nullable;
 public class Friends extends AppCompatActivity implements View.OnClickListener {
 
     Button addFriendButton, signInButton, friendRequestButton;
-    TextView username;
-    TextView resendVerification;
+    TextView username, resendVerification, friendsListTitle;
     ImageView profilePicture;
+    EditText retypePassword;
 
     FirebaseAuth firebaseAuth;
     FirebaseFirestore firebaseFirestore;
+    FirebaseUser firebaseUser;
 
     DocumentReference userReference;
 
@@ -63,6 +68,8 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
         username = findViewById(R.id.display_username);
         profilePicture = findViewById(R.id.profilePicture);
         friendRequestButton = findViewById(R.id.friendRequestsButton);
+        retypePassword = findViewById(R.id.retypePassword);
+        friendsListTitle = findViewById(R.id.friendsListTitle);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
@@ -73,7 +80,7 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
         signInButton.setOnClickListener(this);
         friendRequestButton.setOnClickListener(this);
 
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        firebaseUser = firebaseAuth.getCurrentUser();
 
         if (firebaseUser != null) {
             if (!firebaseUser.isEmailVerified()) {
@@ -82,6 +89,8 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
                 resendVerification.setVisibility(View.VISIBLE);
                 // Set the profile link to false as well.
                 username.setEnabled(false);
+                // Make the retype password box visible.
+                retypePassword.setVisibility(View.VISIBLE);
                 // Make the sign in button visible.
                 signInButton.setVisibility(View.VISIBLE);
                 // If the user's email is not verified, make the profile picture
@@ -90,6 +99,11 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
                 // If the user's email is not verified, make the add friends
                 // button disappear.
                 addFriendButton.setVisibility(View.GONE);
+                // If the user's email is not verified, make the friend requests button
+                // disappear.
+                friendRequestButton.setVisibility(View.GONE);
+                // Set the visibility of the friends list title to gone.
+                friendsListTitle.setVisibility(View.GONE);
             }
 
             // Get the user's ID.
@@ -151,9 +165,8 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
                 startActivity(searchUsers);
                 break;
             case R.id.reSignInButton:
-                // If the sign in button is pressed, go to the sign in activity.
-                Intent signIn = new Intent(this, SignIn.class);
-                startActivity(signIn);
+                // Sign back in after verifying email.
+                reSignIn();
                 break;
             case R.id.friendRequestsButton:
                 // If friend requests is pressed, go to the list of friend requests.
@@ -182,6 +195,35 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
         recyclerView.setAdapter(userAdapter);
     }
 
+    /**
+     * Sign back in after verifying email.
+     */
+    private void reSignIn() {
+        String password = retypePassword.getText().toString().trim();
+
+        firebaseAuth.signInWithEmailAndPassword(firebaseUser.getEmail(), password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        // If user is successfully registered to FireBase,
+                        // redirect them to the Friends activity.
+                        if (task.isSuccessful()) {
+                            // Get the device's token.
+                            Toast.makeText(Friends.this, "Signed In!",
+                                    Toast.LENGTH_SHORT).show();
+
+                            Intent friendsActivity = new Intent(getApplicationContext(),
+                                    Friends.class);
+                            startActivity(friendsActivity);
+                            finish();
+                        } else {
+                            Toast.makeText(Friends.this, "Sign In Error! " +
+                                            task.getException().getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
     @Override
     protected void onStart() {
         super.onStart();

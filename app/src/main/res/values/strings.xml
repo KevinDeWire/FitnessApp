@@ -51,4 +51,6 @@
     <string name="title_activity_other_user">OtherUser</string>
     <string name="requests">Requests</string>
     <string name="title_activity_friend_requests">FriendRequests</string>
+    <string name="retype_password">Retype Password Here</string>
+    <string name="friends_list">Friends List</string>
 </resources>

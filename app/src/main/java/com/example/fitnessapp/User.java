@@ -1,5 +1,7 @@
 package com.example.fitnessapp;
 
+import android.net.Uri;
+
 /**
  * Class for user's of the application.
  */
@@ -7,6 +9,7 @@ public class User {
     private String username;
     private String email;
     private String userId;
+    private String profileImageURL;
 
     /**
      * Default constructor for user.
@@ -15,6 +18,7 @@ public class User {
         username = "";
         email = "";
         userId = "";
+        profileImageURL = "";
     }
 
     /**
@@ -63,5 +67,21 @@ public class User {
      */
     public void setUserId(String id) {
         this.userId = id;
+    }
+
+    /**
+     * Get the user's profile picture URL.
+     * @return profile picture URL
+     */
+    public String getProfileImageURL() {
+        return profileImageURL;
+    }
+
+    /**
+     * Set the user's profile picture URL.
+     * @param url profile picture URL
+     */
+    public void setProfileImageURL(String url) {
+        this.profileImageURL = url;
     }
 }

@@ -82,6 +82,14 @@
         android:text="@string/not_verified"
         android:textColor="@color/red"
         android:visibility="gone" />
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/retypePassword"
+        android:hint="@string/retype_password"
+        android:inputType="textPassword"
+        android:visibility="gone"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -90,6 +98,14 @@
         android:text="@string/title_activity_sign_in"
         android:visibility="gone"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textSize="30dp"
+        android:textStyle="bold"
+        android:id="@+id/friendsListTitle"
+        android:text="@string/friends_list"/>
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

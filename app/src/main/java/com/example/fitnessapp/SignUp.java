@@ -10,19 +10,25 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.HashMap;
 
 
 public class SignUp extends AppCompatActivity implements View.OnClickListener {
@@ -34,6 +40,8 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
     FirebaseAuth firebaseAuth;
 
     FirebaseFirestore firebaseFirestore;
+    CollectionReference tokenReference;
+    private static final String TAG = "SignUp";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,7 +146,8 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
     /**
      * FireBase sign up function is called.
-     * @param email email of the user.
+     *
+     * @param email    email of the user.
      * @param password password of the user.
      * @param username username of the user.
      */
@@ -159,6 +168,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                                     "Successfully" + " Registered!", Toast.LENGTH_SHORT)
                                     .show();
 
+                            addTokenDevice();
 
                             // Save user's name, email, and ID to database.
                             writeNewUser(username, firebaseUser.getEmail(),
@@ -188,10 +198,11 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         // Make a new instance of the user.
         User user = new User();
 
-        // Set the registered user's username, email, and ID to the user.
+        // Set the registered user's username, email, ID, and profile picture URL to the user.
         user.setUsername(username);
         user.setEmail(email);
         user.setUserId(userId);
+        user.setProfileImageURL("default");
 
         // Create a document reference for the user collection.
         DocumentReference documentReference = firebaseFirestore.collection("users")
@@ -199,5 +210,27 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
         // Set the user and their information to the FireStore database.
         documentReference.set(user);
+    }
+
+    public void addTokenDevice() {
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.d(TAG, "getInstanceId failed", task.getException());
+                            return;
+                        }
+                        String userId = firebaseAuth.getCurrentUser().getUid();
+
+                        tokenReference = FirebaseFirestore.getInstance().collection("users")
+                                .document(userId).collection("tokens");
+                        // Add token device.
+                        String token = task.getResult().getToken();
+                        HashMap tokenMap = new HashMap();
+                        tokenMap.put("token", token);
+                        tokenReference.document(token).set(tokenMap);
+                    }
+                });
     }
 }
