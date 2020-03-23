@@ -22,8 +22,8 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.cardview.widget.CardView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:innerRadius="0dp"
         android:layout_marginTop="10dp"
         android:layout_gravity="center"
@@ -31,8 +31,8 @@
         app:cardCornerRadius="75dp">
 
         <ImageView
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
             android:layout_gravity="center"
             android:background="@drawable/default_picture"
             android:id="@+id/profilePicture"/>

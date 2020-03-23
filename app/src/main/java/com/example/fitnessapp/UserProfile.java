@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -90,6 +91,14 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
                 public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
                                     @Nullable FirebaseFirestoreException e) {
                     if (documentSnapshot != null) {
+                        if (!documentSnapshot.getString("profileImageURL")
+                                .equals("default")) {
+                            // If the user's profile picture URL is not default, load the profile
+                            // picture.
+                            Glide.with(UserProfile.this)
+                                    .load(documentSnapshot.getString("profileImageURL"))
+                                    .into(profilePicture);
+                        }
                         // Set the username from the database onto the profile.
                         username.setText(documentSnapshot.getString("username"));
                         // Set the email from the database on the profile.
@@ -181,7 +190,6 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
             bitmap = (Bitmap) data.getExtras().get("data");
             // Set the profile picture.
             profilePicture.setImageBitmap(bitmap);
-            // Upload the profile picture to Firebase.
         }
 
         if (requestCode == SELECT_IMAGE_REQUEST && resultCode == RESULT_OK
@@ -195,6 +203,7 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
 
         }
 
+        // Set the profile picture.
         profilePicture.setImageBitmap(bitmap);
         // Upload the profile picture to Firebase.
         if (bitmap != null) {
