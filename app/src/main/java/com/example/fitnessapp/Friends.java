@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -117,6 +118,9 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
                 @Override
                 public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
                                     @Nullable FirebaseFirestoreException e) {
+                    Glide.with(Friends.this)
+                            .load(documentSnapshot.getString("profileImageURL"))
+                            .into(profilePicture);
                     // Set the username from the database on the screen.
                     username.setText(documentSnapshot.getString("username"));
                 }

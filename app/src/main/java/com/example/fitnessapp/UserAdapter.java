@@ -3,15 +3,18 @@ package com.example.fitnessapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,9 +28,9 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import javax.annotation.Nullable;
 
 public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.UserViewHolder> {
-    Context context;
     FriendRequests friendRequests = new FriendRequests();
     Friends friends = new Friends();
+    SearchUsers searchUsers = new SearchUsers();
 
 
     public UserAdapter(@NonNull FirestoreRecyclerOptions<User> options) {
@@ -159,11 +162,13 @@ public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.User
 
         TextView username;
         TextView email;
+        ImageView profilePicture;
 
         public UserViewHolder(View view) {
             super(view);
             username = view.findViewById(R.id.other_username);
             email = view.findViewById(R.id.other_email);
+            profilePicture = view.findViewById(R.id.profilePicture);
         }
     }
 }

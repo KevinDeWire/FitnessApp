@@ -3,6 +3,7 @@ package com.example.fitnessapp;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -22,6 +23,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,9 +37,8 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
 
     Button friendButton;
     Button declineRequestButton;
-    TextView username;
-    TextView email;
-    TextView friendsSince;
+    TextView username, email, friendsSince;
+    ImageView profilePicture;
 
     DocumentReference documentReference;
     CollectionReference friendRequestRef, currentFriendsReference, otherFriendsReference,
@@ -83,6 +84,8 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
         username = findViewById(R.id.display_username);
         email = findViewById(R.id.display_email);
         friendsSince = findViewById(R.id.friendsSince);
+
+        profilePicture = findViewById(R.id.profilePicture);
 
         // Set the text of the button to "Add Friend" as it is initially "Sign Out."
         friendButton = findViewById(R.id.multipleUseButton);
@@ -145,6 +148,13 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                 username.setText(documentSnapshot.getString("username"));
                 // Set the email from the database on the screen.
                 email.setText(documentSnapshot.getString("email"));
+
+                // Set the profile picture from the cloud storage onto the screen.
+                if(!documentSnapshot.getString("profileImageURL").equals("default")) {
+                    Glide.with(OtherUser.this)
+                            .load(documentSnapshot.getString("profileImageURL"))
+                            .into(profilePicture);
+                }
             }
         });
     }

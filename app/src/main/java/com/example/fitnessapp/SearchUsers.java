@@ -66,4 +66,8 @@ public class SearchUsers extends AppCompatActivity {
     public static Context getContext() {
         return mContext;
     }
+
+    public SearchUsers getActivityContext() {
+        return SearchUsers.this;
+    }
 }
