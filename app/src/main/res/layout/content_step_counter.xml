@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".StepCounter"
+    tools:showIn="@layout/activity_step_counter">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -60,67 +62,43 @@
         <Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
 
         <Button
-            android:id="@+id/buttonSchedule"
+            android:id="@+id/buttonStepStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:text="@string/schedule" />
+            android:text="@string/start" />
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.25"/>
+            android:layout_weight="0.25" />
 
         <Button
-            android:id="@+id/buttonLog"
+            android:id="@+id/buttonStepStop"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:text="@string/log_exercise" />
+            android:text="@string/stop" />
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.25"/>
+            android:layout_weight="0.25" />
 
         <Button
-            android:id="@+id/buttonCharts"
+            android:id="@+id/buttonReset"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:text="@string/charts" />
+            android:text="@string/reset_counters" />
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.25"/>
-
-        <Button
-            android:id="@+id/buttonFriends"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.25"
-            android:text="@string/friends" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.25"/>
-
-        <Button
-            android:id="@+id/buttonStepCounter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.25"
-            android:text="@string/step_counter" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="3" />
 
     </LinearLayout>
 

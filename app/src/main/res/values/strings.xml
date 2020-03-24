@@ -9,6 +9,53 @@
     <string name="charts">Charts</string>
     <string name="friends">Friends</string>
     <string name="step_counter">Step Counter</string>
+<<<<<<< HEAD
     <string name="title_activity_schedule">Schedule</string>
     <string name="title_activity_friends">Friends</string>
+=======
+    <string name="title_activity_exercise_log">Exercise Log</string>
+    <string name="title_activity_charts">Charts</string>
+    <string name="title_activity_step_counter">Step Counter</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="reset_counters">Reset Counters</string>
+    <string name="title_activity_friends">Friends</string>
+    <string name="title_activity_schedule">Schedule</string>
+    <string name="title_activity_sign_in">Sign In</string>
+    <string name="sign_in_name">Email</string>
+    <string name="password">Password</string>
+    <string name="not_signed_up">Don\'t have an account?</string>
+    <string name="sign_in_page_info">You need to be logged in to access the friends
+    page.</string>
+    <string name="title_activity_sign_up">Sign Up</string>
+    <string name="email">Email</string>
+    <string name="username">Username</string>
+    <string name="reenter_password">Re-enter Password</string>
+    <string name="sign_up_button">Sign Up</string>
+    <string name="sign_up_link"><u>Sign Up</u></string>
+    <string name="already_registered">Already registered?</string>
+    <string name="sign_in_link"><u>Sign In</u></string>
+    <string name="sign_out">Sign Out</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="reset_link"><u>Send Reset Link</u></string>
+    <string name="not_verified">Email Not Verified! <u>Resend Verification.</u>
+    Sign in again after verifying.</string>
+    <string name="title_activity_user_profile">UserProfile</string>
+    <string name="add_friend">Add Friend</string>
+    <string name="refresh">Refresh</string>
+    <string name="title_activity_add_friends">AddFriends</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="decline_request">Decline Friend Request</string>
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_other_user">OtherUser</string>
+    <string name="requests">Requests</string>
+    <string name="title_activity_friend_requests">FriendRequests</string>
+    <string name="retype_password">Retype Password Here</string>
+    <string name="friends_list">Friends List</string>
+>>>>>>> 7c4032e2cb0846cf1838833be87f530e562fcec0
 </resources>
