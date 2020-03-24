@@ -32,7 +32,6 @@ public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.User
     Friends friends = new Friends();
     SearchUsers searchUsers = new SearchUsers();
 
-
     public UserAdapter(@NonNull FirestoreRecyclerOptions<User> options) {
         super(options);
     }
@@ -50,6 +49,26 @@ public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.User
 
         userViewHolder.username.setText(user.getUsername());
         userViewHolder.email.setText(user.getEmail());
+
+        try {
+            userReference.document(id).addSnapshotListener(searchUsers.getActivityContext(),
+                    new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
+                                            @Nullable FirebaseFirestoreException e) {
+                            if (documentSnapshot != null) {
+                                if (!documentSnapshot.getString("profileImageURL")
+                                        .equals("default")) {
+                                    Glide.with(Friends.getmContext())
+                                            .load(documentSnapshot.getString("profileImageURL"))
+                                            .into(userViewHolder.profilePicture);
+                                }
+                            }
+                        }
+                    });
+        } catch (Exception e) {
+            Log.d("UserAdapter", e.getMessage());
+        }
 
         try {
             if (user.getUsername().isEmpty()) {
@@ -82,35 +101,7 @@ public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.User
                         });
             }
         } catch (Exception e) {
-            if (user.getUsername().isEmpty()) {
-                // If there is no username found, get the username from the users collection.
-                userReference.document(id).addSnapshotListener(friends.getActivityContext(),
-                        new EventListener<DocumentSnapshot>() {
-                            @Override
-                            public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
-                                                @Nullable FirebaseFirestoreException e) {
-                                if (documentSnapshot != null) {
-                                    userViewHolder.username.setText(documentSnapshot
-                                            .getString("username"));
-                                }
-                            }
-                        });
-            }
-
-            if (user.getEmail().isEmpty()) {
-                // If there is no email, get the email from the users collection.
-                userReference.document(id).addSnapshotListener(friends.getActivityContext(),
-                        new EventListener<DocumentSnapshot>() {
-                            @Override
-                            public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
-                                                @Nullable FirebaseFirestoreException e) {
-                                if (documentSnapshot != null) {
-                                    userViewHolder.email.setText(documentSnapshot
-                                            .getString("email"));
-                                }
-                            }
-                        });
-            }
+           e.printStackTrace();
         }
 
         // Get the current user's ID.

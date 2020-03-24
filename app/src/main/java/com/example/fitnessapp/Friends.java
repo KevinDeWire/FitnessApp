@@ -255,4 +255,6 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
     public static Context getContext() {
         return mContext;
     }
+
+    public static Context getmContext() {return getContext();}
 }
