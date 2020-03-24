@@ -65,6 +65,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         if (firebaseAuth.getCurrentUser() != null) {
             Intent friendActivity = new Intent(this, Friends.class);
             startActivity(friendActivity);
+            finish();
         }
 
 
@@ -116,6 +117,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
             case R.id.signInLink:
                 Intent signInActivity = new Intent(this, SignIn.class);
                 startActivity(signInActivity);
+                finish();
                 break;
         }
     }
