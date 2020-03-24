@@ -15,10 +15,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-<<<<<<< HEAD
-            android:name=".Friends"
-            android:label="@string/title_activity_friends"
-=======
             android:name=".FriendRequests"
             android:label="@string/title_activity_friend_requests"
             android:theme="@style/AppTheme.NoActionBar"></activity>
@@ -59,7 +55,6 @@
         <activity
             android:name=".StepCounter"
             android:label="@string/title_activity_step_counter"
->>>>>>> 7c4032e2cb0846cf1838833be87f530e562fcec0
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
@@ -67,10 +62,6 @@
                 android:value="com.example.fitnessapp.MainActivity" />
         </activity>
         <activity
-<<<<<<< HEAD
-            android:name=".Schedule"
-            android:label="@string/title_activity_schedule"
-=======
             android:name=".Charts"
             android:label="@string/title_activity_charts"
             android:parentActivityName=".MainActivity"
@@ -82,7 +73,6 @@
         <activity
             android:name=".ExerciseLog"
             android:label="@string/title_activity_exercise_log"
->>>>>>> 7c4032e2cb0846cf1838833be87f530e562fcec0
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data

@@ -9,10 +9,6 @@
     <string name="charts">Charts</string>
     <string name="friends">Friends</string>
     <string name="step_counter">Step Counter</string>
-<<<<<<< HEAD
-    <string name="title_activity_schedule">Schedule</string>
-    <string name="title_activity_friends">Friends</string>
-=======
     <string name="title_activity_exercise_log">Exercise Log</string>
     <string name="title_activity_charts">Charts</string>
     <string name="title_activity_step_counter">Step Counter</string>
@@ -57,5 +53,4 @@
     <string name="title_activity_friend_requests">FriendRequests</string>
     <string name="retype_password">Retype Password Here</string>
     <string name="friends_list">Friends List</string>
->>>>>>> 7c4032e2cb0846cf1838833be87f530e562fcec0
 </resources>
