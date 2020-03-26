@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -57,6 +58,8 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
         setContentView(R.layout.activity_user_profile);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Retrieve the user ID collected from the user list.
         userId = getIntent().getStringExtra("id");
@@ -135,6 +138,18 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                 // Also make the decline request button disappear again.
                 declineRequestButton.setVisibility(View.GONE);
                 break;
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // Go back to the previous activity.
+                this.onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

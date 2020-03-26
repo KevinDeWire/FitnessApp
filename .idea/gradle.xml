@@ -7,6 +7,10 @@
         <compositeConfiguration>
           <compositeBuild compositeDefinitionSource="SCRIPT" />
         </compositeConfiguration>
+<<<<<<< HEAD
+=======
+        <option name="delegatedBuild" value="false" />
+>>>>>>> e6d860347308714dc80c19badd1ebcb3ed818923
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
