@@ -103,6 +103,7 @@ public class StepCounterService extends Service implements SensorEventListener {
         myEdit.putInt("lastCount", lastCount);
         myEdit.putInt("currentCount", currentCount);
         myEdit.commit();
+        // TODO add save to database.
     }
 
     @Override
