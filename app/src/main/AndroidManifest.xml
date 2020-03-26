@@ -9,6 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <service
+            android:name=".StepCounterService"
+            android:enabled="true"
+            android:exported="false"></service>
+
         <activity
             android:name=".StepCounter"
             android:label="@string/title_activity_step_counter"
