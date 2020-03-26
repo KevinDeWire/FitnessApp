@@ -22,6 +22,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -50,6 +51,8 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         mEmail = findViewById(R.id.register_email);
         mUsername = findViewById(R.id.create_username);
         mPassword = findViewById(R.id.create_password);
@@ -71,6 +74,18 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
         signUpButton.setOnClickListener(this);
         signInLink.setOnClickListener(this);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // Go back to the previous activity.
+                this.onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

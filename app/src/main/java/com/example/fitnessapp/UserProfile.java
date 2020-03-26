@@ -28,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.provider.MediaStore;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -63,6 +64,8 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
         setContentView(R.layout.activity_user_profile);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         username = findViewById(R.id.display_username);
         email = findViewById(R.id.display_email);
@@ -109,6 +112,18 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
         }
         signOutButton.setOnClickListener(this);
         profilePicture.setOnClickListener(this);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // Go back to the previous activity.
+                this.onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
