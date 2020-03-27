@@ -11,9 +11,8 @@
     <string name="step_counter">Step Counter</string>
     <string name="title_activity_exercise_log">Exercise Log</string>
     <string name="title_activity_charts">Charts</string>
-    <string name="title_activity_step_counter">Step Counter</string>
+    <string name="title_activity_step_counter">Activity Monitor</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
     <string name="reset_counters">Reset Counters</string>
-    <string name="pref_file">com.example.fitnessapp.PREFERENCES</string>
 </resources>

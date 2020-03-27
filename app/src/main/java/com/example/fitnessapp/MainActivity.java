@@ -8,6 +8,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -20,10 +23,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         sharedPreferences = getSharedPreferences(PrefFile, Context.MODE_PRIVATE);
-        boolean stepCountStarted = sharedPreferences.getBoolean("stepCountStarted", false);
+        boolean activityMonitorStarted = sharedPreferences.getBoolean("activityMonitorStarted", false);
 
-        if (stepCountStarted){
-            startService(new Intent(this, StepCounterService.class));
+        if (activityMonitorStarted){
+            startService(new Intent(this, ActivityMonitorService.class));
         }
 
 
@@ -34,6 +37,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         logButton.setOnClickListener(this);
         chartButton.setOnClickListener(this);
         stepCounterButton.setOnClickListener(this);
+
+        TextView activeTimeValue = findViewById(R.id.textViewActiveValue);
+        Long activeTimeMillis = 0L; //TODO pull current value from database
+        String activeTime = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(activeTimeMillis),
+                TimeUnit.MILLISECONDS.toMinutes(activeTimeMillis) % TimeUnit.HOURS.toMinutes(1),
+                TimeUnit.MILLISECONDS.toSeconds(activeTimeMillis) % TimeUnit.MINUTES.toSeconds(1));
+        activeTimeValue.setText(activeTime);
 
 
 
@@ -51,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intentCharts);
                 break;
             case R.id.buttonStepCounter:
-                Intent intentStep = new Intent(this, StepCounter.class);
+                Intent intentStep = new Intent(this, ActivityMonitor.class);
                 startActivity(intentStep);
                 break;
         }
