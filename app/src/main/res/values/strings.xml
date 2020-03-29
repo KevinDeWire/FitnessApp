@@ -69,4 +69,6 @@
     <string name="rpe">RPE</string>
     <string name="add_exercise">Add Exercise</string>
     <string name="enter_exercise_name">Enter Exercise Name</string>
+    <string name="save_workout">Save</string>
+    <string name="save_for_reuse">Save for Reuse</string>
 </resources>
