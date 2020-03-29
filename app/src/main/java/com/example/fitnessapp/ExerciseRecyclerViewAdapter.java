@@ -17,13 +17,23 @@ public class ExerciseRecyclerViewAdapter extends RecyclerView.Adapter<ExerciseRe
         .ViewHolder> {
     private List<String> mData;
     private LayoutInflater mInflater;
+    private ItemClickListener itemClickListener;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView mExerciseName;
 
         public ViewHolder(View view) {
             super(view);
             mExerciseName = itemView.findViewById(R.id.exerciseName);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (itemClickListener != null) {
+                itemClickListener.onItemClick(v, getAdapterPosition());
+            }
         }
     }
 
@@ -52,8 +62,20 @@ public class ExerciseRecyclerViewAdapter extends RecyclerView.Adapter<ExerciseRe
         return mData.size();
     }
 
-    public void updateData(List<String> mData) {
-        this.mData = mData;
+    public void updateData(List<String> data) {
+        this.mData = data;
         notifyDataSetChanged();
+    }
+
+    public String getName(int position) {
+        return mData.get(position);
+    }
+
+    public interface ItemClickListener {
+        void onItemClick(View view, int position);
+    }
+
+    public void setClickListener(ItemClickListener clickListener) {
+        this.itemClickListener = clickListener;
     }
 }

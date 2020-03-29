@@ -3,6 +3,7 @@ package com.example.fitnessapp;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -20,7 +21,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.sql.Date;
 import java.util.ArrayList;
 
-public class ExerciseLog extends AppCompatActivity implements View.OnClickListener {
+public class ExerciseLog extends AppCompatActivity implements View.OnClickListener,
+        ExerciseRecyclerViewAdapter.ItemClickListener {
 
     ExerciseRecyclerViewAdapter mAdapter;
 
@@ -65,6 +67,7 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         recyclerView.setAdapter(mAdapter);
 
         mAddExerciseButton.setOnClickListener(this);
+        mAdapter.setClickListener(this);
 
     }
 
@@ -113,8 +116,7 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                             // If no exercise name is filled in, display an error message.
                             mEnteredExercise.setError("Name can't be empty.");
                             return;
-                        }
-                        else {
+                        } else {
                             // If there are no errors, add the exercise to the exercise names
                             // ArrayList when submit is clicked.
                             exerciseNames.add(enteredExercise);
@@ -123,5 +125,13 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                         }
                     }
                 });
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        Intent exerciseSets = new Intent(this, ExerciseSetsActivity.class);
+        // When an exercise is clicked, the exercise name is sent to the exercise sets activity.
+        exerciseSets.putExtra("exercise_name", mAdapter.getName(position));
+        startActivity(exerciseSets);
     }
 }
