@@ -53,4 +53,20 @@
     <string name="title_activity_friend_requests">FriendRequests</string>
     <string name="retype_password">Retype Password Here</string>
     <string name="friends_list">Friends List</string>
+    <string name="date">Date</string>
+    <string name="workout_selection">Workout Selection</string>
+    <string name="rpe_hint">1-10</string>
+    <string name="exercise_hint">Squat, Bench Press, etc.</string>
+    <string name="reps_hint">##</string>
+    <string name="weight_hint">###</string>
+    <string-array name="weight_metric">
+        <item>lb(s)</item>
+        <item>kg(s)</item>
+    </string-array>
+    <string name="title_activity_exercise_sets">ExerciseSetsActivity</string>
+    <string name="weight">Weight</string>
+    <string name="reps">Reps</string>
+    <string name="rpe">RPE</string>
+    <string name="add_exercise">Add Exercise</string>
+    <string name="enter_exercise_name">Enter Exercise Name</string>
 </resources>
