@@ -77,6 +77,7 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
             case R.id.addExerciseButton:
                 // Add exercise to the list of exercises.
                 addExercise();
+                break;
         }
     }
 

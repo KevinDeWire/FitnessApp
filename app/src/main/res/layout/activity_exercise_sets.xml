@@ -25,38 +25,93 @@
         android:id="@+id/exerciseTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/white"
         android:textSize="30dp"
-        android:textStyle="bold"
-        android:gravity="center" />
+        android:background="@color/gray"
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/gray"
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_marginRight="5dp"
+            android:background="@color/white"
+            android:gravity="center"
             android:text="@string/weight" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="130dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_marginRight="5dp"
+            android:background="@color/white"
+            android:gravity="center"
             android:text="@string/reps" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@color/white"
+            android:gravity="center"
             android:text="@string/rpe" />
     </LinearLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@color/gray" />
+
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/exerciseList"
+        android:layout_width="match_parent"
+        android:layout_height="400dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp">
+
+        <EditText
+            android:id="@+id/enterWeight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/weight_hint" />
+
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/metricSpinner"
+            android:entries="@array/weight_metric" />
+
+        <EditText
+            android:id="@+id/enterReps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/reps_hint" />
+
+        <EditText
+            android:id="@+id/enterRpe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/rpe_hint" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/addSetButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/exerciseList" />
+        android:layout_gravity="center"
+        android:text="@string/add_set" />
 
 
 </LinearLayout>
