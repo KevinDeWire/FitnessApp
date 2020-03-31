@@ -1,6 +1,7 @@
 package com.example.fitnessapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +18,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final String PrefFile = "com.example.fitnessapp.PREFERENCES";
     SharedPreferences sharedPreferences;
 
+    private FitnessViewModel mFitnessViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,6 +27,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         sharedPreferences = getSharedPreferences(PrefFile, Context.MODE_PRIVATE);
         boolean activityMonitorStarted = sharedPreferences.getBoolean("activityMonitorStarted", false);
+
+        mFitnessViewModel = new ViewModelProvider(this).get(FitnessViewModel.class);
 
         if (activityMonitorStarted){
             startService(new Intent(this, ActivityMonitorService.class));
@@ -37,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         logButton.setOnClickListener(this);
         chartButton.setOnClickListener(this);
         stepCounterButton.setOnClickListener(this);
+
+
 
         TextView activeTimeValue = findViewById(R.id.textViewActiveValue);
         Long activeTimeMillis = 0L; //TODO pull current value from database

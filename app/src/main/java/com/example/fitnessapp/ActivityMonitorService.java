@@ -13,6 +13,7 @@ import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -32,7 +33,7 @@ public class ActivityMonitorService extends Service implements SensorEventListen
     Calendar cal = Calendar.getInstance();
     SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
-
+    private StepCountDao mStepCountDao;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -46,6 +47,9 @@ public class ActivityMonitorService extends Service implements SensorEventListen
         Sensor motionDetect = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         mSensorManager.registerListener(this, stepCounter, SensorManager.SENSOR_DELAY_UI);
         mSensorManager.registerListener(this, motionDetect, SensorManager.SENSOR_DELAY_UI);
+
+        FitnessRoomDatabase db = FitnessRoomDatabase.getDatabase(this);  //todo: change to look like example in slides
+        mStepCountDao = db.stepCountDao();
 
     }
 
@@ -119,11 +123,13 @@ public class ActivityMonitorService extends Service implements SensorEventListen
         String currentDate = format1.format(cal.getTime());
         int lastCount = sharedPreferences.getInt("stepLastCount", Integer.MAX_VALUE);
         int currentCount = (int) currentCountFloat;
-        int totalSteps = 0; //todo pull current value from database
+        long totalSteps = mStepCountDao.currentCount(currentDate);
 
         if (lastDate.compareTo(currentDate) != 0){
             lastCount = currentCount;
             lastDate = currentDate;
+            StepCount stepCount = new StepCount(currentDate, 0);
+            mStepCountDao.insert(stepCount);
         }
         else if (lastCount >= currentCount){
             lastCount = currentCount;
@@ -137,7 +143,8 @@ public class ActivityMonitorService extends Service implements SensorEventListen
         myEdit.putString("stepLastDate", lastDate);
         myEdit.putInt("stepLastCount", lastCount);
         myEdit.commit();
-        // TODO add save to database.
+        StepCount stepCount = new StepCount(currentDate, (int) totalSteps);
+        mStepCountDao.update(stepCount);
     }
 
     @Override
