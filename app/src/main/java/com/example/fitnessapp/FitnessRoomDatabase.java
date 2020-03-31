@@ -1,11 +1,10 @@
+package com.example.fitnessapp;
+
 import android.content.Context;
 
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-
-import com.example.fitnessapp.StepCount;
-import com.example.fitnessapp.StepCountDao;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
