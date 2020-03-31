@@ -5,11 +5,13 @@ import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -42,6 +44,10 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
         setContentView(R.layout.activity_exercise_sets);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+        // Display the back button.
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mEnterWeight = findViewById(R.id.enterWeight);
         mEnterReps = findViewById(R.id.enterReps);
@@ -89,6 +95,18 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
         // Add the set to the list of exercise sets.
         exerciseSets.add(set);
         mAdapter.updateData(exerciseSets);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // Go back to the previous activity.
+                this.onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
