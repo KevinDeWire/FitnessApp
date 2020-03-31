@@ -125,6 +125,7 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                         } else {
                             // If there are no errors, add the exercise to the exercise names
                             // ArrayList when submit is clicked.
+                            // ToDo save to exercise name database.
                             exerciseNames.add(enteredExercise);
                             mAdapter.updateData(exerciseNames);
                             dialog.cancel();
