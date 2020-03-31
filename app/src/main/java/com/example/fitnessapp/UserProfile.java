@@ -157,14 +157,15 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
                 dialog.cancel();
             }
         });
-        builder.setNegativeButton("Choose From Gallery", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // If choose from gallery is selected, call select photo function.
-                selectPhotoFromGallery();
-                dialog.cancel();
-            }
-        });
+        builder.setNegativeButton("Choose From Gallery",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // If choose from gallery is selected, call select photo function.
+                        selectPhotoFromGallery();
+                        dialog.cancel();
+                    }
+                });
         builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
