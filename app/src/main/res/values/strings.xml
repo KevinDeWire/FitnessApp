@@ -8,11 +8,14 @@
     <string name="log_exercise">Log Exercise</string>
     <string name="charts">Charts</string>
     <string name="friends">Friends</string>
-    <string name="step_counter">Step Counter</string>
+    <string name="step_counter">Activity Monitor</string>
     <string name="title_activity_exercise_log">Exercise Log</string>
     <string name="title_activity_charts">Charts</string>
     <string name="title_activity_step_counter">Activity Monitor</string>
-    <string name="start">Start</string>
-    <string name="stop">Stop</string>
+    <string name="start">Start Monitoring</string>
+    <string name="stop">Stop Monitoring</string>
     <string name="reset_counters">Reset Counters</string>
+    <string name="monitoring">Monitoring</string>
+    <string name="monitor_true">Monitoring Started</string>
+    <string name="monitor_false">Monitoring Stopped</string>
 </resources>

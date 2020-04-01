@@ -59,10 +59,18 @@
 
         </TableRow>
 
+        <TextView
+            android:id="@+id/textViewActivityMonitored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:gravity="center"
+            android:text="@string/monitoring"/>
+
         <Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="0.25" />
 
         <Button
             android:id="@+id/buttonStepStart"

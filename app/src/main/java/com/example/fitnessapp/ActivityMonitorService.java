@@ -13,7 +13,6 @@ import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.lifecycle.ViewModelProvider;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -34,6 +33,7 @@ public class ActivityMonitorService extends Service implements SensorEventListen
     SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
     private StepCountDao mStepCountDao;
+    private ActiveTimeDao mActiveTimeDao;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -48,8 +48,9 @@ public class ActivityMonitorService extends Service implements SensorEventListen
         mSensorManager.registerListener(this, stepCounter, SensorManager.SENSOR_DELAY_UI);
         mSensorManager.registerListener(this, motionDetect, SensorManager.SENSOR_DELAY_UI);
 
-        FitnessRoomDatabase db = FitnessRoomDatabase.getDatabase(this);  //todo: change to look like example in slides
+        FitnessRoomDatabase db = FitnessRoomDatabase.getDatabase(this);
         mStepCountDao = db.stepCountDao();
+        mActiveTimeDao = db.activeTimeDao();
 
     }
 
@@ -86,17 +87,20 @@ public class ActivityMonitorService extends Service implements SensorEventListen
 
     }
 
+    // ACTIVE TIME
     private void UpdateActiveTime(long currentTimestamp) {
         SharedPreferences.Editor myEdit = sharedPreferences.edit();
         long lastTimestamp = sharedPreferences.getLong("activityLastTimestamp", Long.MAX_VALUE);
         String lastDate = sharedPreferences.getString("activityLastDate", "1900-01-01");
         String currentDate = format1.format(cal.getTime());
-        long totalTime = 0; //TODO retreive current from database
+        long totalTime = mActiveTimeDao.currentTime(currentDate);
 
         if ((currentTimestamp - lastTimestamp)<=10000){
             if (lastDate.compareTo(currentDate) != 0){
                 lastTimestamp = currentTimestamp;
                 lastDate = currentDate;
+                ActiveTime activeTime = new ActiveTime(currentDate, 0);
+                mActiveTimeDao.insert(activeTime);
             }
             else if (lastTimestamp >= currentTimestamp){
                 lastTimestamp = currentTimestamp;
@@ -111,12 +115,14 @@ public class ActivityMonitorService extends Service implements SensorEventListen
             myEdit.putString("activityLastDate", lastDate);
             myEdit.putLong("activityLastTimestamp", lastTimestamp);
             myEdit.commit();
-            // TODO add save to database.
+            ActiveTime activeTime = new ActiveTime(currentDate, totalTime);
+            mActiveTimeDao.update(activeTime);
 
         }
 
     }
 
+    // STEP COUNT
     private void UpdateStepCount(float currentCountFloat) {
         SharedPreferences.Editor myEdit = sharedPreferences.edit();
         String lastDate = sharedPreferences.getString("stepLastDate", "1900-01-01");

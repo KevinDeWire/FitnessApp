@@ -1,6 +1,7 @@
 package com.example.fitnessapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Context;
@@ -11,9 +12,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    Calendar cal = Calendar.getInstance();
+    SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+    String mCurrentDate;
 
     public static final String PrefFile = "com.example.fitnessapp.PREFERENCES";
     SharedPreferences sharedPreferences;
@@ -25,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        TextView activityMonitorText = findViewById(R.id.textViewActivityMonitored);
+
         sharedPreferences = getSharedPreferences(PrefFile, Context.MODE_PRIVATE);
         boolean activityMonitorStarted = sharedPreferences.getBoolean("activityMonitorStarted", false);
 
@@ -32,8 +43,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (activityMonitorStarted){
             startService(new Intent(this, ActivityMonitorService.class));
+            activityMonitorText.setText(R.string.monitor_true);
         }
-
+        else activityMonitorText.setText(R.string.monitor_false);
 
         Button logButton = findViewById(R.id.buttonLog);
         Button chartButton = findViewById(R.id.buttonCharts);
@@ -43,17 +55,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         chartButton.setOnClickListener(this);
         stepCounterButton.setOnClickListener(this);
 
+        mCurrentDate = format1.format(cal.getTime());
 
+        final TextView stepsValue = findViewById(R.id.textViewStepsValue);
+        mFitnessViewModel.getAllStepCounts().observe(this, new Observer<List<StepCount>>() {
+            @Override
+            public void onChanged(List<StepCount> stepCounts) {
+                int totalSteps = mFitnessViewModel.getTotalSteps(mCurrentDate);
+                stepsValue.setText(String.valueOf(totalSteps));
+            }
+        });
 
-        TextView activeTimeValue = findViewById(R.id.textViewActiveValue);
-        Long activeTimeMillis = 0L; //TODO pull current value from database
-        String activeTime = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(activeTimeMillis),
-                TimeUnit.MILLISECONDS.toMinutes(activeTimeMillis) % TimeUnit.HOURS.toMinutes(1),
-                TimeUnit.MILLISECONDS.toSeconds(activeTimeMillis) % TimeUnit.MINUTES.toSeconds(1));
-        activeTimeValue.setText(activeTime);
-
-
-
+        final TextView activeValue = findViewById(R.id.textViewActiveValue);
+        mFitnessViewModel.getmAllActiveTimes().observe(this, new Observer<List<ActiveTime>>() {
+            @Override
+            public void onChanged(List<ActiveTime> activeTimes) {
+                long activeTimeMillis = mFitnessViewModel.getActiveTime(mCurrentDate);
+                String activeTime = String.format(Locale.US, "%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(activeTimeMillis),
+                        TimeUnit.MILLISECONDS.toMinutes(activeTimeMillis) % TimeUnit.HOURS.toMinutes(1),
+                        TimeUnit.MILLISECONDS.toSeconds(activeTimeMillis) % TimeUnit.MINUTES.toSeconds(1));
+                activeValue.setText(activeTime);
+            }
+        });
 
     }
 

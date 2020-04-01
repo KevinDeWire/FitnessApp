@@ -22,7 +22,7 @@ public interface StepCountDao {
     LiveData<List<StepCount>> getAll();
 
     @Query("SELECT totalsteps FROM stepcount WHERE date = :date")
-    public abstract long currentCount(String date);
+    public abstract int currentCount(String date);
 
     @Query("SELECT * FROM stepcount where date > :date")
     public abstract List<StepCount> allFromDate(String date);

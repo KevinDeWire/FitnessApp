@@ -5,26 +5,24 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName= "stepcount")
-public class StepCount {
+@Entity(tableName= "activetime")
+public class ActiveTime {
 
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "date")
     private String mDate;
 
-    @ColumnInfo(name = "totalsteps")
-    private int mTotalSteps;
+    @ColumnInfo(name = "totaltime")
+    private long mTotalTime; // In millis
 
-    StepCount(@NonNull String date, int totalSteps){
+    ActiveTime(@NonNull String date, long totalTime){
         this.mDate = date;
-        this.mTotalSteps = totalSteps;
+        this.mTotalTime = totalTime;
+
     }
 
     String getDate(){return this.mDate;}
 
-    int getTotalSteps(){return this.mTotalSteps;}
+    long getTotalTime(){return this.mTotalTime;} // In millis
 }
-
-
-
