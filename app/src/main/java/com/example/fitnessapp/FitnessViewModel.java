@@ -36,7 +36,7 @@ public class FitnessViewModel extends AndroidViewModel {
     int getTotalSteps(String date) {return mRepository.getTotalSteps(date); }
 
     // ACTIVE TIME
-    LiveData<List<ActiveTime>> getmAllActiveTimes(){
+    LiveData<List<ActiveTime>> getAllActiveTimes(){
         return mAllActiveTimes;
     }
 

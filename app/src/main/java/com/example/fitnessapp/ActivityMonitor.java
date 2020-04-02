@@ -67,7 +67,7 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
         });
 
         final TextView activeValue = findViewById(R.id.textViewActiveValue);
-        mFitnessViewModel.getmAllActiveTimes().observe(this, new Observer<List<ActiveTime>>() {
+        mFitnessViewModel.getAllActiveTimes().observe(this, new Observer<List<ActiveTime>>() {
             @Override
             public void onChanged(List<ActiveTime> activeTimes) {
                 long activeTimeMillis = mFitnessViewModel.getActiveTime(mCurrentDate);
@@ -86,8 +86,6 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
         stopButton.setOnClickListener(this);
         resetButton.setOnClickListener(this);
 
-
-
     }
 
     @Override
@@ -95,17 +93,22 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
 
         SharedPreferences.Editor myEdit = sharedPreferences.edit();
         StepCount stepCountZero = new StepCount(mCurrentDate, 0);
+        boolean activityMonitorStarted = sharedPreferences.getBoolean("activityMonitorStarted", false);
 
         switch (v.getId()){
             case R.id.buttonStepStart:
-                myEdit.putBoolean("activityMonitorStarted", true);
-                startService(new Intent(this, ActivityMonitorService.class));
-                activityMonitorText.setText(R.string.monitor_true);
+                if(!activityMonitorStarted){
+                    myEdit.putBoolean("activityMonitorStarted", true);
+                    startService(new Intent(this, ActivityMonitorService.class));
+                    activityMonitorText.setText(R.string.monitor_true);
+                }
                 break;
             case R.id.buttonStepStop:
-                myEdit.putBoolean("activityMonitorStarted", false);
-                stopService(new Intent(this, ActivityMonitorService.class));
-                activityMonitorText.setText(R.string.monitor_false);
+                if(activityMonitorStarted){
+                    myEdit.putBoolean("activityMonitorStarted", false);
+                    stopService(new Intent(this, ActivityMonitorService.class));
+                    activityMonitorText.setText(R.string.monitor_false);
+                }
                 break;
             case R.id.buttonReset:
                 myEdit.putString("stepLastDate", mCurrentDate);

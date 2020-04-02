@@ -43,9 +43,9 @@ public class ActivityMonitorService extends Service implements SensorEventListen
 
         mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         assert mSensorManager != null;
-        Sensor stepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        //Sensor stepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         Sensor motionDetect = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        mSensorManager.registerListener(this, stepCounter, SensorManager.SENSOR_DELAY_UI);
+        //mSensorManager.registerListener(this, stepCounter, SensorManager.SENSOR_DELAY_UI);
         mSensorManager.registerListener(this, motionDetect, SensorManager.SENSOR_DELAY_UI);
 
         FitnessRoomDatabase db = FitnessRoomDatabase.getDatabase(this);
@@ -87,7 +87,7 @@ public class ActivityMonitorService extends Service implements SensorEventListen
 
     }
 
-    // ACTIVE TIME
+    // ACTIVE TIME UPDATES
     private void UpdateActiveTime(long currentTimestamp) {
         SharedPreferences.Editor myEdit = sharedPreferences.edit();
         long lastTimestamp = sharedPreferences.getLong("activityLastTimestamp", Long.MAX_VALUE);

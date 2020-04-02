@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         final TextView activeValue = findViewById(R.id.textViewActiveValue);
-        mFitnessViewModel.getmAllActiveTimes().observe(this, new Observer<List<ActiveTime>>() {
+        mFitnessViewModel.getAllActiveTimes().observe(this, new Observer<List<ActiveTime>>() {
             @Override
             public void onChanged(List<ActiveTime> activeTimes) {
                 long activeTimeMillis = mFitnessViewModel.getActiveTime(mCurrentDate);
