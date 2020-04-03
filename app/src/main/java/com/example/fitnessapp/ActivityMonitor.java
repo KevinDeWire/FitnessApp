@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -26,6 +27,7 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
 
     public static final String PrefFile = "com.example.fitnessapp.PREFERENCES";
     SharedPreferences sharedPreferences;
+    boolean activityMonitorStarted;
 
     private FitnessViewModel mFitnessViewModel;
 
@@ -49,7 +51,7 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
         activityMonitorText = findViewById(R.id.textViewActivityMonitored);
 
         sharedPreferences = getSharedPreferences(PrefFile, Context.MODE_PRIVATE);
-        boolean activityMonitorStarted = sharedPreferences.getBoolean("activityMonitorStarted", false);
+        activityMonitorStarted = sharedPreferences.getBoolean("activityMonitorStarted", false);
 
         if (activityMonitorStarted) activityMonitorText.setText(R.string.monitor_true);
         else activityMonitorText.setText(R.string.monitor_false);
@@ -93,13 +95,14 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
 
         SharedPreferences.Editor myEdit = sharedPreferences.edit();
         StepCount stepCountZero = new StepCount(mCurrentDate, 0);
-        boolean activityMonitorStarted = sharedPreferences.getBoolean("activityMonitorStarted", false);
 
         switch (v.getId()){
             case R.id.buttonStepStart:
                 if(!activityMonitorStarted){
                     myEdit.putBoolean("activityMonitorStarted", true);
-                    startService(new Intent(this, ActivityMonitorService.class));
+                    Intent serviceIntent = new Intent(this, ActivityMonitorService.class);
+                    serviceIntent.putExtra("inputExtra", "Monitoring Running");
+                    ContextCompat.startForegroundService(this, serviceIntent);
                     activityMonitorText.setText(R.string.monitor_true);
                 }
                 break;

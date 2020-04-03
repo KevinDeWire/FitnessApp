@@ -1,9 +1,14 @@
 package com.example.fitnessapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,6 +22,9 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+
+import static android.app.NotificationManager.*;
+import static androidx.core.app.NotificationCompat.PRIORITY_LOW;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -42,7 +50,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mFitnessViewModel = new ViewModelProvider(this).get(FitnessViewModel.class);
 
         if (activityMonitorStarted){
-            startService(new Intent(this, ActivityMonitorService.class));
+            Intent serviceIntent = new Intent(this, ActivityMonitorService.class);
+            serviceIntent.putExtra("inputExtra", "Monitoring Running");
+            ContextCompat.startForegroundService(this, serviceIntent);
             activityMonitorText.setText(R.string.monitor_true);
         }
         else activityMonitorText.setText(R.string.monitor_false);

@@ -1,5 +1,9 @@
 package com.example.fitnessapp;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +16,7 @@ import android.os.Build;
 import android.os.IBinder;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -35,7 +39,8 @@ public class ActivityMonitorService extends Service implements SensorEventListen
     private StepCountDao mStepCountDao;
     private ActiveTimeDao mActiveTimeDao;
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public static final String CHANNEL_ID = "ForegroundServiceChannel";
+
     @Override
     public void onCreate(){
 
@@ -57,6 +62,19 @@ public class ActivityMonitorService extends Service implements SensorEventListen
     @Override
     public int onStartCommand(Intent intent, int flags, int startID){
 
+        String input = intent.getStringExtra("inputExtra");
+        createNotificationChannel();
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                0, notificationIntent, 0);
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("Foreground Service")
+                .setContentText(input)
+                .setSmallIcon(R.drawable.ic_bt_misc_hid)
+                .setContentIntent(pendingIntent)
+                .build();
+        startForeground(1, notification);
+
         return mStartMode;
     }
 
@@ -76,6 +94,11 @@ public class ActivityMonitorService extends Service implements SensorEventListen
     @Override
     public void onSensorChanged(SensorEvent event) {
         Sensor sensor = event.sensor;
+
+        SharedPreferences.Editor myEdit = sharedPreferences.edit();
+        myEdit.putString("activityLastDate", sensor.getName());
+        myEdit.commit();
+
         if (sensor.getType() == Sensor.TYPE_STEP_COUNTER){
             float currentCountFloat = event.values[0];
             UpdateStepCount(currentCountFloat);
@@ -157,4 +180,18 @@ public class ActivityMonitorService extends Service implements SensorEventListen
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel serviceChannel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "Foreground Service Channel",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            assert manager != null;
+            manager.createNotificationChannel(serviceChannel);
+        }
+    }
+
 }
