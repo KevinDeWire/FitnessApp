@@ -128,6 +128,12 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                             exerciseNames.add(enteredExercise);
                             mAdapter.updateData(exerciseNames);
                             dialog.cancel();
+
+                            // Once exercise name is submitted, go to activity with exercise name.
+                            Intent exerciseSets = new Intent(ExerciseLog.this,
+                                    ExerciseSetsActivity.class);
+                            exerciseSets.putExtra("exercise_name", enteredExercise);
+                            startActivity(exerciseSets);
                         }
                     }
                 });
