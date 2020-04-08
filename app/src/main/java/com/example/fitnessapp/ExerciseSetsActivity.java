@@ -103,8 +103,6 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
                 // Add the set to the list of exercise sets.
                 exerciseSets.add(set);
                 mAdapter.updateData(exerciseSets);
-
-                //ToDo add attributes to database.
             }
         }
     }

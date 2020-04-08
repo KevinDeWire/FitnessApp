@@ -70,7 +70,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/exerciseList"
         android:layout_width="match_parent"
-        android:layout_height="300dp" />
+        android:layout_height="270dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -106,12 +106,24 @@
             android:hint="@string/rpe_hint" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/addSetButton"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/add_set" />
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/addSetButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="@string/add_set" />
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/save_sets"
+            android:id="@+id/saveSets"/>
 
+    </LinearLayout>
 </LinearLayout>
