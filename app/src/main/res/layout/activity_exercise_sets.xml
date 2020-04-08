@@ -25,10 +25,10 @@
         android:id="@+id/exerciseTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/gray"
         android:gravity="center"
         android:textColor="@color/white"
         android:textSize="30dp"
-        android:background="@color/gray"
         android:textStyle="bold" />
 
     <LinearLayout
@@ -75,8 +75,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="10dp">
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
 
         <EditText
             android:id="@+id/enterWeight"
@@ -86,9 +86,9 @@
             android:hint="@string/weight_hint" />
 
         <Spinner
+            android:id="@+id/metricSpinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/metricSpinner"
             android:entries="@array/weight_metric" />
 
         <EditText
@@ -110,6 +110,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
         <Button
             android:id="@+id/addSetButton"
             android:layout_width="wrap_content"
@@ -119,11 +120,11 @@
             android:text="@string/add_set" />
 
         <Button
+            android:id="@+id/saveWorkout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/save_sets"
-            android:id="@+id/saveSets"/>
+            android:text="@string/save_sets" />
 
     </LinearLayout>
 </LinearLayout>

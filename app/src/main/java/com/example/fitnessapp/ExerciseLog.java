@@ -29,7 +29,7 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
     ExerciseRecyclerViewAdapter mAdapter;
 
     RecyclerView recyclerView;
-    Button mAddExerciseButton;
+    Button mAddExerciseButton, mSaveForReuseButton;
     Spinner mDateSpinner;
 
     // Initialize list of exercise names.
@@ -51,6 +51,7 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         recyclerView = findViewById(R.id.workoutLog);
         mAddExerciseButton = findViewById(R.id.addExerciseButton);
         mDateSpinner = findViewById(R.id.date);
+        mSaveForReuseButton = findViewById(R.id.saveForLater);
 
         long milliseconds = System.currentTimeMillis();
         Date date = new Date(milliseconds);
@@ -65,13 +66,13 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         dateArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mDateSpinner.setAdapter(dateArrayAdapter);
 
-
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new ExerciseRecyclerViewAdapter(exerciseNames);
         recyclerView.setAdapter(mAdapter);
 
         mAddExerciseButton.setOnClickListener(this);
+        mSaveForReuseButton.setOnClickListener(this);
         mAdapter.setClickListener(this);
 
     }
@@ -82,6 +83,9 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
             case R.id.addExerciseButton:
                 // Add exercise to the list of exercises.
                 addExercise();
+                break;
+            case R.id.saveForLater:
+                saveForReuse();
                 break;
         }
     }
@@ -131,10 +135,59 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                             Intent exerciseSets = new Intent(ExerciseLog.this,
                                     ExerciseSetsActivity.class);
                             exerciseSets.putExtra("exercise_name", enteredExercise);
+                            exerciseSets.putExtra("date", mDateSpinner.getSelectedItem()
+                                    .toString());
                             startActivity(exerciseSets);
                         }
                     }
                 });
+    }
+
+    private void saveForReuse() {
+        // Get the selected date from the spinner.
+        Date selectedDate = Date.valueOf(mDateSpinner.getSelectedItem().toString());
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter Workout Name");
+        final EditText mEnteredWorkoutName = new EditText(this);
+        builder.setView(mEnteredWorkoutName);
+
+        builder.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String enteredWorkoutName = mEnteredWorkoutName.getText().toString().trim();
+
+                        // If no workout name is entered, display error message to user.
+                        if (TextUtils.isEmpty(enteredWorkoutName)) {
+                            mEnteredWorkoutName.setError("Name can't be empty");
+                        }
+
+                        // ToDo Save the workout name, "enteredWorkoutName," and the selected date,
+                        // ToDo "selectedDate," into the database.
+                        // ToDo Save workout sets and their attributes to the database.
+
+                        dialog.cancel();
+                    }
+                }
+        );
     }
 
     @Override
@@ -154,6 +207,8 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         Intent exerciseSets = new Intent(this, ExerciseSetsActivity.class);
         // When an exercise is clicked, the exercise name is sent to the exercise sets activity.
         exerciseSets.putExtra("exercise_name", mAdapter.getName(position));
+        // The selected date on the spinner is sent to the exercise sets activity.
+        exerciseSets.putExtra("date", mDateSpinner.getSelectedItem().toString());
         startActivity(exerciseSets);
     }
 }
