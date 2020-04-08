@@ -30,24 +30,29 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
     boolean activityMonitorStarted;
 
     private FitnessViewModel mFitnessViewModel;
+    FitnessRoomDatabase db;
+    ActiveTimeDao mActiveTimeDao;
+    StepCountDao mStepCountDao;
 
     Calendar cal = Calendar.getInstance();
     SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
     String mCurrentDate;
 
     TextView activityMonitorText;
+    TextView activeValue;
+    TextView stepCount;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_step_counter);
+        setContentView(R.layout.activity_activity_monitor);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
-        final TextView stepCount = findViewById(R.id.textViewStepsValue);
-
+        stepCount = findViewById(R.id.textViewStepsValue);
+        activeValue = findViewById(R.id.textViewActiveValue);
         activityMonitorText = findViewById(R.id.textViewActivityMonitored);
 
         sharedPreferences = getSharedPreferences(PrefFile, Context.MODE_PRIVATE);
@@ -59,24 +64,25 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
         mCurrentDate = format1.format(cal.getTime());
 
         mFitnessViewModel = new ViewModelProvider(this).get(FitnessViewModel.class);
+        db = FitnessRoomDatabase.getDatabase(this);
+        mActiveTimeDao = db.activeTimeDao();
+        mStepCountDao = db.stepCountDao();
+
+        StepCountDisplay(mCurrentDate);
 
         mFitnessViewModel.getAllStepCounts().observe(this, new Observer<List<StepCount>>() {
             @Override
             public void onChanged(List<StepCount> stepCounts) {
-                int totalSteps = mFitnessViewModel.getTotalSteps(mCurrentDate);
-                stepCount.setText(String.valueOf(totalSteps));
+                StepCountDisplay(mCurrentDate);
             }
         });
 
-        final TextView activeValue = findViewById(R.id.textViewActiveValue);
+        ActiveTimeDisplay(mCurrentDate);
+
         mFitnessViewModel.getAllActiveTimes().observe(this, new Observer<List<ActiveTime>>() {
             @Override
             public void onChanged(List<ActiveTime> activeTimes) {
-                long activeTimeMillis = mFitnessViewModel.getActiveTime(mCurrentDate);
-                String activeTime = String.format(Locale.US, "%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(activeTimeMillis),
-                        TimeUnit.MILLISECONDS.toMinutes(activeTimeMillis) % TimeUnit.HOURS.toMinutes(1),
-                        TimeUnit.MILLISECONDS.toSeconds(activeTimeMillis) % TimeUnit.MINUTES.toSeconds(1));
-                activeValue.setText(activeTime);
+                ActiveTimeDisplay(mCurrentDate);
             }
         });
 
@@ -95,6 +101,7 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
 
         SharedPreferences.Editor myEdit = sharedPreferences.edit();
         StepCount stepCountZero = new StepCount(mCurrentDate, 0);
+        ActiveTime activeTimeZero = new ActiveTime(mCurrentDate, 0);
 
         switch (v.getId()){
             case R.id.buttonStepStart:
@@ -118,9 +125,25 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
                 myEdit.putInt("stepLastCount", Integer.MAX_VALUE);
                 myEdit.putString("activityLastDate", mCurrentDate);
                 myEdit.putLong("activityLastTimestamp", Long.MAX_VALUE);
+                myEdit.putString("activityMonitorService", "xxxx");
                 mFitnessViewModel.insertStep(stepCountZero);
+                mFitnessViewModel.insertActiveTime(activeTimeZero);
                 break;
         }
         myEdit.commit();
     }
+
+    void ActiveTimeDisplay(String date){
+        long activeTimeSeconds = mActiveTimeDao.currentTime(date);
+        String activeTime = String.format(Locale.US, "%02d:%02d:%02d", TimeUnit.SECONDS.toHours(activeTimeSeconds),
+                TimeUnit.SECONDS.toMinutes(activeTimeSeconds) % TimeUnit.HOURS.toMinutes(1),
+                activeTimeSeconds % TimeUnit.MINUTES.toSeconds(1));
+        activeValue.setText(activeTime);
+    }
+
+    void StepCountDisplay(String date){
+        int totalSteps = mStepCountDao.currentCount(date);
+        stepCount.setText(String.valueOf(totalSteps));
+    }
+
 }

@@ -20,7 +20,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_step_counter" />
+    <include layout="@layout/content_activity_monitor" />
 
 
 

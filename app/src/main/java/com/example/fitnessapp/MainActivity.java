@@ -1,14 +1,5 @@
 package com.example.fitnessapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,14 +8,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-
-import static android.app.NotificationManager.*;
-import static androidx.core.app.NotificationCompat.PRIORITY_LOW;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -36,18 +29,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     SharedPreferences sharedPreferences;
 
     private FitnessViewModel mFitnessViewModel;
+    FitnessRoomDatabase db;
+    ActiveTimeDao mActiveTimeDao;
+    StepCountDao mStepCountDao;
+
+    TextView activityMonitorText;
+    TextView activeValue;
+    TextView stepCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TextView activityMonitorText = findViewById(R.id.textViewActivityMonitored);
+        activityMonitorText = findViewById(R.id.textViewActivityMonitored);
+        stepCount = findViewById(R.id.textViewStepsValue);
+        activeValue = findViewById(R.id.textViewActiveValue);
 
         sharedPreferences = getSharedPreferences(PrefFile, Context.MODE_PRIVATE);
         boolean activityMonitorStarted = sharedPreferences.getBoolean("activityMonitorStarted", false);
 
         mFitnessViewModel = new ViewModelProvider(this).get(FitnessViewModel.class);
+        db = FitnessRoomDatabase.getDatabase(this);
+        mActiveTimeDao = db.activeTimeDao();
+        mStepCountDao = db.stepCountDao();
 
         if (activityMonitorStarted){
             Intent serviceIntent = new Intent(this, ActivityMonitorService.class);
@@ -67,24 +72,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mCurrentDate = format1.format(cal.getTime());
 
-        final TextView stepsValue = findViewById(R.id.textViewStepsValue);
+        StepCountDisplay(mCurrentDate);
+
         mFitnessViewModel.getAllStepCounts().observe(this, new Observer<List<StepCount>>() {
             @Override
             public void onChanged(List<StepCount> stepCounts) {
-                int totalSteps = mFitnessViewModel.getTotalSteps(mCurrentDate);
-                stepsValue.setText(String.valueOf(totalSteps));
+                StepCountDisplay(mCurrentDate);
             }
         });
 
-        final TextView activeValue = findViewById(R.id.textViewActiveValue);
+        ActiveTimeDisplay(mCurrentDate);
+
         mFitnessViewModel.getAllActiveTimes().observe(this, new Observer<List<ActiveTime>>() {
             @Override
             public void onChanged(List<ActiveTime> activeTimes) {
-                long activeTimeMillis = mFitnessViewModel.getActiveTime(mCurrentDate);
-                String activeTime = String.format(Locale.US, "%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(activeTimeMillis),
-                        TimeUnit.MILLISECONDS.toMinutes(activeTimeMillis) % TimeUnit.HOURS.toMinutes(1),
-                        TimeUnit.MILLISECONDS.toSeconds(activeTimeMillis) % TimeUnit.MINUTES.toSeconds(1));
-                activeValue.setText(activeTime);
+                ActiveTimeDisplay(mCurrentDate);
             }
         });
 
@@ -107,8 +109,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-
+    void ActiveTimeDisplay(String date){
+        long activeTimeSeconds = mActiveTimeDao.currentTime(date);
+        String activeTime = String.format(Locale.US, "%02d:%02d:%02d", TimeUnit.SECONDS.toHours(activeTimeSeconds),
+                TimeUnit.SECONDS.toMinutes(activeTimeSeconds) % TimeUnit.HOURS.toMinutes(1),
+                activeTimeSeconds % TimeUnit.MINUTES.toSeconds(1));
+        activeValue.setText(activeTime);
     }
+
+    void StepCountDisplay(String date){
+        int totalSteps = mStepCountDao.currentCount(date);
+        stepCount.setText(String.valueOf(totalSteps));
+    }
+
 }
