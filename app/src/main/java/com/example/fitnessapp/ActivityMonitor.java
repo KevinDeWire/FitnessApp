@@ -102,6 +102,7 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
         SharedPreferences.Editor myEdit = sharedPreferences.edit();
         StepCount stepCountZero = new StepCount(mCurrentDate, 0);
         ActiveTime activeTimeZero = new ActiveTime(mCurrentDate, 0);
+        activityMonitorStarted = sharedPreferences.getBoolean("activityMonitorStarted", false);
 
         switch (v.getId()){
             case R.id.buttonStepStart:
