@@ -20,7 +20,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.sql.Date;
 import java.util.ArrayList;
 
 public class ExerciseSetsActivity extends AppCompatActivity implements View.OnClickListener
@@ -32,9 +34,11 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
     EditText mEnterWeight, mEnterReps, mEnterRpe;
     Spinner mMetricSpinner;
     RecyclerView recyclerView;
-    Button mAddSetButton;
+    Button mAddSetButton, mSaveWorkoutButton;
 
     String exerciseTitle;
+
+    Date date;
 
     // Initialize a list of exercise sets.
     ArrayList<ExerciseSet> exerciseSets = new ArrayList<>();
@@ -56,10 +60,14 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
         recyclerView = findViewById(R.id.exerciseList);
         mAddSetButton = findViewById(R.id.addSetButton);
         mMetricSpinner = findViewById(R.id.metricSpinner);
+        mSaveWorkoutButton = findViewById(R.id.saveWorkout);
 
         // Get the exercise title from the selected exercise from the ExerciseLog activity.
         exerciseTitle = getIntent().getStringExtra("exercise_name");
         mExerciseTitle.setText(exerciseTitle);
+
+        // Get the workout date from the selected date from the ExerciseLog activity.
+        date = Date.valueOf(getIntent().getStringExtra("date"));
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -67,6 +75,7 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
         recyclerView.setAdapter(mAdapter);
 
         mAddSetButton.setOnClickListener(this);
+        mSaveWorkoutButton.setOnClickListener(this);
         mAdapter.setClickListener(this);
     }
 
@@ -75,6 +84,9 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
         switch (v.getId()) {
             case R.id.addSetButton:
                 addExerciseSet();
+                break;
+            case R.id.saveWorkout:
+                saveWorkout();
                 break;
         }
     }
@@ -95,6 +107,7 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
                 mEnterRpe.setError("RPE must be from 1-10");
             } else {
                 // If there are no errors, add the attributes to the set.
+                set.setName(exerciseTitle);
                 set.setWeight(Double.parseDouble(weight));
                 set.setMetric(metric);
                 set.setReps(Integer.parseInt(reps));
@@ -105,6 +118,12 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
                 mAdapter.updateData(exerciseSets);
             }
         }
+    }
+
+    private void saveWorkout() {
+        // ToDo Save the workout sets and their attributes to the database.
+        // ToDo You can use the set getters to get the variables, f.e. set.setWeight.
+        // ToDo Save the date of workout to the database. You can use the "date" variable for this.
     }
 
     @Override
