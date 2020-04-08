@@ -130,7 +130,7 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
                 mFitnessViewModel.insertActiveTime(activeTimeZero);
                 break;
         }
-        myEdit.commit();
+        myEdit.apply();
     }
 
     void ActiveTimeDisplay(String date){

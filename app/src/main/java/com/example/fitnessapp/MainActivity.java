@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final String PrefFile = "com.example.fitnessapp.PREFERENCES";
     SharedPreferences sharedPreferences;
 
-    private FitnessViewModel mFitnessViewModel;
     FitnessRoomDatabase db;
     ActiveTimeDao mActiveTimeDao;
     StepCountDao mStepCountDao;
@@ -49,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         sharedPreferences = getSharedPreferences(PrefFile, Context.MODE_PRIVATE);
         boolean activityMonitorStarted = sharedPreferences.getBoolean("activityMonitorStarted", false);
 
-        mFitnessViewModel = new ViewModelProvider(this).get(FitnessViewModel.class);
+        FitnessViewModel mFitnessViewModel = new ViewModelProvider(this).get(FitnessViewModel.class);
         db = FitnessRoomDatabase.getDatabase(this);
         mActiveTimeDao = db.activeTimeDao();
         mStepCountDao = db.stepCountDao();
