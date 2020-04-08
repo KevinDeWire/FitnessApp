@@ -180,6 +180,7 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                         // If no workout name is entered, display error message to user.
                         if (TextUtils.isEmpty(enteredWorkoutName)) {
                             mEnteredWorkoutName.setError("Name can't be empty");
+                            return;
                         }
 
                         // ToDo Save the workout name, "enteredWorkoutName," and the selected date,
