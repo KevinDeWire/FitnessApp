@@ -71,7 +71,7 @@
             android:layout_weight="0.25" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/buttonSchedule"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
@@ -107,7 +107,7 @@
             android:layout_weight="0.25"/>
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/buttonFriends"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"

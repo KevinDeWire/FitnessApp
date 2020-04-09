@@ -21,4 +21,61 @@
     <string name="ticker_text">Activity Monitoring Running</string>
     <string name="notification_title">Activity Monitor</string>
     <string name="notification_message">Monitoring Running</string>
+    <string name="title_activity_friends">Friends</string>
+    <string name="title_activity_schedule">Schedule</string>
+    <string name="title_activity_sign_in">Sign In</string>
+    <string name="sign_in_name">Email</string>
+    <string name="password">Password</string>
+    <string name="not_signed_up">Don\'t have an account?</string>
+    <string name="sign_in_page_info">You need to be logged in to access the friends
+    page.</string>
+    <string name="title_activity_sign_up">Sign Up</string>
+    <string name="email">Email</string>
+    <string name="username">Username</string>
+    <string name="reenter_password">Re-enter Password</string>
+    <string name="sign_up_button">Sign Up</string>
+    <string name="sign_up_link"><u>Sign Up</u></string>
+    <string name="already_registered">Already registered?</string>
+    <string name="sign_in_link"><u>Sign In</u></string>
+    <string name="sign_out">Sign Out</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="reset_link"><u>Send Reset Link</u></string>
+    <string name="not_verified">Email Not Verified! <u>Resend Verification.</u>
+    Sign in again after verifying.</string>
+    <string name="title_activity_user_profile">UserProfile</string>
+    <string name="add_friend">Add Friend</string>
+    <string name="refresh">Refresh</string>
+    <string name="title_activity_add_friends">AddFriends</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="decline_request">Decline Friend Request</string>
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_other_user">OtherUser</string>
+    <string name="requests">Requests</string>
+    <string name="title_activity_friend_requests">FriendRequests</string>
+    <string name="retype_password">Retype Password Here</string>
+    <string name="friends_list">Friends List</string>
+    <string name="date">Date</string>
+    <string name="workout_selection">Workout Selection</string>
+    <string name="rpe_hint">1-10</string>
+    <string name="exercise_hint">Squat, Bench Press, etc.</string>
+    <string name="reps_hint">##</string>
+    <string name="weight_hint">###</string>
+    <string-array name="weight_metric">
+        <item>lb(s)</item>
+        <item>kg(s)</item>
+    </string-array>
+    <string name="title_activity_exercise_sets">ExerciseSetsActivity</string>
+    <string name="weight">Weight</string>
+    <string name="reps">Reps</string>
+    <string name="rpe">RPE</string>
+    <string name="add_exercise">Add Exercise</string>
+    <string name="enter_exercise_name">Enter Exercise Name</string>
+    <string name="save_sets">Save</string>
+    <string name="save_for_reuse">Save for Reuse</string>
+    <string name="add_set">Add Set</string>
 </resources>

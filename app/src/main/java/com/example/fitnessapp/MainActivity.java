@@ -61,12 +61,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         else activityMonitorText.setText(R.string.monitor_false);
 
+        Button scheduleButton = findViewById(R.id.buttonSchedule);
         Button logButton = findViewById(R.id.buttonLog);
         Button chartButton = findViewById(R.id.buttonCharts);
+        Button friendButton = findViewById(R.id.buttonFriends);
         Button stepCounterButton = findViewById(R.id.buttonStepCounter);
 
+        scheduleButton.setOnClickListener(this);
         logButton.setOnClickListener(this);
         chartButton.setOnClickListener(this);
+        friendButton.setOnClickListener(this);
         stepCounterButton.setOnClickListener(this);
 
         mCurrentDate = format1.format(cal.getTime());
@@ -91,8 +95,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    public void onClick(View v){
-        switch (v.getId()){
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.buttonSchedule:
+                Intent intentSchedule = new Intent(this, Schedule.class);
+                startActivity(intentSchedule);
+                break;
             case R.id.buttonLog:
                 Intent intentLog = new Intent(this, ExerciseLog.class);
                 startActivity(intentLog);
@@ -100,6 +108,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.buttonCharts:
                 Intent intentCharts = new Intent(this, Charts.class);
                 startActivity(intentCharts);
+                break;
+            case R.id.buttonFriends:
+                Intent friends = new Intent(this, SignIn.class);
+                startActivity(friends);
                 break;
             case R.id.buttonStepCounter:
                 Intent intentStep = new Intent(this, ActivityMonitor.class);
