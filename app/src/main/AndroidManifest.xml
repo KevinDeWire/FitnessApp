@@ -25,7 +25,6 @@
             android:exported="false" />
 
         <activity
-            android:name=".ActivityMonitor"
             android:name=".ExerciseSetsActivity"
             android:label="@string/title_activity_exercise_sets"
             android:theme="@style/AppTheme.NoActionBar"></activity>
@@ -68,7 +67,7 @@
             android:label="@string/title_activity_friends"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".StepCounter"
+            android:name=".ActivityMonitor"
             android:label="@string/title_activity_step_counter"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
