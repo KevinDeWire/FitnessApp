@@ -3,8 +3,6 @@ package com.example.fitnessapp;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-import java.sql.Date;
 
 
 
@@ -19,7 +17,6 @@ public class ExerciseSets {
     @ColumnInfo(name = "exercise_name")
     private String mExerciseName;
 
-    @NonNull
     @ColumnInfo(name = "set_num")
     private int mSetNum;
 

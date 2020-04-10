@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ExerciseLog extends AppCompatActivity implements View.OnClickListener,
         ExerciseRecyclerViewAdapter.ItemClickListener {
@@ -37,6 +38,9 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
 
     // Initialize list of dates.
     ArrayList<Date> dates = new ArrayList<>();
+
+    FitnessRoomDatabase db;
+    SavedWorkoutDao mSavedWorkoutDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +78,9 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         mAddExerciseButton.setOnClickListener(this);
         mSaveForReuseButton.setOnClickListener(this);
         mAdapter.setClickListener(this);
+
+        db = FitnessRoomDatabase.getDatabase(this);
+        mSavedWorkoutDao = db.savedWorkoutDao();
 
     }
 
@@ -184,6 +191,12 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                         // ToDo Save the workout name, "enteredWorkoutName," and the selected date,
                         // ToDo "selectedDate," into the database.
                         // ToDo Save workout sets and their attributes to the database.
+
+                        for(int i=0; i<exerciseNames.size();i++){
+                            SavedWorkout savedWorkout = new SavedWorkout(enteredWorkoutName, exerciseNames.get(i));
+                            mSavedWorkoutDao.insert(savedWorkout);
+
+                        }
 
                         dialog.cancel();
                     }

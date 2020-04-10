@@ -9,12 +9,14 @@ import androidx.room.RoomDatabase;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {StepCount.class, ActiveTime.class, ExerciseSets.class}, version = 3, exportSchema = false)
+@Database(entities = {StepCount.class, ActiveTime.class, ExerciseSets.class, SavedWorkout.class, ScheduledWorkout.class}, version = 4, exportSchema = false)
 public abstract class FitnessRoomDatabase extends RoomDatabase {
 
     public abstract StepCountDao stepCountDao();
     public abstract ActiveTimeDao activeTimeDao();
     public abstract ExerciseSetsDao exerciseSetsDao();
+    public abstract SavedWorkoutDao savedWorkoutDao();
+    public abstract ScheduledWorkoutDao scheduledWorkoutDao();
 
     private static volatile FitnessRoomDatabase INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;
