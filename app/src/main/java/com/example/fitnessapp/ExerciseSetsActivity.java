@@ -136,16 +136,18 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void saveWorkout() {
-        for(int i = 0; i < exerciseSets.size(); i++){
-            ExerciseSets exerciseSet = new ExerciseSets(date.toString(), exerciseTitle, i, exerciseSets.get(i).getWeight(), exerciseSets.get(i).getMetric(), exerciseSets.get(i).getReps(), exerciseSets.get(i).getRpe());
+        for (int i = 0; i < exerciseSets.size(); i++) {
+            ExerciseSets exerciseSet = new ExerciseSets(date.toString(), exerciseTitle, i,
+                    exerciseSets.get(i).getWeight(), exerciseSets.get(i).getMetric(),
+                    exerciseSets.get(i).getReps(), exerciseSets.get(i).getRpe());
             mExerciseSetsDao.insert(exerciseSet);
         }
     }
 
-    private void loadWorkout(){
+    private void loadWorkout() {
         List<ExerciseSets> savedSets = mExerciseSetsDao.allOnDate(date.toString(), exerciseTitle);
-        if(!savedSets.isEmpty()){
-            for(int i = 0; i < savedSets.size(); i++){
+        if (!savedSets.isEmpty()) {
+            for (int i = 0; i < savedSets.size(); i++) {
                 ExerciseSet set = new ExerciseSet();
                 set.setName(exerciseTitle);
                 set.setWeight(savedSets.get(i).getWeight());
