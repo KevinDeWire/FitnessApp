@@ -26,6 +26,9 @@ public interface ExerciseSetsDao {
     @Query("SELECT * FROM exercise_sets WHERE date = :date")
     List<ExerciseSets> namesOnDate(String date);
 
+    @Query("SELECT * FROM exercise_sets sets")
+    List<ExerciseSets> allExercises();
+
     @Query("SELECT * FROM exercise_sets WHERE date = :date and exercise_name = :exerciseName")
     List<ExerciseSets> allOnDate(String date, String exerciseName);
 

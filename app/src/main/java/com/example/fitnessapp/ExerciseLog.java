@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,7 +38,7 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
     ArrayList<String> exerciseNames = new ArrayList<>();
 
     // Initialize list of dates.
-    ArrayList<Date> dates = new ArrayList<>();
+    ArrayList<String> dates = new ArrayList<>();
 
     FitnessRoomDatabase db;
     ExerciseSetsDao mExerciseSetsDao;
@@ -59,18 +60,11 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         mDateSpinner = findViewById(R.id.date);
         mSaveForReuseButton = findViewById(R.id.saveForLater);
 
-        long milliseconds = System.currentTimeMillis();
-        Date date = new Date(milliseconds);
-        if (!dates.contains(date)) {
-            // If today's date is not already added to the date spinner, add it.
-            dates.add(date);
-        }
+        db = FitnessRoomDatabase.getDatabase(this);
+        mExerciseSetsDao = db.exerciseSetsDao();
 
-        // Set date array adapter.
-        ArrayAdapter<Date> dateArrayAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, dates);
-        dateArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mDateSpinner.setAdapter(dateArrayAdapter);
+        // Load the spinner of dates.
+        loadDateSpinner();
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -80,9 +74,6 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         mAddExerciseButton.setOnClickListener(this);
         mSaveForReuseButton.setOnClickListener(this);
         mAdapter.setClickListener(this);
-
-        db = FitnessRoomDatabase.getDatabase(this);
-        mExerciseSetsDao = db.exerciseSetsDao();
 
         loadExercise();
 
@@ -208,11 +199,49 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         List<ExerciseSets> savedExercises = mExerciseSetsDao.namesOnDate(selectedDate);
         if (!savedExercises.isEmpty()) {
             for (int i = 0; i < savedExercises.size(); i++) {
+                // For each exercise name in the selected date, add all exercises from the database
+                // into the exercise name list.
                 String exerciseName = savedExercises.get(i).getExerciseName();
-                exerciseNames.add(exerciseName);
+
+                if (!exerciseNames.contains(exerciseName)) {
+                    // If exercise name is not already in the array of names, add it.
+                    exerciseNames.add(exerciseName);
+                }
             }
+            // Update the RecyclerView adapter with the loaded data.
             mAdapter.updateData(exerciseNames);
         }
+    }
+
+    private void loadDateSpinner() {
+        List<ExerciseSets> allExercises = mExerciseSetsDao.allExercises();
+
+        String date;
+
+        if (!allExercises.isEmpty()) {
+            for (int i = 0; i < allExercises.size(); i++) {
+                // For each exercise, grab the date.
+                date = allExercises.get(i).getDate();
+                if (!dates.contains(date)) {
+                    // If the date hasn't been added to the spinner of dates yet, add it.
+                    dates.add(date);
+                }
+            }
+        }
+
+        // Get today's date.
+        long milliseconds = System.currentTimeMillis();
+        date = new Date(milliseconds).toString();
+        if (!dates.contains(date)) {
+            // If today's date isn't already in the list of dates, add it.
+            dates.add(date);
+        }
+
+        // Set date array adapter.
+        ArrayAdapter<String> dateArrayAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, dates);
+        dateArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mDateSpinner.setAdapter(dateArrayAdapter);
     }
 
     @Override
