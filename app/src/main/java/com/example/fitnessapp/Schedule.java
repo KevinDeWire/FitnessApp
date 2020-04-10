@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.CalendarView;
 import android.widget.Toast;
@@ -25,10 +24,10 @@ public class Schedule extends AppCompatActivity implements CalendarView.OnDateCh
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         mCalendarView = findViewById(R.id.calendarView);
+
         mCalendarView.setFirstDayOfWeek(2);
+
         mCalendarView.setOnDateChangeListener(this);
     }
 
@@ -37,17 +36,5 @@ public class Schedule extends AppCompatActivity implements CalendarView.OnDateCh
                                     int dayOfMonth) {
         String date = month + "/" + dayOfMonth + "/" + year;
         Toast.makeText(this, date, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // Go back to the previous activity.
-                this.onBackPressed();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 }

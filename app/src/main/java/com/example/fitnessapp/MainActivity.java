@@ -1,18 +1,65 @@
 package com.example.fitnessapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    Calendar cal = Calendar.getInstance();
+    SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+    String mCurrentDate;
+
+    public static final String PrefFile = "com.example.fitnessapp.PREFERENCES";
+    SharedPreferences sharedPreferences;
+
+    FitnessRoomDatabase db;
+    ActiveTimeDao mActiveTimeDao;
+    StepCountDao mStepCountDao;
+
+    TextView activityMonitorText;
+    TextView activeValue;
+    TextView stepCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        activityMonitorText = findViewById(R.id.textViewActivityMonitored);
+        stepCount = findViewById(R.id.textViewStepsValue);
+        activeValue = findViewById(R.id.textViewActiveValue);
+
+        sharedPreferences = getSharedPreferences(PrefFile, Context.MODE_PRIVATE);
+        boolean activityMonitorStarted = sharedPreferences.getBoolean("activityMonitorStarted", false);
+
+        FitnessViewModel mFitnessViewModel = new ViewModelProvider(this).get(FitnessViewModel.class);
+        db = FitnessRoomDatabase.getDatabase(this);
+        mActiveTimeDao = db.activeTimeDao();
+        mStepCountDao = db.stepCountDao();
+
+        if (activityMonitorStarted){
+            Intent serviceIntent = new Intent(this, ActivityMonitorService.class);
+            serviceIntent.putExtra("inputExtra", "Monitoring Running");
+            ContextCompat.startForegroundService(this, serviceIntent);
+            activityMonitorText.setText(R.string.monitor_true);
+        }
+        else activityMonitorText.setText(R.string.monitor_false);
 
         Button scheduleButton = findViewById(R.id.buttonSchedule);
         Button logButton = findViewById(R.id.buttonLog);
@@ -25,6 +72,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         chartButton.setOnClickListener(this);
         friendButton.setOnClickListener(this);
         stepCounterButton.setOnClickListener(this);
+
+        mCurrentDate = format1.format(cal.getTime());
+
+        StepCountDisplay(mCurrentDate);
+
+        mFitnessViewModel.getAllStepCounts().observe(this, new Observer<List<StepCount>>() {
+            @Override
+            public void onChanged(List<StepCount> stepCounts) {
+                StepCountDisplay(mCurrentDate);
+            }
+        });
+
+        ActiveTimeDisplay(mCurrentDate);
+
+        mFitnessViewModel.getAllActiveTimes().observe(this, new Observer<List<ActiveTime>>() {
+            @Override
+            public void onChanged(List<ActiveTime> activeTimes) {
+                ActiveTimeDisplay(mCurrentDate);
+            }
+        });
+
     }
 
     public void onClick(View v) {
@@ -46,14 +114,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(friends);
                 break;
             case R.id.buttonStepCounter:
-                Intent intentStep = new Intent(this, StepCounter.class);
+                Intent intentStep = new Intent(this, ActivityMonitor.class);
                 startActivity(intentStep);
                 break;
         }
     }
 
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-
+    void ActiveTimeDisplay(String date){
+        long activeTimeSeconds = mActiveTimeDao.currentTime(date);
+        String activeTime = String.format(Locale.US, "%02d:%02d:%02d", TimeUnit.SECONDS.toHours(activeTimeSeconds),
+                TimeUnit.SECONDS.toMinutes(activeTimeSeconds) % TimeUnit.HOURS.toMinutes(1),
+                activeTimeSeconds % TimeUnit.MINUTES.toSeconds(1));
+        activeValue.setText(activeTime);
     }
+
+    void StepCountDisplay(String date){
+        int totalSteps = mStepCountDao.currentCount(date);
+        stepCount.setText(String.valueOf(totalSteps));
+    }
+
 }

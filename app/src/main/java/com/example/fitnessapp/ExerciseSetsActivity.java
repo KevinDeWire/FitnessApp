@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ExerciseSetsActivity extends AppCompatActivity implements View.OnClickListener
         , ExerciseSetRecyclerAdapter.ItemClickListener {
@@ -39,6 +40,9 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
     String exerciseTitle;
 
     Date date;
+
+    FitnessRoomDatabase db;
+    ExerciseSetsDao mExerciseSetsDao;
 
     // Initialize a list of exercise sets.
     ArrayList<ExerciseSet> exerciseSets = new ArrayList<>();
@@ -77,6 +81,11 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
         mAddSetButton.setOnClickListener(this);
         mSaveWorkoutButton.setOnClickListener(this);
         mAdapter.setClickListener(this);
+
+        db = FitnessRoomDatabase.getDatabase(this);
+        mExerciseSetsDao = db.exerciseSetsDao();
+
+        loadWorkout();
     }
 
     @Override
@@ -124,6 +133,28 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
         // ToDo Save the workout sets and their attributes to the database.
         // ToDo You can use the set getters to get the variables, f.e. set.setWeight.
         // ToDo Save the date of workout to the database. You can use the "date" variable for this.
+        for(int i = 0; i < exerciseSets.size(); i++){
+            ExerciseSets exerciseSet = new ExerciseSets(date.toString(), exerciseTitle, i, exerciseSets.get(i).getWeight(), exerciseSets.get(i).getMetric(), exerciseSets.get(i).getReps(), exerciseSets.get(i).getRpe());
+            mExerciseSetsDao.insert(exerciseSet);
+        }
+    }
+
+    private void loadWorkout(){
+        List<ExerciseSets> savedSets = mExerciseSetsDao.allOnDate(date.toString(), exerciseTitle);
+        if(!savedSets.isEmpty()){
+            ExerciseSet set = new ExerciseSet();
+            for(int i = 0; i < savedSets.size(); i++){
+                set.setName(exerciseTitle);
+                set.setWeight(savedSets.get(i).getWeight());
+                set.setMetric(savedSets.get(i).getMetric());
+                set.setReps(savedSets.get(i).getReps());
+                set.setRpe(savedSets.get(i).getRpe());
+
+                // Add the set to the list of exercise sets.
+                exerciseSets.add(set);
+            }
+            mAdapter.updateData(exerciseSets);
+        }
     }
 
     @Override

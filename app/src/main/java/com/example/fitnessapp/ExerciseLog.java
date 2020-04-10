@@ -127,8 +127,6 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                             mEnteredExercise.setError("Name can't be empty.");
                             return;
                         } else {
-                            // If there are no errors, add the exercise to the exercise names
-                            // ArrayList when submit is clicked.
                             exerciseNames.add(enteredExercise);
                             mAdapter.updateData(exerciseNames);
                             dialog.cancel();

@@ -1,6 +1,5 @@
 package com.example.fitnessapp;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,7 +29,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -76,9 +74,6 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
-
-        // Display the back button.
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         resendVerification.setOnClickListener(this);
         username.setOnClickListener(this);
@@ -233,20 +228,6 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
                     }
                 });
     }
-
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // Go back to the previous activity.
-                this.onBackPressed();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -261,7 +242,6 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
 
     /**
      * Get the activity context.
-     *
      * @return activity context
      */
     public Friends getActivityContext() {
@@ -270,14 +250,11 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
 
     /**
      * Get the application context.
-     *
      * @return application context
      */
     public static Context getContext() {
         return mContext;
     }
 
-    public static Context getmContext() {
-        return getContext();
-    }
+    public static Context getmContext() {return getContext();}
 }

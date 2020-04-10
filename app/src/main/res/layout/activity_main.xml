@@ -22,7 +22,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
                 android:gravity="center"
-                android:hint="@string/steps_taken_today" />
+                android:text="@string/steps_taken_today" />
 
             <TextView
                 android:id="@+id/textViewTimeActiveLabel"
@@ -30,7 +30,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
                 android:gravity="center"
-                android:hint="@string/time_active_today"/>
+                android:text="@string/time_active_today"/>
 
         </TableRow>
 
@@ -57,10 +57,18 @@
 
         </TableRow>
 
+        <TextView
+            android:id="@+id/textViewActivityMonitored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:gravity="center"
+            android:text="@string/monitoring"/>
+
         <Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="0.25" />
 
         <Button
             android:id="@+id/buttonSchedule"
