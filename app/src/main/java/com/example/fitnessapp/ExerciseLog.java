@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ExerciseLog extends AppCompatActivity implements View.OnClickListener,
         ExerciseRecyclerViewAdapter.ItemClickListener {
@@ -37,6 +38,11 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
 
     // Initialize list of dates.
     ArrayList<Date> dates = new ArrayList<>();
+
+    FitnessRoomDatabase db;
+    ExerciseSetsDao mExerciseSetsDao;
+
+    String selectedDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +80,11 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         mAddExerciseButton.setOnClickListener(this);
         mSaveForReuseButton.setOnClickListener(this);
         mAdapter.setClickListener(this);
+
+        db = FitnessRoomDatabase.getDatabase(this);
+        mExerciseSetsDao = db.exerciseSetsDao();
+
+        loadExercise();
 
     }
 
@@ -145,7 +156,7 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
 
     private void saveForReuse() {
         // Get the selected date from the spinner.
-        Date selectedDate = Date.valueOf(mDateSpinner.getSelectedItem().toString());
+        selectedDate = mDateSpinner.getSelectedItem().toString();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Enter Workout Name");
@@ -189,6 +200,19 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                     }
                 }
         );
+    }
+
+    private void loadExercise() {
+        selectedDate = mDateSpinner.getSelectedItem().toString();
+
+        List<ExerciseSets> savedExercises = mExerciseSetsDao.namesOnDate(selectedDate);
+        if (!savedExercises.isEmpty()) {
+            for (int i = 0; i < savedExercises.size(); i++) {
+                String exerciseName = savedExercises.get(i).getExerciseName();
+                exerciseNames.add(exerciseName);
+            }
+            mAdapter.updateData(exerciseNames);
+        }
     }
 
     @Override
