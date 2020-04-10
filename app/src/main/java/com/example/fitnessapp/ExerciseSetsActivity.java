@@ -137,6 +137,7 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
 
     private void saveWorkout() {
         for (int i = 0; i < exerciseSets.size(); i++) {
+            // Save exercise and its attributes into the database.
             ExerciseSets exerciseSet = new ExerciseSets(date.toString(), exerciseTitle, i,
                     exerciseSets.get(i).getWeight(), exerciseSets.get(i).getMetric(),
                     exerciseSets.get(i).getReps(), exerciseSets.get(i).getRpe());

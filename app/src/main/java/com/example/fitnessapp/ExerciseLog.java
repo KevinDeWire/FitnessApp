@@ -1,7 +1,6 @@
 package com.example.fitnessapp;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,7 +20,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.sql.Array;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +37,14 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
     List<String> exerciseNames = new ArrayList<>();
 
     // Initialize list of dates.
-    ArrayList<String> dates = new ArrayList<>();
+    List<String> dates = new ArrayList<>();
 
     List<String> savedWorkouts = new ArrayList<>();
 
     FitnessRoomDatabase db;
     SavedWorkoutDao mSavedWorkoutDao;
+
+    ExerciseSetsDao mExerciseSetsDao;
 
     ArrayAdapter<String> workoutNameAdapter;
 
@@ -67,8 +67,6 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
 
         db = FitnessRoomDatabase.getDatabase(this);
 
-        loadDateSpinner();
-
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new ExerciseRecyclerViewAdapter(exerciseNames);
@@ -79,6 +77,10 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         mAdapter.setClickListener(this);
 
         mSavedWorkoutDao = db.savedWorkoutDao();
+        mExerciseSetsDao = db.exerciseSetsDao();
+
+        // Load dates to spinner of dates.
+        loadDateSpinner();
 
         // Load workouts to spinner of saved workouts.
         loadWorkoutsSpinner();
@@ -191,7 +193,7 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                         }
 
                         // Save workout name and attributes to database.
-                        for(int i=0; i<exerciseNames.size();i++){
+                        for (int i = 0; i < exerciseNames.size(); i++) {
                             SavedWorkout savedWorkout = new SavedWorkout(enteredWorkoutName,
                                     exerciseNames.get(i));
                             mSavedWorkoutDao.insert(savedWorkout);
@@ -205,6 +207,9 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
     }
 
     private void loadDateSpinner() {
+        // Load dates from exercise sets into list of dates.
+        dates = mExerciseSetsDao.dates();
+
         long milliseconds = System.currentTimeMillis();
         String date = new Date(milliseconds).toString();
         if (!dates.contains(date)) {
@@ -220,8 +225,9 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
     }
 
     private void loadWorkoutsSpinner() {
+        savedWorkouts.add("");
         // Set saved workouts equal to list of workouts from database.
-        savedWorkouts = mSavedWorkoutDao.WorkoutNames();
+        savedWorkouts.addAll(mSavedWorkoutDao.WorkoutNames());
 
         // Initialize workout name array adapter.
         workoutNameAdapter = new ArrayAdapter<>(this,
@@ -261,10 +267,18 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        String workoutName = mWorkoutNameSpinner.getSelectedItem().toString();
-        exerciseNames = mSavedWorkoutDao.Exercises(workoutName);
-        exerciseNames = mSavedWorkoutDao.Exercises(workoutName);
-        mAdapter.updateData(exerciseNames);
+        String selectedWorkout = mWorkoutNameSpinner.getSelectedItem().toString();
+        if (!selectedWorkout.isEmpty()) {
+            // When workout is selected on the spinner, load the exercises on there.
+            exerciseNames = mSavedWorkoutDao.Exercises(selectedWorkout);
+            mAdapter.updateData(exerciseNames);
+        } else {
+            // When date is selected on the spinner, and no workouts are selected, load the
+            // exercises solely based on date.
+            String selectedDate = mDateSpinner.getSelectedItem().toString();
+            exerciseNames = mExerciseSetsDao.names(selectedDate);
+            mAdapter.updateData(exerciseNames);
+        }
     }
 
     @Override
