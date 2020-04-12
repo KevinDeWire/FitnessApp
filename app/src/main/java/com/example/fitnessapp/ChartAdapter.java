@@ -18,6 +18,8 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.util.ArrayList;
 
+import static com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM;
+
 public class ChartAdapter extends RecyclerView.Adapter<ChartAdapter.ChartView> {
 
     private ArrayList<ChartData> chartData;
@@ -59,6 +61,10 @@ public class ChartAdapter extends RecyclerView.Adapter<ChartAdapter.ChartView> {
                 return dates.get(index);
             }
         });
+        holder.lineChart.getXAxis().setLabelRotationAngle(-45f);
+        holder.lineChart.getXAxis().setPosition(BOTTOM);
+        holder.lineChart.getDescription().setEnabled(false);
+        holder.lineChart.getLegend().setEnabled(false);
         holder.lineChart.invalidate();
     }
 
@@ -74,7 +80,7 @@ public class ChartAdapter extends RecyclerView.Adapter<ChartAdapter.ChartView> {
         ArrayList<String> dates = (ArrayList<String>) chartData.get(position).getDates();
         ArrayList<Double> weights = (ArrayList<Double>) chartData.get(position).getWeights();
         for (int i=0; i<dates.size(); i++){
-            values.add(new Entry((float)i, weights.get(i).floatValue()));
+            values.add(new Entry(i, weights.get(i).floatValue()));
         }
         set1 = new LineDataSet(values, chartData.get(position).getExerciseName());
         set1.setColor(Color.DKGRAY);
@@ -87,6 +93,7 @@ public class ChartAdapter extends RecyclerView.Adapter<ChartAdapter.ChartView> {
     }
 
     void updateData(ArrayList<ChartData> data) {
+        chartData.clear();
         chartData = data;
         notifyDataSetChanged();
     }

@@ -92,16 +92,17 @@ public class Charts extends AppCompatActivity implements View.OnClickListener{
 
     private ArrayList<ChartData> GetChartData(String date) {
         ArrayList<ChartData> chartDataArrayList = new ArrayList<>();
+        ChartData chartData;
 
         //Get Step Count Data
-        ChartData chartData = new ChartData();
-        chartData.setExerciseName("Step Count");
-        chartData.setDates(mStepCountDao.LastXDays(date));
-        List<Integer> intSteps = mStepCountDao.LastXTotalSteps(date);
-        List<Double> douSteps = new ArrayList<>();
-        for (int i:intSteps) {douSteps.add(intSteps.indexOf(i), (double)i);}
-        chartData.setWeights(douSteps);
-        chartDataArrayList.add(chartData);
+//        chartData = new ChartData();
+//        chartData.setExerciseName("Step Count");
+//        chartData.setDates(mStepCountDao.LastXDays(date));
+//        List<Integer> intSteps = mStepCountDao.LastXTotalSteps(date);
+//        List<Double> douSteps = new ArrayList<>();
+//        for (int i:intSteps) {douSteps.add(intSteps.indexOf(i), (double)i);}
+//        chartData.setWeights(douSteps);
+//        chartDataArrayList.add(chartData);
 
         //Get Active Time Data
         chartData = new ChartData();

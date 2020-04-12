@@ -61,7 +61,7 @@
     <string name="friends_list">Friends List</string>
     <string name="date">Date</string>
     <string name="workout_selection">Workout Selection</string>
-    <string name="rpe_hint">1-10</string>
+    <string name="rpe_hint">1–10</string>
     <string name="exercise_hint">Squat, Bench Press, etc.</string>
     <string name="reps_hint">##</string>
     <string name="weight_hint">###</string>
@@ -79,4 +79,6 @@
     <string name="save_for_reuse">Save for Reuse</string>
     <string name="add_set">Add Set</string>
     <string name="exercise_name">Exercise Name</string>
+    <string name="last_7_days">Last 7 Days</string>
+    <string name="last_30_days">Last 30 Days</string>
 </resources>
