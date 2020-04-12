@@ -25,6 +25,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.sql.Date;
@@ -58,9 +59,6 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
     FirebaseUser firebaseUser;
 
     CollectionReference sharedWorkoutReference;
-
-    // This counter must be global.
-    int j;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -277,51 +275,29 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         // Set the date as the selected spinner date.
         String date = mDateSpinner.getSelectedItem().toString();
         if (firebaseUser != null) {
-            for (int i = 0;  i < exerciseNames.size(); i++) {
-                List<ExerciseSets> savedSets = mExerciseSetsDao
-                        .allOnDate(date, exerciseNames.get(i));
-                for (j = 0; j < savedSets.size(); j++) {
+            if (!exerciseNames.isEmpty()) {
+                for (int i = 0; i < exerciseNames.size(); i++) {
+                    List<ExerciseSets> savedSets = mExerciseSetsDao
+                            .allOnDate(date, exerciseNames.get(i));
 
-                    final CollectionReference exerciseReference = sharedWorkoutReference
-                            .document(date).collection(exerciseNames.get(i));
+                    if (!savedSets.isEmpty()) {
+                        for (int j = 0; j < savedSets.size(); j++) {
 
-                    ExerciseSet exerciseSet = new ExerciseSet();
-                    exerciseSet.setName(exerciseNames.get(i));
-                    exerciseSet.setWeight(savedSets.get(j).getWeight());
-                    exerciseSet.setMetric(savedSets.get(j).getMetric());
-                    exerciseSet.setReps(savedSets.get(j).getReps());
-                    exerciseSet.setRpe(savedSets.get(j).getRpe());
+                            final DocumentReference exerciseReference = sharedWorkoutReference
+                                    .document(date).collection("exercises")
+                                    .document(exerciseNames.get(i));
 
-                    // Set exercise set into document.
-                    exerciseReference.document("set_" + j).set(exerciseSet)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    // Get the number of sets for later querying collection of
-                                    // sets when viewing other user's shared workouts.
-                                    HashMap<String, Integer> numberOfSets = new HashMap<>();
-                                    numberOfSets.put("Number of Sets", j);
-                                    exerciseReference.document("number_of_sets")
-                                            .set(numberOfSets)
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    Toast.makeText(ExerciseLog.this,
-                                                            "Workout Shared",
-                                                            Toast.LENGTH_SHORT).show();
-                                                }
-                                            })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    // If share isn't successful, tell user.
-                                                    Toast.makeText(ExerciseLog.this,
-                                                            e.getMessage(), Toast.LENGTH_SHORT)
-                                                            .show();
-                                                }
-                                            });
-                                }
-                            });
+                            ExerciseSet exerciseSet = new ExerciseSet();
+                            exerciseSet.setName(exerciseNames.get(i));
+                            exerciseSet.setWeight(savedSets.get(j).getWeight());
+                            exerciseSet.setMetric(savedSets.get(j).getMetric());
+                            exerciseSet.setReps(savedSets.get(j).getReps());
+                            exerciseSet.setRpe(savedSets.get(j).getRpe());
+
+                            // Share each set for each exercise.
+                            shareSets(exerciseReference, j, exerciseSet);
+                        }
+                    }
                 }
             }
         } else {
@@ -332,6 +308,33 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         }
     }
 
+    /**
+     * Share each exercise set and their attributes to the Firebase Firestore database.
+     * @param exerciseReference Exercise document
+     * @param setNum The set number
+     * @param exerciseSet Exercise set
+     */
+    private void shareSets(DocumentReference exerciseReference, int setNum,
+                           ExerciseSet exerciseSet) {
+        // Set exercise set into the set # document.
+        exerciseReference.collection("sets").document("set_" + setNum)
+                .set(exerciseSet)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(ExerciseLog.this,
+                                "Sharing...",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(ExerciseLog.this, e.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
