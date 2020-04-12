@@ -20,8 +20,14 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ExerciseLog extends AppCompatActivity implements View.OnClickListener,
@@ -30,23 +36,24 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
     ExerciseRecyclerViewAdapter mAdapter;
 
     RecyclerView recyclerView;
-    Button mAddExerciseButton, mSaveForReuseButton;
+    Button mAddExerciseButton, mSaveForReuseButton, mShareButton;
     Spinner mDateSpinner, mWorkoutNameSpinner;
 
-    // Initialize list of exercise names.
     List<String> exerciseNames = new ArrayList<>();
-
-    // Initialize list of dates.
     List<String> dates = new ArrayList<>();
-
     List<String> savedWorkouts = new ArrayList<>();
 
     FitnessRoomDatabase db;
     SavedWorkoutDao mSavedWorkoutDao;
-
     ExerciseSetsDao mExerciseSetsDao;
 
     ArrayAdapter<String> workoutNameAdapter;
+
+    FirebaseAuth firebaseAuth;
+    FirebaseFirestore firebaseFirestore;
+    FirebaseUser firebaseUser;
+
+    CollectionReference sharedWorkout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,12 +65,16 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         // Display the back button.
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseFirestore = FirebaseFirestore.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+
         recyclerView = findViewById(R.id.workoutLog);
         mAddExerciseButton = findViewById(R.id.addExerciseButton);
         mDateSpinner = findViewById(R.id.date);
         mSaveForReuseButton = findViewById(R.id.saveForLater);
         mWorkoutNameSpinner = findViewById(R.id.workoutSelection);
-
+        mShareButton = findViewById(R.id.shareButton);
 
         db = FitnessRoomDatabase.getDatabase(this);
 
@@ -74,7 +85,12 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
 
         mAddExerciseButton.setOnClickListener(this);
         mSaveForReuseButton.setOnClickListener(this);
+        mShareButton.setOnClickListener(this);
         mAdapter.setClickListener(this);
+
+        // Set Firebase shared workout collection.
+        sharedWorkout = firebaseFirestore.collection("users")
+                .document(firebaseUser.getUid()).collection("shared_workout");
 
         mSavedWorkoutDao = db.savedWorkoutDao();
         mExerciseSetsDao = db.exerciseSetsDao();
@@ -97,7 +113,12 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                 addExercise();
                 break;
             case R.id.saveForLater:
+                // Save workouts to a database.
                 saveForReuse();
+                break;
+            case R.id.shareButton:
+                // Share workout with friends via Firebase.
+                shareWorkout();
                 break;
         }
     }
@@ -216,6 +237,10 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
             dates.add(date);
         }
 
+        // Sort date spinner from newest to oldest so that the initial date on the spinner is
+        // today's date.
+        Collections.sort(dates, Collections.reverseOrder());
+
         // Set date array adapter.
         ArrayAdapter<String> dateArrayAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, dates);
@@ -239,6 +264,10 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         if (!savedWorkouts.isEmpty()) {
             mWorkoutNameSpinner.setAdapter(workoutNameAdapter);
         }
+    }
+
+    private void shareWorkout() {
+
     }
 
 
