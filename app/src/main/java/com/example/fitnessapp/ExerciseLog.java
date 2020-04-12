@@ -415,13 +415,6 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                         // If there are no errors, call the sign in function.
                         signIn(email, password);
                         dialog.cancel();
-
-                        // Relaunch the activity.
-                        finish();
-                        Intent exerciseLog =
-                                new Intent(ExerciseLog.this, ExerciseLog.class);
-                        exerciseLog.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        startActivity(exerciseLog);
                     }
                 }
         );
@@ -439,6 +432,13 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            // Relaunch the activity once signed in.
+                            finish();
+                            Intent exerciseLog =
+                                    new Intent(ExerciseLog.this, ExerciseLog.class);
+                            exerciseLog.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                            startActivity(exerciseLog);
+
                             // Tell user that the sign in was successful.
                             Toast.makeText(ExerciseLog.this, "Signed In Successfully",
                                     Toast.LENGTH_SHORT).show();
