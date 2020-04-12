@@ -273,6 +273,11 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                     // When workout is selected on the spinner, load the exercises on there.
                     exerciseNames = mSavedWorkoutDao.Exercises(selectedWorkout);
                     mAdapter.updateData(exerciseNames);
+                } else {
+                    // When workout isn't selected, load exercises based solely on date.
+                    String selectedDate = mDateSpinner.getSelectedItem().toString();
+                    exerciseNames = mExerciseSetsDao.names(selectedDate);
+                    mAdapter.updateData(exerciseNames);
                 }
                 break;
             case R.id.date:
