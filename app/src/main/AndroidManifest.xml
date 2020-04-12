@@ -27,7 +27,7 @@
         <activity
             android:name=".ExerciseSetsActivity"
             android:label="@string/title_activity_exercise_sets"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".FriendRequests"
             android:label="@string/title_activity_friend_requests"
