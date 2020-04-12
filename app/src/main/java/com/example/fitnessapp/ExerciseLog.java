@@ -86,6 +86,7 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         loadWorkoutsSpinner();
 
         mWorkoutNameSpinner.setOnItemSelectedListener(this);
+        mDateSpinner.setOnItemSelectedListener(this);
     }
 
     @Override
@@ -155,8 +156,6 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
     }
 
     private void saveForReuse() {
-        // Get the selected date from the spinner.
-        Date selectedDate = Date.valueOf(mDateSpinner.getSelectedItem().toString());
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Enter Workout Name");
@@ -268,16 +267,20 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String selectedWorkout = mWorkoutNameSpinner.getSelectedItem().toString();
-        if (!selectedWorkout.isEmpty()) {
-            // When workout is selected on the spinner, load the exercises on there.
-            exerciseNames = mSavedWorkoutDao.Exercises(selectedWorkout);
-            mAdapter.updateData(exerciseNames);
-        } else {
-            // When date is selected on the spinner, and no workouts are selected, load the
-            // exercises solely based on date.
-            String selectedDate = mDateSpinner.getSelectedItem().toString();
-            exerciseNames = mExerciseSetsDao.names(selectedDate);
-            mAdapter.updateData(exerciseNames);
+        switch (parent.getId()) {
+            case (R.id.workoutSelection):
+                if (!selectedWorkout.isEmpty()) {
+                    // When workout is selected on the spinner, load the exercises on there.
+                    exerciseNames = mSavedWorkoutDao.Exercises(selectedWorkout);
+                    mAdapter.updateData(exerciseNames);
+                }
+                break;
+            case R.id.date:
+                // When date is selected on the spinner, load the exercises on there.
+                String selectedDate = mDateSpinner.getSelectedItem().toString();
+                exerciseNames = mExerciseSetsDao.names(selectedDate);
+                mAdapter.updateData(exerciseNames);
+                break;
         }
     }
 
