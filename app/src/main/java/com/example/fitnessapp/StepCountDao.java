@@ -27,4 +27,10 @@ public interface StepCountDao {
     @Query("SELECT * FROM stepcount where date > :date")
     public abstract List<StepCount> allFromDate(String date);
 
+    @Query("SELECT date FROM stepcount WHERE date > :date")
+    public abstract List<String> LastXDays(String date);
+
+    @Query("SELECT totalsteps FROM stepcount WHERE date > :date")
+    public abstract List<Integer> LastXTotalSteps(String date);
+
 }

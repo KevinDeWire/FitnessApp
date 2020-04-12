@@ -29,5 +29,13 @@ public interface ExerciseSetsDao {
     @Query("SELECT MAX(rpe) FROM exercise_sets WHERE weight IN (SELECT MAX(weight) FROM exercise_sets WHERE date = :date AND exercise_name = :exerciseName)")
     double maxRpe(String date, String exerciseName);
 
+    @Query("SELECT DISTINCT exercise_name FROM exercise_sets WHERE date > :date")
+    List<String> ChartExercises(String date);
+
+    @Query("SELECT DISTINCT date FROM exercise_sets WHERE exercise_name = :exercise")
+    List<String> ChartDates(String exercise);
+
+    @Query("SELECT MAX(weight) from exercise_sets WHERE date = :date AND exercise_name = :exercise")
+    double ChartWeights(String date, String exercise);
 
 }
