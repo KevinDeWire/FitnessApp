@@ -135,6 +135,7 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
                 // Send user back to sign in activity when they sign out.
                 Intent signInActivity = new Intent(getApplicationContext(), SignIn.class);
                 startActivity(signInActivity);
+                finish();
                 break;
             case R.id.profilePicture:
                 // Function that provides different methods of updating the profile picture.

@@ -4,13 +4,17 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
+import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -20,13 +24,18 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -59,6 +68,8 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
     FirebaseUser firebaseUser;
 
     CollectionReference sharedWorkoutReference;
+
+    private static final String TAG = "Sign in";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,9 +104,11 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         mShareButton.setOnClickListener(this);
         mAdapter.setClickListener(this);
 
-        // Set Firebase shared workout collection.
-        sharedWorkoutReference = firebaseFirestore.collection("users")
-                .document(firebaseUser.getUid()).collection("shared_workout");
+        if (firebaseUser != null) {
+            // Set Firebase shared workout collection.
+            sharedWorkoutReference = firebaseFirestore.collection("users")
+                    .document(firebaseUser.getUid()).collection("shared_workout");
+        }
 
         mSavedWorkoutDao = db.savedWorkoutDao();
         mExerciseSetsDao = db.exerciseSetsDao();
@@ -301,18 +314,17 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                 }
             }
         } else {
-            // If not logged in, tell user.
-            // Will eventually redirect user to sign in activity.
-            Toast.makeText(this, "You must log in to share.", Toast.LENGTH_SHORT)
-                    .show();
+            // If the user is not logged in, prompt user to sign in.
+            signInAlert();
         }
     }
 
     /**
      * Share each exercise set and their attributes to the Firebase Firestore database.
+     *
      * @param exerciseReference Exercise document
-     * @param setNum The set number
-     * @param exerciseSet Exercise set
+     * @param setNum            The set number
+     * @param exerciseSet       Exercise set
      */
     private void shareSets(DocumentReference exerciseReference, int setNum,
                            ExerciseSet exerciseSet) {
@@ -322,6 +334,7 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        // If sharing is successful, display that the set is being shared.
                         Toast.makeText(ExerciseLog.this,
                                 "Sharing...",
                                 Toast.LENGTH_SHORT).show();
@@ -332,6 +345,135 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(ExerciseLog.this, e.getMessage(),
                                 Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void signInAlert() {
+        // Build a dialog that prompts the user to sign in if they click share but are not signed
+        // in.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Sign In");
+        builder.setMessage("You must be signed in to share your workouts");
+
+        // Create a linear layout for putting in the EditText field's for email and password.
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        // Set email EditText.
+        final EditText mEnterEmail = new EditText(this);
+        mEnterEmail.setHint("Enter email");
+        layout.addView(mEnterEmail);
+
+        // Set password EditText.
+        final EditText mEnterPassword = new EditText(this);
+        mEnterPassword.setHint("Enter password");
+        // Set input type to password.
+        mEnterPassword
+                .setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        layout.addView(mEnterPassword);
+
+        builder.setView(layout);
+
+        builder.setPositiveButton("Sign In", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String email = mEnterEmail.getText().toString().trim();
+                        String password = mEnterPassword.getText().toString().trim();
+
+                        if (TextUtils.isEmpty(email)) {
+                            mEnterEmail.setError("Email is required.");
+                            return;
+                        }
+                        if (TextUtils.isEmpty(password)) {
+                            mEnterPassword.setError("Password is required.");
+                            return;
+                        }
+                        if (password.length() < 6) {
+                            mEnterPassword.setError("Password must have at least 6 characters.");
+                            return;
+                        }
+
+                        // If there are no errors, call the sign in function.
+                        signIn(email, password);
+                        dialog.cancel();
+
+                        // Relaunch the activity.
+                        finish();
+                        Intent exerciseLog =
+                                new Intent(ExerciseLog.this, ExerciseLog.class);
+                        exerciseLog.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        startActivity(exerciseLog);
+                    }
+                }
+        );
+    }
+
+    /**
+     * Sign into Firebase using email and password.
+     *
+     * @param email    The user's email
+     * @param password The user's password
+     */
+    private void signIn(String email, String password) {
+        firebaseAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Tell user that the sign in was successful.
+                            Toast.makeText(ExerciseLog.this, "Signed In Successfully",
+                                    Toast.LENGTH_SHORT).show();
+
+                            // If the sign in is successful, add the device token to Firebase.
+                            addTokenDevice();
+                        }
+                    }
+                });
+    }
+
+    /**
+     * If the user signs in, their device token needs to be added to the Firebase Firestore.
+     */
+    private void addTokenDevice() {
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.d(TAG, "getInstanceId failed", task.getException());
+                            return;
+                        }
+
+                        String userId = firebaseAuth.getCurrentUser().getUid();
+
+                        CollectionReference tokenReference = firebaseFirestore
+                                .collection("users").document(userId)
+                                .collection("tokens");
+
+                        // Add token to Firebase.
+                        String token = task.getResult().getToken();
+                        HashMap tokenMap = new HashMap();
+                        tokenMap.put("token", token);
+                        tokenReference.document(token).set(tokenMap);
                     }
                 });
     }
