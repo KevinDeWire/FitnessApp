@@ -20,6 +20,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -28,6 +30,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EventListener;
+import java.util.HashMap;
 import java.util.List;
 
 public class ExerciseLog extends AppCompatActivity implements View.OnClickListener,
@@ -53,7 +57,10 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
     FirebaseFirestore firebaseFirestore;
     FirebaseUser firebaseUser;
 
-    CollectionReference sharedWorkout;
+    CollectionReference sharedWorkoutReference;
+
+    // This counter must be global.
+    int j;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +96,7 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         mAdapter.setClickListener(this);
 
         // Set Firebase shared workout collection.
-        sharedWorkout = firebaseFirestore.collection("users")
+        sharedWorkoutReference = firebaseFirestore.collection("users")
                 .document(firebaseUser.getUid()).collection("shared_workout");
 
         mSavedWorkoutDao = db.savedWorkoutDao();
@@ -267,7 +274,62 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
     }
 
     private void shareWorkout() {
+        // Set the date as the selected spinner date.
+        String date = mDateSpinner.getSelectedItem().toString();
+        if (firebaseUser != null) {
+            for (int i = 0;  i < exerciseNames.size(); i++) {
+                List<ExerciseSets> savedSets = mExerciseSetsDao
+                        .allOnDate(date, exerciseNames.get(i));
+                for (j = 0; j < savedSets.size(); j++) {
 
+                    final CollectionReference exerciseReference = sharedWorkoutReference
+                            .document(date).collection(exerciseNames.get(i));
+
+                    ExerciseSet exerciseSet = new ExerciseSet();
+                    exerciseSet.setName(exerciseNames.get(i));
+                    exerciseSet.setWeight(savedSets.get(j).getWeight());
+                    exerciseSet.setMetric(savedSets.get(j).getMetric());
+                    exerciseSet.setReps(savedSets.get(j).getReps());
+                    exerciseSet.setRpe(savedSets.get(j).getRpe());
+
+                    // Set exercise set into document.
+                    exerciseReference.document("set_" + j).set(exerciseSet)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    // Get the number of sets for later querying collection of
+                                    // sets when viewing other user's shared workouts.
+                                    HashMap<String, Integer> numberOfSets = new HashMap<>();
+                                    numberOfSets.put("Number of Sets", j);
+                                    exerciseReference.document("number_of_sets")
+                                            .set(numberOfSets)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Toast.makeText(ExerciseLog.this,
+                                                            "Workout Shared",
+                                                            Toast.LENGTH_SHORT).show();
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    // If share isn't successful, tell user.
+                                                    Toast.makeText(ExerciseLog.this,
+                                                            e.getMessage(), Toast.LENGTH_SHORT)
+                                                            .show();
+                                                }
+                                            });
+                                }
+                            });
+                }
+            }
+        } else {
+            // If not logged in, tell user.
+            // Will eventually redirect user to sign in activity.
+            Toast.makeText(this, "You must log in to share.", Toast.LENGTH_SHORT)
+                    .show();
+        }
     }
 
 
