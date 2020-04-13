@@ -300,6 +300,11 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                                     .document(date).collection("exercises")
                                     .document(exerciseNames.get(i));
 
+                            // Set a key for the date inside of the date document.
+                            HashMap<String, String> dateMap = new HashMap<>();
+                            dateMap.put("date", date);
+                            sharedWorkoutReference.document(date).set(dateMap);
+
                             ExerciseSet exerciseSet = new ExerciseSet();
                             exerciseSet.setName(exerciseNames.get(i));
                             exerciseSet.setWeight(savedSets.get(j).getWeight());
