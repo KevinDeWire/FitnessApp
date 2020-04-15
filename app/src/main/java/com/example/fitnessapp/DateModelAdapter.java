@@ -113,15 +113,27 @@ public class DateModelAdapter extends FirestoreRecyclerAdapter<DateModel, DateMo
                         if (j == 0) {
                             // Create a new TextView for the exercise name and set it over top of
                             // the first set of an exercise.
-                            TextView mExerciseName = new TextView(UserProfile.getmContext());
-                            mExerciseName.setText(exerciseName);
-                            mExerciseName.setTypeface(null, Typeface.BOLD);
-                            mExerciseName.setTextSize(20);
-                            mExerciseName.setGravity(Gravity.CENTER);
-                            mExerciseName.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup
-                                    .LayoutParams.MATCH_PARENT,
-                                    ViewGroup.LayoutParams.WRAP_CONTENT));
-                            ((LinearLayout) linearLayout).addView(mExerciseName);
+                            try {
+                                TextView mExerciseName = new TextView(UserProfile.getmContext());
+                                mExerciseName.setText(exerciseName);
+                                mExerciseName.setTypeface(null, Typeface.BOLD);
+                                mExerciseName.setTextSize(20);
+                                mExerciseName.setGravity(Gravity.CENTER);
+                                mExerciseName.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup
+                                        .LayoutParams.MATCH_PARENT,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT));
+                                ((LinearLayout) linearLayout).addView(mExerciseName);
+                            } catch (Exception err) {
+                                TextView mExerciseName = new TextView(OtherUser.getmContext());
+                                mExerciseName.setText(exerciseName);
+                                mExerciseName.setTypeface(null, Typeface.BOLD);
+                                mExerciseName.setTextSize(20);
+                                mExerciseName.setGravity(Gravity.CENTER);
+                                mExerciseName.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup
+                                        .LayoutParams.MATCH_PARENT,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT));
+                                ((LinearLayout) linearLayout).addView(mExerciseName);
+                            }
                         }
 
                         if (documentSnapshot != null) {

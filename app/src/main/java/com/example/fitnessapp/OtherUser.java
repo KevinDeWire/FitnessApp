@@ -1,9 +1,11 @@
 package com.example.fitnessapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.bumptech.glide.Glide;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -16,10 +18,13 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.MenuItem;
 import android.view.View;
@@ -50,7 +55,11 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
     // 0 for not friends, 1 for friend request sent, 2 for received, 3 for friends.
     int friendshipState;
 
+    DateModelAdapter dateModelAdapter;
+
     String userId;
+
+    static Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +113,7 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
             declineRequestButton.setOnClickListener(this);
 
             getFriendshipState();
+            setUpDateRecyclerView();
         } else {
             Intent signInActivity = new Intent(this, SignIn.class);
             startActivity(signInActivity);
@@ -172,7 +182,7 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                 email.setText(documentSnapshot.getString("email"));
 
                 // Set the profile picture from the cloud storage onto the screen.
-                if(!documentSnapshot.getString("profileImageURL").equals("default")) {
+                if (!documentSnapshot.getString("profileImageURL").equals("default")) {
                     Glide.with(OtherUser.this)
                             .load(documentSnapshot.getString("profileImageURL"))
                             .into(profilePicture);
@@ -399,6 +409,39 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
         });
 
         friendButton.setEnabled(true);
+    }
 
+    private void setUpDateRecyclerView() {
+        CollectionReference dateReference = documentReference
+                .collection("shared_workout");
+
+        // Query the dates in descending order.
+        Query dateQuery = dateReference.orderBy("date", Query.Direction.DESCENDING);
+
+        FirestoreRecyclerOptions<DateModel> options =
+                new FirestoreRecyclerOptions.Builder<DateModel>()
+                        .setQuery(dateQuery, DateModel.class).build();
+
+        dateModelAdapter = new DateModelAdapter(options);
+        RecyclerView dateRecyclerView = findViewById(R.id.listOfDates);
+        dateRecyclerView.setHasFixedSize(true);
+        dateRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        dateRecyclerView.setAdapter(dateModelAdapter);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        dateModelAdapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        dateModelAdapter.stopListening();
+    }
+
+    static public Context getmContext() {
+        return mContext;
     }
 }

@@ -1,7 +1,6 @@
 package com.example.fitnessapp;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,7 +17,6 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -28,9 +25,8 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import javax.annotation.Nullable;
 
 public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.UserViewHolder> {
-    FriendRequests friendRequests = new FriendRequests();
-    Friends friends = new Friends();
-    SearchUsers searchUsers = new SearchUsers();
+    private FriendRequests friendRequests = new FriendRequests();
+    private SearchUsers searchUsers = new SearchUsers();
 
     public UserAdapter(@NonNull FirestoreRecyclerOptions<User> options) {
         super(options);
