@@ -23,6 +23,8 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.auth.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -35,15 +37,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.annotation.Nullable;
 
@@ -67,12 +74,16 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
     static final int REQUEST_IMAGE_CAPTURE = 10001;
     static final int SELECT_IMAGE_REQUEST = 10002;
 
+    static Context mContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mContext = getApplicationContext();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -274,7 +285,6 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
                 .addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        User user = new User();
                         // Set the profile image URL in the document.
                         userReference.update("profileImageURL", uri.toString());
                     }
@@ -290,7 +300,7 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
 
         FirestoreRecyclerOptions<DateModel> options =
                 new FirestoreRecyclerOptions.Builder<DateModel>()
-                .setQuery(dateQuery, DateModel.class).build();
+                        .setQuery(dateQuery, DateModel.class).build();
 
         dateModelAdapter = new DateModelAdapter(options);
         RecyclerView dateRecyclerView = findViewById(R.id.listOfDates);
@@ -298,6 +308,7 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
         dateRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         dateRecyclerView.setAdapter(dateModelAdapter);
     }
+
 
     @Override
     protected void onStart() {
@@ -309,5 +320,20 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
     protected void onStop() {
         super.onStop();
         dateModelAdapter.stopListening();
+    }
+
+    public UserProfile getContext() {
+        return UserProfile.this;
+    }
+
+    static public Context getmContext() {
+        return mContext;
+    }
+
+    public void setUpNameAdapter(ListView mExerciseListView, ArrayList<String> exerciseNames) {
+        ArrayAdapter<String> exerciseAdapter =
+                new ArrayAdapter<>(this,
+                        android.R.layout.simple_list_item_1, exerciseNames);
+        mExerciseListView.setAdapter(exerciseAdapter);
     }
 }

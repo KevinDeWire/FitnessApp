@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/listOfExercises"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -13,9 +14,10 @@
         android:textColor="@color/white"
         android:textStyle="bold"
         android:textSize="30dp" />
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/listOfExercises"
+    <LinearLayout
+        android:id="@+id/listOfSets"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:orientation="horizontal"/>
 
 </LinearLayout>

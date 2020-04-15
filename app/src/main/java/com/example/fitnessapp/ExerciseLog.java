@@ -300,10 +300,20 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                                     .document(date).collection("exercises")
                                     .document(exerciseNames.get(i));
 
+                            // Set a key for the name inside of the exercise name document.
+                            HashMap<String, Object> exerciseMap = new HashMap<>();
+                            exerciseMap.put("name", exerciseNames.get(i));
+                            exerciseReference.set(exerciseMap);
+
+                            // Save the number of sets as a key value.
+                            exerciseMap.put("number_of_sets", j + 1);
+                            exerciseReference.set(exerciseMap);
+
                             // Set a key for the date inside of the date document.
-                            HashMap<String, String> dateMap = new HashMap<>();
-                            dateMap.put("date", date);
-                            sharedWorkoutReference.document(date).set(dateMap);
+                            DateModel dateModel = new DateModel();
+                            dateModel.setDate(date);
+                            dateModel.setUserId(firebaseUser.getUid());
+                            sharedWorkoutReference.document(date).set(dateModel);
 
                             ExerciseSet exerciseSet = new ExerciseSet();
                             exerciseSet.setName(exerciseNames.get(i));

@@ -5,9 +5,11 @@ package com.example.fitnessapp;
  */
 public class DateModel {
     private String date;
+    private String userId;
 
     public DateModel() {
         date = "";
+        userId = "";
     }
 
     /**
@@ -26,5 +28,13 @@ public class DateModel {
      */
     public void setDate(String d) {
         this.date = d;
+    }
+
+    public String getUserId(){
+        return userId;
+    }
+
+    public void setUserId(String id) {
+        this.userId = id;
     }
 }
