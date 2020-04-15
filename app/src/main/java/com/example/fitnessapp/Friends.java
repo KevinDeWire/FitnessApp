@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -62,6 +63,8 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
         setContentView(R.layout.activity_friends);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         addFriendButton = findViewById(R.id.addFriendButton);
         signInButton = findViewById(R.id.reSignInButton);
@@ -129,7 +132,22 @@ public class Friends extends AppCompatActivity implements View.OnClickListener {
             mContext = getActivityContext();
 
             setUpRecyclerView();
+        } else {
+            Intent signInActivity = new Intent(this, SignIn.class);
+            startActivity(signInActivity);
+            finish();
+        }
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // Go back to the previous activity.
+                this.onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

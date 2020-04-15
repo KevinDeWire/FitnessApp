@@ -129,11 +129,16 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
                     }
                 }
             });
-        }
-        signOutButton.setOnClickListener(this);
-        profilePicture.setOnClickListener(this);
 
-        setUpDateRecyclerView();
+            signOutButton.setOnClickListener(this);
+            profilePicture.setOnClickListener(this);
+
+            setUpDateRecyclerView();
+        } else {
+            Intent signInActivity = new Intent(this, SignIn.class);
+            startActivity(signInActivity);
+            finish();
+        }
     }
 
     @Override
@@ -330,10 +335,4 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
         return mContext;
     }
 
-    public void setUpNameAdapter(ListView mExerciseListView, ArrayList<String> exerciseNames) {
-        ArrayAdapter<String> exerciseAdapter =
-                new ArrayAdapter<>(this,
-                        android.R.layout.simple_list_item_1, exerciseNames);
-        mExerciseListView.setAdapter(exerciseAdapter);
-    }
 }

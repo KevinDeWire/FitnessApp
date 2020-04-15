@@ -104,41 +104,43 @@ public class UserAdapter extends FirestoreRecyclerAdapter<User, UserAdapter.User
            e.printStackTrace();
         }
 
-        // Get the current user's ID.
-        final String currentId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            // Get the current user's ID.
+            final String currentId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        userViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent otherProfile;
-                if (id.equals(currentId)) {
-                    // If the ID that is clicked is the same as the user's who is currently
-                    // logged in, start up the user profile activity.
-                    Intent userProfile = new Intent(SearchUsers.getContext(), UserProfile.class);
-                    userProfile.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    SearchUsers.getContext().startActivity(userProfile);
-                } else {
-                    try {
-                        otherProfile = new Intent(SearchUsers.getContext(), OtherUser.class);
-                        otherProfile.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        otherProfile.putExtra("id", id);
-                        SearchUsers.getContext().startActivity(otherProfile);
-                    } catch (Exception e) {
+            userViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent otherProfile;
+                    if (id.equals(currentId)) {
+                        // If the ID that is clicked is the same as the user's who is currently
+                        // logged in, start up the user profile activity.
+                        Intent userProfile = new Intent(SearchUsers.getContext(), UserProfile.class);
+                        userProfile.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        SearchUsers.getContext().startActivity(userProfile);
+                    } else {
                         try {
-                            otherProfile = new Intent(FriendRequests.getContext(), OtherUser.class);
+                            otherProfile = new Intent(SearchUsers.getContext(), OtherUser.class);
                             otherProfile.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             otherProfile.putExtra("id", id);
-                            FriendRequests.getContext().startActivity(otherProfile);
-                        } catch (Exception err) {
-                            otherProfile = new Intent(Friends.getContext(), OtherUser.class);
-                            otherProfile.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            otherProfile.putExtra("id", id);
-                            Friends.getContext().startActivity(otherProfile);
+                            SearchUsers.getContext().startActivity(otherProfile);
+                        } catch (Exception e) {
+                            try {
+                                otherProfile = new Intent(FriendRequests.getContext(), OtherUser.class);
+                                otherProfile.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                otherProfile.putExtra("id", id);
+                                FriendRequests.getContext().startActivity(otherProfile);
+                            } catch (Exception err) {
+                                otherProfile = new Intent(Friends.getContext(), OtherUser.class);
+                                otherProfile.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                otherProfile.putExtra("id", id);
+                                Friends.getContext().startActivity(otherProfile);
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     @NonNull

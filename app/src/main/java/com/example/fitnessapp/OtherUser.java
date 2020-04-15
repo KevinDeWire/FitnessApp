@@ -66,42 +66,49 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (userId.equals(currentUser.getUid())) {
-            // If the profile is the same as the current user's profile,
-            // redirect to the UserProfile activity.
-            Intent redirect = new Intent(this, UserProfile.class);
-            startActivity(redirect);
+        if (currentUser != null) {
+
+            if (userId.equals(currentUser.getUid())) {
+                // If the profile is the same as the current user's profile,
+                // redirect to the UserProfile activity.
+                Intent redirect = new Intent(this, UserProfile.class);
+                startActivity(redirect);
+                finish();
+            }
+
+            documentReference = FirebaseFirestore.getInstance().collection("users")
+                    .document(userId);
+            friendRequestRef = FirebaseFirestore.getInstance()
+                    .collection("friend_request");
+            currentFriendsReference = FirebaseFirestore.getInstance().collection("users")
+                    .document(currentUser.getUid()).collection("friends");
+            otherFriendsReference = FirebaseFirestore.getInstance().collection("users")
+                    .document(userId).collection("friends");
+            notificationRef = FirebaseFirestore.getInstance().collection("notifications");
+
+            username = findViewById(R.id.display_username);
+            email = findViewById(R.id.display_email);
+            friendsSince = findViewById(R.id.friendsSince);
+
+            profilePicture = findViewById(R.id.profilePicture);
+
+            // Set the text of the button to "Add Friend" as it is initially "Sign Out."
+            friendButton = findViewById(R.id.multipleUseButton);
+            friendButton.setText("Add Friend");
+            declineRequestButton = findViewById(R.id.declineRequestButton);
+
+            friendshipState = 0;
+
+            setText();
+            friendButton.setOnClickListener(this);
+            declineRequestButton.setOnClickListener(this);
+
+            getFriendshipState();
+        } else {
+            Intent signInActivity = new Intent(this, SignIn.class);
+            startActivity(signInActivity);
             finish();
         }
-
-        documentReference = FirebaseFirestore.getInstance().collection("users")
-                .document(userId);
-        friendRequestRef = FirebaseFirestore.getInstance()
-                .collection("friend_request");
-        currentFriendsReference = FirebaseFirestore.getInstance().collection("users")
-                .document(currentUser.getUid()).collection("friends");
-        otherFriendsReference = FirebaseFirestore.getInstance().collection("users")
-                .document(userId).collection("friends");
-        notificationRef = FirebaseFirestore.getInstance().collection("notifications");
-
-        username = findViewById(R.id.display_username);
-        email = findViewById(R.id.display_email);
-        friendsSince = findViewById(R.id.friendsSince);
-
-        profilePicture = findViewById(R.id.profilePicture);
-
-        // Set the text of the button to "Add Friend" as it is initially "Sign Out."
-        friendButton = findViewById(R.id.multipleUseButton);
-        friendButton.setText("Add Friend");
-        declineRequestButton = findViewById(R.id.declineRequestButton);
-
-        friendshipState = 0;
-
-        setText();
-        friendButton.setOnClickListener(this);
-        declineRequestButton.setOnClickListener(this);
-
-        getFriendshipState();
     }
 
     @Override

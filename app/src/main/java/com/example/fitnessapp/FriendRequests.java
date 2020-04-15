@@ -1,6 +1,7 @@
 package com.example.fitnessapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -41,7 +42,13 @@ public class FriendRequests extends AppCompatActivity {
 
         mContext = getApplicationContext();
 
-        setUpRecyclerView();
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            setUpRecyclerView();
+        } else {
+            Intent signInActivity = new Intent(this, SignIn.class);
+            startActivity(signInActivity);
+            finish();
+        }
     }
 
     @Override

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -35,7 +36,13 @@ public class SearchUsers extends AppCompatActivity {
 
         mContext = getApplicationContext();
 
-        setUpRecyclerView();
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            setUpRecyclerView();
+        } else {
+            Intent signInActivity = new Intent(this, SignIn.class);
+            startActivity(signInActivity);
+            finish();
+        }
     }
 
     @Override
