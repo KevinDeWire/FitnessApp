@@ -27,4 +27,10 @@ public interface ActiveTimeDao {
     @Query("SELECT * FROM activeTime where date > :date")
     public abstract List<ActiveTime> allFromDate(String date);
 
+    @Query("SELECT date FROM activetime WHERE date > :date")
+    public abstract List<String> LastXDays(String date);
+
+    @Query("SELECT totaltime FROM activetime WHERE date > :date")
+    public abstract List<Integer> LastXTotalTime(String date);
+
 }
