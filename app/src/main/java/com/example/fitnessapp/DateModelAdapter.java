@@ -1,6 +1,7 @@
 package com.example.fitnessapp;
 
 
+import android.app.Activity;
 import android.graphics.Typeface;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -123,16 +124,44 @@ public class DateModelAdapter extends FirestoreRecyclerAdapter<DateModel, DateMo
                                         .LayoutParams.MATCH_PARENT,
                                         ViewGroup.LayoutParams.WRAP_CONTENT));
                                 ((LinearLayout) linearLayout).addView(mExerciseName);
-                            } catch (Exception err) {
-                                TextView mExerciseName = new TextView(OtherUser.getmContext());
-                                mExerciseName.setText(exerciseName);
-                                mExerciseName.setTypeface(null, Typeface.BOLD);
-                                mExerciseName.setTextSize(20);
-                                mExerciseName.setGravity(Gravity.CENTER);
-                                mExerciseName.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup
-                                        .LayoutParams.MATCH_PARENT,
-                                        ViewGroup.LayoutParams.WRAP_CONTENT));
-                                ((LinearLayout) linearLayout).addView(mExerciseName);
+                            } catch (Exception e2) {
+                                try {
+                                    TextView mExerciseName = new TextView(OtherUser.getmContext());
+                                    mExerciseName.setText(exerciseName);
+                                    mExerciseName.setTypeface(null, Typeface.BOLD);
+                                    mExerciseName.setTextSize(20);
+                                    mExerciseName.setGravity(Gravity.CENTER);
+                                    mExerciseName.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup
+                                            .LayoutParams.MATCH_PARENT,
+                                            ViewGroup.LayoutParams.WRAP_CONTENT));
+                                    ((LinearLayout) linearLayout).addView(mExerciseName);
+                                } catch (Exception e3) {
+                                    try {
+                                        TextView mExerciseName = new TextView(SearchUsers.getContext());
+                                        mExerciseName.setText(exerciseName);
+                                        mExerciseName.setTypeface(null, Typeface.BOLD);
+                                        mExerciseName.setTextSize(20);
+                                        mExerciseName.setGravity(Gravity.CENTER);
+                                        mExerciseName.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup
+                                                .LayoutParams.MATCH_PARENT,
+                                                ViewGroup.LayoutParams.WRAP_CONTENT));
+                                        ((LinearLayout) linearLayout).addView(mExerciseName);
+                                    } catch (Exception e4) {
+                                        try {
+                                            TextView mExerciseName = new TextView(FriendRequests.getContext());
+                                            mExerciseName.setText(exerciseName);
+                                            mExerciseName.setTypeface(null, Typeface.BOLD);
+                                            mExerciseName.setTextSize(20);
+                                            mExerciseName.setGravity(Gravity.CENTER);
+                                            mExerciseName.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup
+                                                    .LayoutParams.MATCH_PARENT,
+                                                    ViewGroup.LayoutParams.WRAP_CONTENT));
+                                            ((LinearLayout) linearLayout).addView(mExerciseName);
+                                        } catch (Exception e5) {
+                                            e5.printStackTrace();
+                                        }
+                                    }
+                                }
                             }
                         }
 
@@ -149,16 +178,30 @@ public class DateModelAdapter extends FirestoreRecyclerAdapter<DateModel, DateMo
                                     + rpe;
 
                             // Set the display string into a TextView.
-                            TextView mSet = new TextView(UserProfile.getmContext());
-                            mSet.setText(setDisplay);
-                            mSet.setTextSize(15);
-                            mSet.setGravity(Gravity.CENTER);
+                            try {
+                                TextView mSet = new TextView(OtherUser.getmContext());
+                                mSet.setText(setDisplay);
+                                mSet.setTextSize(15);
+                                mSet.setGravity(Gravity.CENTER);
 
-                            // Add the TextView to the layout.
-                            mSet.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup
-                                    .LayoutParams.MATCH_PARENT,
-                                    ViewGroup.LayoutParams.WRAP_CONTENT));
-                            ((LinearLayout) linearLayout).addView(mSet);
+                                // Add the TextView to the layout.
+                                mSet.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup
+                                        .LayoutParams.MATCH_PARENT,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT));
+                                ((LinearLayout) linearLayout).addView(mSet);
+
+                            } catch (Exception e2) {
+                                TextView mSet = new TextView(UserProfile.getmContext());
+                                mSet.setText(setDisplay);
+                                mSet.setTextSize(15);
+                                mSet.setGravity(Gravity.CENTER);
+
+                                // Add the TextView to the layout.
+                                mSet.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup
+                                        .LayoutParams.MATCH_PARENT,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT));
+                                ((LinearLayout) linearLayout).addView(mSet);
+                            }
                         }
                     }
                 });

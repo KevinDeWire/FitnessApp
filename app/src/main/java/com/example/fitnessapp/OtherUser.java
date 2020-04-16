@@ -45,6 +45,7 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
     Button declineRequestButton;
     TextView username, email, friendsSince;
     ImageView profilePicture;
+    RecyclerView dateRecyclerView;
 
     DocumentReference documentReference;
     CollectionReference friendRequestRef, currentFriendsReference, otherFriendsReference,
@@ -69,6 +70,8 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mContext = getApplicationContext();
 
         // Retrieve the user ID collected from the user list.
         userId = getIntent().getStringExtra("id");
@@ -98,7 +101,7 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
             username = findViewById(R.id.display_username);
             email = findViewById(R.id.display_email);
             friendsSince = findViewById(R.id.friendsSince);
-
+            dateRecyclerView = findViewById(R.id.listOfDates);
             profilePicture = findViewById(R.id.profilePicture);
 
             // Set the text of the button to "Add Friend" as it is initially "Sign Out."
@@ -108,11 +111,16 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
 
             friendshipState = 0;
 
+            // Initially set date recycler view to gone, so that shared workouts can't
+            // be viewed by non friends.
+            dateRecyclerView.setVisibility(View.GONE);
+
             setText();
             friendButton.setOnClickListener(this);
             declineRequestButton.setOnClickListener(this);
 
             getFriendshipState();
+
             setUpDateRecyclerView();
         } else {
             Intent signInActivity = new Intent(this, SignIn.class);
@@ -242,6 +250,8 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                             friendsSince.setVisibility(View.VISIBLE);
                             // Set the friend button's text to Remove Friend.
                             friendButton.setText("Remove Friend");
+                            // Set shared workouts to visible.
+                            dateRecyclerView.setVisibility(View.VISIBLE);
                         }
                     }
                 });
@@ -367,6 +377,7 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                                         // Set the button text to add friend.
                                         friendButton.setText("Add Friend");
                                         friendsSince.setVisibility(View.GONE);
+                                        dateRecyclerView.setVisibility(View.GONE);
                                     }
                                 });
                     }
@@ -402,6 +413,7 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                                     friendButton.setText("Remove Friend");
                                     // Set the decline request button to gone.
                                     declineRequestButton.setVisibility(View.GONE);
+                                    dateRecyclerView.setVisibility(View.VISIBLE);
                                 }
                             }
                         });
@@ -423,7 +435,6 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                         .setQuery(dateQuery, DateModel.class).build();
 
         dateModelAdapter = new DateModelAdapter(options);
-        RecyclerView dateRecyclerView = findViewById(R.id.listOfDates);
         dateRecyclerView.setHasFixedSize(true);
         dateRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         dateRecyclerView.setAdapter(dateModelAdapter);
