@@ -95,14 +95,14 @@ public class Charts extends AppCompatActivity implements View.OnClickListener{
         ChartData chartData;
 
         //Get Step Count Data
-//        chartData = new ChartData();
-//        chartData.setExerciseName("Step Count");
-//        chartData.setDates(mStepCountDao.LastXDays(date));
-//        List<Integer> intSteps = mStepCountDao.LastXTotalSteps(date);
-//        List<Double> douSteps = new ArrayList<>();
-//        for (int i:intSteps) {douSteps.add(intSteps.indexOf(i), (double)i);}
-//        chartData.setWeights(douSteps);
-//        chartDataArrayList.add(chartData);
+        chartData = new ChartData();
+        chartData.setExerciseName("Step Count");
+        chartData.setDates(mStepCountDao.LastXDays(date));
+        List<Integer> intSteps = mStepCountDao.LastXTotalSteps(date);
+        List<Double> douSteps = new ArrayList<>();
+        for (int i:intSteps) {douSteps.add(intSteps.indexOf(i), (double)i);}
+        chartData.setWeights(douSteps);
+        chartDataArrayList.add(chartData);
 
         //Get Active Time Data
         chartData = new ChartData();
@@ -110,7 +110,7 @@ public class Charts extends AppCompatActivity implements View.OnClickListener{
         chartData.setDates(mActiveTimeDao.LastXDays(date));
         List<Integer> intActive = mActiveTimeDao.LastXTotalTime(date);
         List<Double> douActive = new ArrayList<>();
-        for (int i : intActive){douActive.add(intActive.indexOf(i), (double)i);}
+        for (int i : intActive){douActive.add(intActive.indexOf(i), (double)i/60);}
         chartData.setWeights(douActive);
         chartDataArrayList.add(chartData);
 

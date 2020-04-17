@@ -27,6 +27,7 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
 
     public static final String PrefFile = "com.example.fitnessapp.PREFERENCES";
     SharedPreferences sharedPreferences;
+    SharedPreferences.Editor myEdit;
     boolean activityMonitorStarted;
 
     private FitnessViewModel mFitnessViewModel;
@@ -56,6 +57,7 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
         activityMonitorText = findViewById(R.id.textViewActivityMonitored);
 
         sharedPreferences = getSharedPreferences(PrefFile, Context.MODE_PRIVATE);
+        myEdit = sharedPreferences.edit();
         activityMonitorStarted = sharedPreferences.getBoolean("activityMonitorStarted", false);
 
         if (activityMonitorStarted) activityMonitorText.setText(R.string.monitor_true);
@@ -94,15 +96,17 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
         stopButton.setOnClickListener(this);
         resetButton.setOnClickListener(this);
 
+        myEdit.apply();
+
     }
 
     @Override
     public void onClick(View v) {
 
-        SharedPreferences.Editor myEdit = sharedPreferences.edit();
-        StepCount stepCountZero = new StepCount(mCurrentDate, 0);
-        ActiveTime activeTimeZero = new ActiveTime(mCurrentDate, 0);
+
+
         activityMonitorStarted = sharedPreferences.getBoolean("activityMonitorStarted", false);
+        boolean firstTime = sharedPreferences.getBoolean("firstTime", true);
 
         switch (v.getId()){
             case R.id.buttonStepStart:
@@ -112,6 +116,10 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
                     serviceIntent.putExtra("inputExtra", "Monitoring Running");
                     ContextCompat.startForegroundService(this, serviceIntent);
                     activityMonitorText.setText(R.string.monitor_true);
+                    if (firstTime){
+                        Initialize();
+                        myEdit.putBoolean("firstTime", false);
+                    }
                 }
                 break;
             case R.id.buttonStepStop:
@@ -122,13 +130,7 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
                 }
                 break;
             case R.id.buttonReset:
-                myEdit.putString("stepLastDate", mCurrentDate);
-                myEdit.putInt("stepLastCount", Integer.MAX_VALUE);
-                myEdit.putString("activityLastDate", mCurrentDate);
-                myEdit.putLong("activityLastTimestamp", Long.MAX_VALUE);
-                myEdit.putString("activityMonitorService", "xxxx");
-                mFitnessViewModel.insertStep(stepCountZero);
-                mFitnessViewModel.insertActiveTime(activeTimeZero);
+                Initialize();
                 break;
         }
         myEdit.apply();
@@ -145,6 +147,19 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
     void StepCountDisplay(String date){
         int totalSteps = mStepCountDao.currentCount(date);
         stepCount.setText(String.valueOf(totalSteps));
+    }
+
+    void Initialize (){
+        StepCount stepCountZero = new StepCount(mCurrentDate, 0);
+        ActiveTime activeTimeZero = new ActiveTime(mCurrentDate, 0);
+        myEdit.putString("stepLastDate", mCurrentDate);
+        myEdit.putInt("stepLastCount", Integer.MAX_VALUE);
+        myEdit.putString("activityLastDate", mCurrentDate);
+        myEdit.putLong("activityLastTimestamp", Long.MAX_VALUE);
+        myEdit.putString("activityMonitorService", "xxxx");
+        mFitnessViewModel.insertStep(stepCountZero);
+        mFitnessViewModel.insertActiveTime(activeTimeZero);
+        myEdit.apply();
     }
 
 }

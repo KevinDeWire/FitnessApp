@@ -56,6 +56,10 @@ public class ActivityMonitorService extends Service implements SensorEventListen
         myEdit = sharedPreferences.edit();
         myEdit.apply();
 
+        FitnessRoomDatabase db = FitnessRoomDatabase.getDatabase(this);
+        mStepCountDao = db.stepCountDao();
+        mActiveTimeDao = db.activeTimeDao();
+
         mHandlerThread.start();
 
         handler = new Handler(mHandlerThread.getLooper());
@@ -66,11 +70,6 @@ public class ActivityMonitorService extends Service implements SensorEventListen
         mMotionDetect = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         mSensorManager.registerListener(this, mStepCounter, SensorManager.SENSOR_DELAY_NORMAL, handler);
         mSensorManager.registerListener(this, mMotionDetect, SensorManager.SENSOR_DELAY_NORMAL, handler);
-
-        FitnessRoomDatabase db = FitnessRoomDatabase.getDatabase(this);
-        mStepCountDao = db.stepCountDao();
-        mActiveTimeDao = db.activeTimeDao();
-
     }
 
     @Override
@@ -117,11 +116,10 @@ public class ActivityMonitorService extends Service implements SensorEventListen
             float y = event.values[1];
             float z = event.values[2];
             float accelCurrent = (float)Math.sqrt(x*x + y*y + z*z);
-            if(accelCurrent > 0.1){
+            if(accelCurrent >= 1){
                 long timestamp = event.timestamp;
                 UpdateActiveTime(timestamp);
             }
-
         }
     }
 
@@ -139,12 +137,9 @@ public class ActivityMonitorService extends Service implements SensorEventListen
             ActiveTime activeTime = new ActiveTime(currentDate, 0);
             myEdit.putString("activityLastDate", lastDate);
             mActiveTimeDao.insert(activeTime);
-            myEdit.putString("activityMonitorService", "activity date change");
         }
-        else if (timeChange > 0 && timeChange <= 30){
+        else if (timeChange > 0 && timeChange <= 5){
             totalTime = totalTime + timeChange;
-            String dateTimestamp = currentDate + ", " + totalTime + " active seconds";
-            myEdit.putString("activityMonitorService", dateTimestamp);
             ActiveTime activeTime = new ActiveTime(currentDate, totalTime);
             mActiveTimeDao.update(activeTime);
         }
@@ -152,7 +147,6 @@ public class ActivityMonitorService extends Service implements SensorEventListen
         lastTimestamp = currentTimestampSeconds;
         myEdit.putLong("activityLastTimestamp", lastTimestamp);
         myEdit.commit();
-
     }
 
     // STEP COUNT
@@ -161,23 +155,20 @@ public class ActivityMonitorService extends Service implements SensorEventListen
         String currentDate = format1.format(cal.getTime());
         int lastCount = sharedPreferences.getInt("stepLastCount", Integer.MAX_VALUE);
         int currentCount = (int) currentCountFloat;
-        long totalSteps = mStepCountDao.currentCount(currentDate);
+        long totalSteps;
         long newCount = currentCount - lastCount;
-
-        myEdit.putString("activityMonitorService", "UpdateStepCount");
 
         if (lastDate.compareTo(currentDate) != 0){
             lastDate = currentDate;
             StepCount stepCount = new StepCount(currentDate, 0);
             myEdit.putString("stepLastDate", lastDate);
             mStepCountDao.insert(stepCount);
-            myEdit.putString("activityMonitorService", "step date change");
         }
         else if(newCount > 0){
+            totalSteps= mStepCountDao.currentCount(currentDate);
             totalSteps = totalSteps + newCount;
             StepCount stepCount = new StepCount(currentDate, (int) totalSteps);
             mStepCountDao.update(stepCount);
-            myEdit.putString("activityMonitorService", "step count change");
         }
 
         lastCount = currentCount;
