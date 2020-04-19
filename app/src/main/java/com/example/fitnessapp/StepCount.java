@@ -25,6 +25,3 @@ public class StepCount {
 
     int getTotalSteps(){return this.mTotalSteps;}
 }
-
-
-

@@ -1,9 +1,23 @@
 package com.example.fitnessapp;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+import android.provider.Settings;
+import android.text.TextUtils;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,23 +25,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.text.TextUtils;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-public class ExerciseSetsActivity extends AppCompatActivity implements View.OnClickListener
-        , ExerciseSetRecyclerAdapter.ItemClickListener {
+public class ExerciseSetsActivity extends AppCompatActivity implements View.OnClickListener, ExerciseSetRecyclerAdapter.ItemClickListener, SensorEventListener {
 
     ExerciseSetRecyclerAdapter mAdapter;
 
@@ -35,7 +38,17 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
     EditText mEnterWeight, mEnterReps, mEnterRpe;
     Spinner mMetricSpinner;
     RecyclerView recyclerView;
-    Button mAddSetButton, mSaveWorkoutButton;
+    Button mAddSetButton, mSaveWorkoutButton, mRepCountButton;
+
+    private SensorManager mSensorManager;
+    Sensor mRepCounter;
+
+    long currentTimestamp = 0;
+    long lastTimestamp = 0;
+    float accelLast = 0;
+    float accelMax = 0;
+    boolean repCheck = true;
+    int repCount = 0;
 
     String exerciseTitle;
 
@@ -47,6 +60,7 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
     // Initialize a list of exercise sets.
     ArrayList<ExerciseSet> exerciseSets = new ArrayList<>();
 
+    @SuppressLint("SourceLockedOrientationActivity")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +79,7 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
         mAddSetButton = findViewById(R.id.addSetButton);
         mMetricSpinner = findViewById(R.id.metricSpinner);
         mSaveWorkoutButton = findViewById(R.id.saveWorkout);
+        mRepCountButton = findViewById(R.id.buttonRepCounter);
 
         // Get the exercise title from the selected exercise from the ExerciseLog activity.
         exerciseTitle = getIntent().getStringExtra("exercise_name");
@@ -78,12 +93,17 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
         mAdapter = new ExerciseSetRecyclerAdapter(exerciseSets);
         recyclerView.setAdapter(mAdapter);
 
-        mAddSetButton.setOnClickListener(this);
-        mSaveWorkoutButton.setOnClickListener(this);
-        mAdapter.setClickListener(this);
-
         db = FitnessRoomDatabase.getDatabase(this);
         mExerciseSetsDao = db.exerciseSetsDao();
+
+        mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+        assert mSensorManager != null;
+        mRepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+
+        mAddSetButton.setOnClickListener(this);
+        mSaveWorkoutButton.setOnClickListener(this);
+        mRepCountButton.setOnClickListener(this);
+        mAdapter.setClickListener(this);
 
         loadWorkout();
     }
@@ -103,8 +123,16 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
             case R.id.saveWorkout:
                 saveWorkout();
                 break;
+            case R.id.buttonRepCounter:
+                try {
+                    repCounterStart();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                break;
         }
     }
+
 
     private void addExerciseSet() {
         String weight = mEnterWeight.getText().toString().trim();
@@ -160,6 +188,97 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
                 exerciseSets.add(set);
             }
             mAdapter.updateData(exerciseSets);
+        }
+    }
+
+    // This gives three notification sounds before the rep counter starts.
+    @SuppressLint("SourceLockedOrientationActivity")
+    private void repCounterStart() throws InterruptedException {
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        mEnterWeight.setShowSoftInputOnFocus(false);
+        mEnterReps.setShowSoftInputOnFocus(false);
+        mEnterRpe.setShowSoftInputOnFocus(false);
+
+        View view   = this.getCurrentFocus();
+        if(view != null){
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+        }
+
+        MediaPlayer mp = MediaPlayer.create(this, Settings.System.DEFAULT_NOTIFICATION_URI);
+
+        for (int i=3; i>0; i--){
+            mp.start();
+            Thread.sleep(2000);
+        }
+        mp.stop();
+
+        mSensorManager.registerListener(this, mRepCounter, SensorManager.SENSOR_DELAY_NORMAL);
+
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        float x = event.values[0];
+        float y = event.values[1];
+        float z = event.values[2];
+        float accelCurrent = (float)Math.sqrt(x*x + y*y + z*z);
+        if(accelCurrent > 0.75){
+            long timestamp = event.timestamp;
+            UpdateRepCount(accelCurrent, timestamp);
+        }
+    }
+
+    private void UpdateRepCount(float accelCurrent, long timestamp) {
+        float timeChange;
+        currentTimestamp = TimeUnit.NANOSECONDS.toSeconds(timestamp);
+
+        if (lastTimestamp == 0){
+            timeChange = 0;
+            lastTimestamp = currentTimestamp;
+        }
+        else {
+            timeChange = currentTimestamp - lastTimestamp;
+            lastTimestamp = currentTimestamp;
+        }
+
+        if (timeChange <= 1){
+            if (accelCurrent > accelLast){
+                accelMax = accelCurrent;
+                accelLast = accelCurrent;
+                if (repCheck){
+                    repCheck = false;
+                    repCount = repCount + 1;
+                    mEnterReps.setText(String.valueOf(repCount/2));
+                }
+            } else {
+                accelLast = accelCurrent;
+                if (accelCurrent < (0.5 * accelMax)){
+                    repCheck = true;
+                }
+            }
+        } else {
+            currentTimestamp = 0;
+            lastTimestamp = 0;
+            accelLast = 0;
+            accelMax = 0;
+            repCheck = true;
+            repCount = 0;
+            mSensorManager.unregisterListener(this);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+            mEnterWeight.setShowSoftInputOnFocus(true);
+            mEnterReps.setShowSoftInputOnFocus(true);
+            mEnterRpe.setShowSoftInputOnFocus(true);
+            View view   = this.getCurrentFocus();
+            if(view != null){
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.showSoftInput(view, 0);
+                }
+            }
         }
     }
 
@@ -249,5 +368,12 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
         } else {
             return true;
         }
+    }
+
+
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 }
