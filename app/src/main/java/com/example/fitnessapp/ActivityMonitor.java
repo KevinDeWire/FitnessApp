@@ -156,7 +156,6 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
         myEdit.putInt("stepLastCount", Integer.MAX_VALUE);
         myEdit.putString("activityLastDate", mCurrentDate);
         myEdit.putLong("activityLastTimestamp", Long.MAX_VALUE);
-        myEdit.putString("activityMonitorService", "xxxx");
         mFitnessViewModel.insertStep(stepCountZero);
         mFitnessViewModel.insertActiveTime(activeTimeZero);
         myEdit.apply();

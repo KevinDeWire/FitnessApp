@@ -134,6 +134,7 @@ public class ActivityMonitorService extends Service implements SensorEventListen
 
         if (lastDate.compareTo(currentDate) != 0){
             lastDate = currentDate;
+            currentTimestampSeconds = Long.MAX_VALUE;
             ActiveTime activeTime = new ActiveTime(currentDate, 0);
             myEdit.putString("activityLastDate", lastDate);
             mActiveTimeDao.insert(activeTime);
@@ -160,6 +161,7 @@ public class ActivityMonitorService extends Service implements SensorEventListen
 
         if (lastDate.compareTo(currentDate) != 0){
             lastDate = currentDate;
+            currentCount = Integer.MAX_VALUE;
             StepCount stepCount = new StepCount(currentDate, 0);
             myEdit.putString("stepLastDate", lastDate);
             mStepCountDao.insert(stepCount);
