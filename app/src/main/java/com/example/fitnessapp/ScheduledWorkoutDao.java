@@ -17,17 +17,17 @@ public interface ScheduledWorkoutDao {
     void insert(ScheduledWorkout scheduledWorkout);
 
     @Update(entity = ScheduledWorkout.class)
-    void update(ScheduledWorkout scheduledWorkout);
+    void update(ScheduledWorkout scheduledExercise);
 
-    @Query("SELECT * FROM scheduled_workouts")
+    @Query("SELECT * FROM scheduled_workout")
     LiveData<List<ScheduledWorkout>> getAll();
 
-    @Query("SELECT workout_name FROM scheduled_workouts WHERE date = :date")
-    String workoutName(String date);
+    @Query("SELECT DISTINCT exercise_name FROM scheduled_workout WHERE date = :date")
+    List<String> exerciseNames(String date);
 
-    @Query("SELECT * FROM scheduled_workouts")
-    List<ScheduledWorkout> all();
+    @Query("SELECT * FROM scheduled_workout WHERE date = :date AND exercise_name = :name")
+    List<ScheduledWorkout> all(String date, String name);
 
-    @Query("DELETE FROM scheduled_workouts WHERE date = :date")
+    @Query("DELETE FROM scheduled_workout WHERE date = :date")
     void delete(String date);
 }
