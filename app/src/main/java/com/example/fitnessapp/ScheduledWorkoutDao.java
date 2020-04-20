@@ -2,6 +2,7 @@ package com.example.fitnessapp;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -22,8 +23,11 @@ public interface ScheduledWorkoutDao {
     LiveData<List<ScheduledWorkout>> getAll();
 
     @Query("SELECT workout_name FROM scheduled_workouts WHERE date = :date")
-    List<String> Workout(String date);
+    String workoutName(String date);
 
     @Query("SELECT * FROM scheduled_workouts")
-    List<ScheduledWorkout> ScheduledWorkouts();
+    List<ScheduledWorkout> all();
+
+    @Query("DELETE FROM scheduled_workouts WHERE date = :date")
+    void delete(String date);
 }

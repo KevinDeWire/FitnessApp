@@ -17,6 +17,7 @@ public abstract class FitnessRoomDatabase extends RoomDatabase {
     public abstract ExerciseSetsDao exerciseSetsDao();
     public abstract SavedWorkoutDao savedWorkoutDao();
     public abstract ScheduledWorkoutDao scheduledWorkoutDao();
+    public abstract ScheduledExerciseDao scheduledExerciseDao();
 
     private static volatile FitnessRoomDatabase INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;
