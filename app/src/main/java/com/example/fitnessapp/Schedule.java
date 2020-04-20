@@ -41,6 +41,7 @@ public class Schedule extends AppCompatActivity implements CalendarView.OnDateCh
     FitnessRoomDatabase db;
     SavedWorkoutDao mSavedWorkoutDao;
     ScheduledWorkoutDao mScheduledWorkoutDao;
+    ExerciseSetsDao mExerciseSetsDao;
 
     String date, selectedExercise;
 
@@ -85,6 +86,7 @@ public class Schedule extends AppCompatActivity implements CalendarView.OnDateCh
         db = FitnessRoomDatabase.getDatabase(this);
         mSavedWorkoutDao = db.savedWorkoutDao();
         mScheduledWorkoutDao = db.scheduledWorkoutDao();
+        mExerciseSetsDao = db.exerciseSetsDao();
     }
 
     @Override
@@ -101,8 +103,6 @@ public class Schedule extends AppCompatActivity implements CalendarView.OnDateCh
         // Clear sets recycler view.
         exerciseSets.clear();
 
-        loadExerciseNames();
-
         mRepTitle.setVisibility(View.GONE);
         mRpeTitle.setVisibility(View.GONE);
 
@@ -113,13 +113,18 @@ public class Schedule extends AppCompatActivity implements CalendarView.OnDateCh
             mAddExercise.setVisibility(View.VISIBLE);
             mAddSet.setVisibility(View.VISIBLE);
             mAddSet.setClickable(false);
-            loadExerciseNames();
+
+            // Load exercises from scheduled exercise database.
+            loadScheduledExerciseNames();
 
         } else {
             // Set buttons to invisible if date is today or before.
             mAddSavedWorkout.setVisibility(View.GONE);
             mAddExercise.setVisibility(View.GONE);
             mAddSet.setVisibility(View.GONE);
+
+            // Load exercises from exercise sets database.
+            loadExerciseNames();
         }
     }
 
@@ -182,8 +187,16 @@ public class Schedule extends AppCompatActivity implements CalendarView.OnDateCh
         // Clear sets recycler view.
         exerciseSets.clear();
 
-        // Use the selected exercise name in load sets.
-        loadExerciseSets();
+        Date today = new Date(System.currentTimeMillis());
+
+        if (Date.valueOf(date).compareTo(today) > 0) {
+            // If the selected date is after today, load exercises from the scheduled database.
+            loadScheduledExerciseSets();
+        } else {
+            // If the selected date is today or prior, load exercises from the exercise sets
+            // database.
+            loadExerciseSets();
+        }
 
         mAddSet.setClickable(true);
 
@@ -193,12 +206,31 @@ public class Schedule extends AppCompatActivity implements CalendarView.OnDateCh
     }
 
     private void loadExerciseNames() {
+        exercises = mExerciseSetsDao.names(date);
+        exerciseAdapter.updateData(exercises);
+    }
+
+    private void loadScheduledExerciseNames() {
         // Get exercises associated with workout name.
         exercises = mScheduledWorkoutDao.exerciseNames(date);
         exerciseAdapter.updateData(exercises);
     }
 
     private void loadExerciseSets() {
+        for (ExerciseSets set : mExerciseSetsDao.allOnDate(date, selectedExercise)) {
+            // For each set in the exercise sets database, add their attributes into the exercise
+            // set.
+            ExerciseSet exerciseSet = new ExerciseSet();
+            exerciseSet.setReps(set.getReps());
+            exerciseSet.setRpe(set.getRpe());
+
+            exerciseSets.add(exerciseSet);
+        }
+
+        setAdapter.updateData(exerciseSets);
+    }
+
+    private void loadScheduledExerciseSets() {
         for (ScheduledWorkout scheduledWorkout : mScheduledWorkoutDao.all(date, selectedExercise)) {
             // For each scheduled workout, add their attributes into a new exercise set.
             ExerciseSet exerciseSet = new ExerciseSet();
