@@ -25,6 +25,9 @@ public interface ScheduledWorkoutDao {
     @Query("SELECT DISTINCT exercise_name FROM scheduled_workout WHERE date = :date")
     List<String> exerciseNames(String date);
 
+    @Query("SELECT date FROM scheduled_workout")
+    List<String> allDates();
+
     @Query("SELECT * FROM scheduled_workout WHERE date = :date AND exercise_name = :name")
     List<ScheduledWorkout> all(String date, String name);
 
