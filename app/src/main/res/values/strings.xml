@@ -85,4 +85,5 @@
     <string name="last_30_days">Last 30 Days</string>
     <string name="add_saved_workout">Add Saved Workout</string>
     <string name="exercises_title">Exercises</string>
+    <string name="add_to_calendar">Add To Calendar</string>
 </resources>

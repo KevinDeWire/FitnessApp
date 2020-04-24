@@ -70,9 +70,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:text="@string/exercises_title"
                 android:textSize="20dp"
-                android:textStyle="bold"
-                android:text="@string/exercises_title"/>
+                android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/scheduledExercises"
@@ -121,5 +121,11 @@
                 android:layout_height="match_parent" />
         </LinearLayout>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/addToCalendar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/add_to_calendar" />
 
 </LinearLayout>

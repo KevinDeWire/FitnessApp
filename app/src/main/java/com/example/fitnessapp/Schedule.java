@@ -1,6 +1,8 @@
 package com.example.fitnessapp;
 
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,6 +12,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.provider.CalendarContract;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +24,8 @@ import android.widget.TextView;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 public class Schedule extends AppCompatActivity implements CalendarView.OnDateChangeListener,
@@ -28,7 +33,7 @@ public class Schedule extends AppCompatActivity implements CalendarView.OnDateCh
 
     private CalendarView mCalendarView;
 
-    private Button mAddSavedWorkout, mAddExercise, mAddSet;
+    private Button mAddSavedWorkout, mAddExercise, mAddSet, mAddToCalendar;
     private RecyclerView mScheduledExerciseRecyclerView, mScheduledExerciseSetsRecycler;
     TextView mExercisesTitle, mExerciseName, mRepTitle, mRpeTitle;
 
@@ -64,6 +69,7 @@ public class Schedule extends AppCompatActivity implements CalendarView.OnDateCh
         mExerciseName = findViewById(R.id.scheduledExerciseName);
         mRepTitle = findViewById(R.id.repTitle);
         mRpeTitle = findViewById(R.id.rpeTitle);
+        mAddToCalendar = findViewById(R.id.addToCalendar);
 
         setUpExerciseRecyclerView();
         setUpExerciseSetRecyclerView();
@@ -74,10 +80,12 @@ public class Schedule extends AppCompatActivity implements CalendarView.OnDateCh
         mAddSet.setVisibility(View.GONE);
         mRepTitle.setVisibility(View.GONE);
         mRpeTitle.setVisibility(View.GONE);
+        mAddToCalendar.setVisibility(View.GONE);
 
         mAddExercise.setOnClickListener(this);
         mAddSavedWorkout.setOnClickListener(this);
         mAddSet.setOnClickListener(this);
+        mAddToCalendar.setOnClickListener(this);
 
         mCalendarView = findViewById(R.id.calendarView);
         mCalendarView.setFirstDayOfWeek(2);
@@ -112,6 +120,7 @@ public class Schedule extends AppCompatActivity implements CalendarView.OnDateCh
             mAddSavedWorkout.setVisibility(View.VISIBLE);
             mAddExercise.setVisibility(View.VISIBLE);
             mAddSet.setVisibility(View.VISIBLE);
+            mAddToCalendar.setVisibility(View.VISIBLE);
             mAddSet.setClickable(false);
 
             // Load exercises from scheduled exercise database.
@@ -122,6 +131,7 @@ public class Schedule extends AppCompatActivity implements CalendarView.OnDateCh
             mAddSavedWorkout.setVisibility(View.GONE);
             mAddExercise.setVisibility(View.GONE);
             mAddSet.setVisibility(View.GONE);
+            mAddToCalendar.setVisibility(View.GONE);
 
             // Load exercises from exercise sets database.
             loadExerciseNames();
@@ -350,6 +360,11 @@ public class Schedule extends AppCompatActivity implements CalendarView.OnDateCh
                             return;
                         }
 
+                        if (Double.valueOf(rpe) > 10 || Double.valueOf(rpe) < 1) {
+                            mEnteredRpe.setError("RPE can only be from 1 to 10.");
+                            return;
+                        }
+
                         // Add exercise set.
                         ExerciseSet exerciseSet = new ExerciseSet();
                         exerciseSet.setReps(Integer.valueOf(reps));
@@ -367,7 +382,6 @@ public class Schedule extends AppCompatActivity implements CalendarView.OnDateCh
                         mScheduledWorkoutDao.insert(scheduledWorkout);
 
                         dialog.cancel();
-
                     }
                 }
         );
@@ -388,6 +402,65 @@ public class Schedule extends AppCompatActivity implements CalendarView.OnDateCh
         mScheduledExerciseSetsRecycler.setLayoutManager(new LinearLayoutManager(this));
     }
 
+    /**
+     * Add scheduled workout and exercises to user's phone calendar.
+     */
+    private void addToCalendar() {
+        // Get month, day, and year from selected date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(Date.valueOf(date));
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int year = calendar.get(Calendar.YEAR);
+
+        List<String> exerciseNames = mScheduledWorkoutDao.exerciseNames(date);
+
+        // Initialize a StringBuilder for the event description.
+        StringBuilder descriptionBuilder = new StringBuilder();
+
+        for (String name : exerciseNames) {
+            // For each exercise name, append it to the string builder.
+            descriptionBuilder.append(name + '\n');
+            // Get attributes of each scheduled exercise set.
+            List<ScheduledWorkout> scheduledExercises = mScheduledWorkoutDao.all(date, name);
+            for (ScheduledWorkout exercise : scheduledExercises) {
+                int setNum = exercise.getSetNum();
+                int reps = exercise.getReps();
+                double rpe = exercise.getRpe();
+
+                // Append each set and their attributes to the string builder.
+                descriptionBuilder.append("Set " + setNum + ": " + reps + " rep(s) at RPE " + rpe);
+
+                if ((setNum) == (scheduledExercises.size())) {
+                    // If the last set is being appended, make two break lines.
+                    descriptionBuilder.append("\n\n");
+                } else {
+                    descriptionBuilder.append('\n');
+                }
+            }
+        }
+
+        // Convert the string builder to a string.
+        String description = descriptionBuilder.toString();
+
+        // Insert date attributes into Gregorian Calendar instance.
+        GregorianCalendar calendarDate = new GregorianCalendar(year, month, day);
+
+        // Add workout information to user's calendar.
+        Intent calendarIntent = new Intent(Intent.ACTION_INSERT);
+        calendarIntent.setType("vnd.android.cursor.item/event");
+        calendarIntent.putExtra(CalendarContract.Events.TITLE, date + "'s Workout");
+        calendarIntent.putExtra(CalendarContract.Events.DESCRIPTION, description);
+        calendarIntent.putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, true);
+        calendarIntent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME,
+                calendarDate.getTimeInMillis());
+        calendarIntent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME,
+                calendarDate.getTimeInMillis());
+
+        startActivity(calendarIntent);
+
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -400,7 +473,9 @@ public class Schedule extends AppCompatActivity implements CalendarView.OnDateCh
             case R.id.addNewSet:
                 addExerciseSets();
                 break;
-
+            case R.id.addToCalendar:
+                addToCalendar();
+                break;
         }
     }
 

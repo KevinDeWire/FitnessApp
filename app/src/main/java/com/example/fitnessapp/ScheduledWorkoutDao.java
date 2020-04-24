@@ -28,6 +28,6 @@ public interface ScheduledWorkoutDao {
     @Query("SELECT * FROM scheduled_workout WHERE date = :date AND exercise_name = :name")
     List<ScheduledWorkout> all(String date, String name);
 
-    @Query("DELETE FROM scheduled_workout WHERE date = :date")
-    void delete(String date);
+//    @Query("DELETE FROM scheduled_workout WHERE date = :date")
+//    void delete(String date);
 }
