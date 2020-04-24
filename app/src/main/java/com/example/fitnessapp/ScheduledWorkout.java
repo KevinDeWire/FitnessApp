@@ -4,22 +4,51 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 
-
-@Entity(tableName= "scheduled_workouts", primaryKeys = {"date", "workout_name"})
+@Entity(tableName = "scheduled_workout", primaryKeys = {"date", "exercise_name", "set_num"})
 public class ScheduledWorkout {
     @NonNull
     @ColumnInfo(name = "date")
     private String mDate;
 
     @NonNull
-    @ColumnInfo(name = "workout_name")
-    private String mWorkoutName;
+    @ColumnInfo(name = "exercise_name")
+    private String mExerciseName;
 
-    ScheduledWorkout(@NonNull String date, @NonNull String workoutName){
+    @ColumnInfo(name = "set_num")
+    private int mSetNum;
+
+    @ColumnInfo(name = "reps")
+    private int mReps;
+
+    @ColumnInfo(name = "rpe")
+    private double mRpe;
+
+    ScheduledWorkout(@NonNull String date, @NonNull String exerciseName, int setNum, int reps,
+                      double rpe){
         this.mDate = date;
-        this.mWorkoutName = workoutName;
+        this.mExerciseName = exerciseName;
+        this.mSetNum = setNum;
+        this.mReps = reps;
+        this.mRpe = rpe;
     }
 
-    String getDate(){return this.mDate;}
-    String getWorkoutName(){return this.mWorkoutName;}
+    public String getDate() {
+        return this.mDate;
+    }
+
+    public String getExerciseName() {
+        return this.mExerciseName;
+    }
+
+    public int getSetNum() {
+        return this.mSetNum;
+    }
+
+    public int getReps() {
+        return this.mReps;
+    }
+
+    public double getRpe() {
+        return this.mRpe;
+    }
 }
