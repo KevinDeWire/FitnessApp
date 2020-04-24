@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 
-
 @Entity(tableName = "scheduled_workout", primaryKeys = {"date", "exercise_name", "set_num"})
 public class ScheduledWorkout {
     @NonNull
