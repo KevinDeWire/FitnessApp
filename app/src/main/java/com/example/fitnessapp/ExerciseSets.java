@@ -5,8 +5,7 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 
 
-
-@Entity(tableName= "exercise_sets", primaryKeys = {"date", "exercise_name", "set_num"})
+@Entity(tableName = "exercise_sets", primaryKeys = {"date", "exercise_name", "set_num"})
 public class ExerciseSets {
 
     @NonNull
@@ -32,7 +31,11 @@ public class ExerciseSets {
     @ColumnInfo(name = "rpe")
     private double mRpe;
 
-    ExerciseSets(@NonNull String date, String exerciseName, int setNum, double weight, String metric, int reps, double rpe){
+    @ColumnInfo(name = "one_rep_max")
+    private double mOneRepMax;
+
+    ExerciseSets(@NonNull String date, String exerciseName, int setNum, double weight,
+                 String metric, int reps, double rpe, double oneRepMax) {
         this.mDate = date;
         this.mExerciseName = exerciseName;
         this.mSetNum = setNum;
@@ -40,15 +43,40 @@ public class ExerciseSets {
         this.mMetric = metric;
         this.mReps = reps;
         this.mRpe = rpe;
+        this.mOneRepMax = oneRepMax;
     }
 
-    String getDate(){return this.mDate;}
-    String getExerciseName(){return this.mExerciseName;}
-    int getSetNum(){return this.mSetNum;}
-    double getWeight(){return this.mWeight;}
-    String getMetric(){return this.mMetric;}
-    int getReps(){return this.mReps;}
-    double getRpe(){return this.mRpe;}
+    public String getDate() {
+        return this.mDate;
+    }
+
+    public String getExerciseName() {
+        return this.mExerciseName;
+    }
+
+    public int getSetNum() {
+        return this.mSetNum;
+    }
+
+    public double getWeight() {
+        return this.mWeight;
+    }
+
+    public String getMetric() {
+        return this.mMetric;
+    }
+
+    public int getReps() {
+        return this.mReps;
+    }
+
+    public double getRpe() {
+        return this.mRpe;
+    }
+
+    public double getOneRepMax() {
+        return this.mOneRepMax;
+    }
 }
 
 

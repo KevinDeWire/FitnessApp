@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +27,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.sql.Date;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -59,6 +61,8 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
 
     // Initialize a list of exercise sets.
     ArrayList<ExerciseSet> exerciseSets = new ArrayList<>();
+
+    static final double MAX_RPE = 10.0;
 
     @SuppressLint("SourceLockedOrientationActivity")
     @Override
@@ -165,10 +169,33 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
 
     private void saveWorkout() {
         for (int i = 0; i < exerciseSets.size(); i++) {
+            double weight = exerciseSets.get(i).getWeight();
+            int reps = exerciseSets.get(i).getReps();
+            double rpe = exerciseSets.get(i).getRpe();
+
+            double oneRepMax;
+
+            // Potential reps = Reps - (10.0 - RPE), following a rule of thumb that RPE can be
+            // estimated by subtracting how many more reps a person can make from 10.
+            double potentialReps = reps + (MAX_RPE - rpe);
+
+            if (reps == 1 && rpe == MAX_RPE) {
+                // If one rep is already at the max RPE, then that is the user's one rep max.
+                oneRepMax = weight;
+            } else {
+                // Epley's formula is used for estimating a user's one rep max, substituting the raw
+                // number of reps with the total of potential reps deduced using the entered RPE.
+                double maxBeforePrecision = weight * (1 + (potentialReps / 30));
+
+                // Give one rep max a precision of two decimal places.
+                DecimalFormat decimalFormat = new DecimalFormat("#0.00");
+                oneRepMax = Double.valueOf(decimalFormat.format(maxBeforePrecision));
+            }
+
             // Save exercise and its attributes into the database.
             ExerciseSets exerciseSet = new ExerciseSets(date.toString(), exerciseTitle, i,
                     exerciseSets.get(i).getWeight(), exerciseSets.get(i).getMetric(),
-                    exerciseSets.get(i).getReps(), exerciseSets.get(i).getRpe());
+                    exerciseSets.get(i).getReps(), exerciseSets.get(i).getRpe(), oneRepMax);
             mExerciseSetsDao.insert(exerciseSet);
         }
     }
