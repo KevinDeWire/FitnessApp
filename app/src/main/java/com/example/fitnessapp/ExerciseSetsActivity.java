@@ -137,7 +137,6 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-
     private void addExerciseSet() {
         String weight = mEnterWeight.getText().toString().trim();
         String metric = mMetricSpinner.getSelectedItem().toString();
@@ -396,8 +395,6 @@ public class ExerciseSetsActivity extends AppCompatActivity implements View.OnCl
             return true;
         }
     }
-
-
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
