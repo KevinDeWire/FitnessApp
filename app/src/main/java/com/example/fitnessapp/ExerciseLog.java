@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ExerciseLog extends AppCompatActivity implements View.OnClickListener,
         ExerciseRecyclerViewAdapter.ItemClickListener, AdapterView.OnItemSelectedListener {
@@ -449,6 +450,11 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         builder.create().show();
     }
 
+    /**
+     * Write a workout recommendation for the user depending on their one rep max progression.
+     *
+     * @return A recommendation based on the user's progression.
+     */
     private String recommendedWorkouts() {
         exerciseNames = mExerciseSetsDao.allNames();
         StringBuilder recommendation = new StringBuilder();
@@ -481,10 +487,12 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                     List<ExerciseSets> sets = mExerciseSetsDao.allOnDate(trackedSets.get(1)
                             .getDate(), name);
 
-                    if (progression > 0) {
-                        // If the progression is positive, call the positive recommendation
-                        // function.
+                    if (progression >= 0) {
+                        // If the progression is positive or neutral, call the positive
+                        // recommendation function.
                         positiveRecommendation(trackedSets, sets, recommendation, name);
+                    } else {
+                        negativeRecommendation(trackedSets, sets, recommendation, name);
                     }
                 }
             }
@@ -493,10 +501,18 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         return recommendation.toString();
     }
 
+    /**
+     * If the one rep max progression is positive, recommend the user's the workouts that has been
+     * helping them improve their strength.
+     *
+     * @param trackedSets    The set of each exercise in a date that has the greatest one rep max.
+     * @param sets           Each set in the workout session that is assumed to have positively
+     *                       effected the user.
+     * @param recommendation A StringBuilder of workout recommendations.
+     * @param name           The name of the exercise.
+     */
     private void positiveRecommendation(List<ExerciseSets> trackedSets, List<ExerciseSets> sets,
                                         StringBuilder recommendation, String name) {
-        // If the progression is positive, inform the user of the workouts that were
-        // effective.
         recommendation.append(name + '\n');
 
         for (ExerciseSets set : sets) {
@@ -517,6 +533,79 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                 recommendation.append('\n');
             }
         }
+    }
+
+    private void negativeRecommendation(List<ExerciseSets> trackedSets, List<ExerciseSets> sets,
+                                        StringBuilder recommendation, String name) {
+        int trackedReps = trackedSets.get(1).getReps();
+        double trackedRpe = trackedSets.get(1).getRpe();
+
+        int reps = randomRepGenerator(trackedReps);
+        double rpe = randomRpeGenerator(trackedRpe);
+
+    }
+
+    /**
+     * Depending on the amount of reps that did not benefit the user's one rep max growth, a number
+     * of reps that may benefit the user will be generated.
+     *
+     * @param trackedReps Reps of the tracked set.
+     * @return A randomly generated number of reps that is determined by if the user needs an
+     * increase or decrease in volume.
+     */
+    private int randomRepGenerator(int trackedReps) {
+        int maxReps = 0;
+        int minReps = 0;
+        if (trackedReps >= 12) {
+            // Assume if the tracked number of reps is 12 or more, the user may benefit from lower
+            // reps and heavier weight.
+            minReps = 7;
+            maxReps = 10;
+        }
+        if (trackedReps >= 8) {
+            // Assume if the tracked number of reps is 12 or more, the user may benefit from lower
+            // reps and heavier weight.
+            minReps = 7;
+            maxReps = 5;
+        }
+        if (trackedReps <= 5) {
+            // Assume if the tracked number of reps is 5 or less, the user may benefit from higher
+            // reps and lighter weight.
+            minReps = 7;
+            maxReps = 12;
+        }
+        if (trackedReps <= 7) {
+            // Assume if the tracked number of reps is 5 or less, the user may benefit from higher
+            // reps and lighter weight.
+            minReps = 8;
+            maxReps = 12;
+        }
+
+        // Randomly generate the number of reps within a range determined by the number of reps that
+        // did not benefit the user.
+        int reps = ThreadLocalRandom.current().nextInt(minReps, maxReps + 1);
+
+        return reps;
+    }
+
+    private double randomRpeGenerator(double trackedRpe) {
+        double maxRpe;
+        double minRpe;
+
+        if (trackedRpe >= 7.0) {
+            // Assume that the user may be over training and lower the RPE.
+            minRpe = 6.0;
+            maxRpe = 6.5;
+        } else {
+            // Assume that the user may be under training and raise the RPE.
+            minRpe = 7.0;
+            maxRpe = 9.0;
+        }
+
+        // Randomly generate the rpe within a range determined by what RPE did not benefit the user.
+        double rpe = ThreadLocalRandom.current().nextDouble(minRpe, maxRpe + 1);
+
+        return rpe;
     }
 
     private void signInAlert() {
