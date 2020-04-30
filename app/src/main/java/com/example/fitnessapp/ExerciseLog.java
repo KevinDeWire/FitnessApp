@@ -37,6 +37,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
 import java.sql.Date;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -540,9 +541,23 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         int trackedReps = trackedSets.get(1).getReps();
         double trackedRpe = trackedSets.get(1).getRpe();
 
+        // Call rep generator and RPE generator.
         int reps = randomRepGenerator(trackedReps);
         double rpe = randomRpeGenerator(trackedRpe);
 
+        recommendation.append(name + '\n');
+
+        for(ExerciseSets set : sets) {
+            int setNum = set.getSetNum() + 1;
+
+            recommendation.append("Set " + setNum + ": " + reps + " rep(s) at RPE " + rpe);
+
+            if ((setNum) == (sets.size())) {
+                recommendation.append("\n\n");
+            } else {
+                recommendation.append('\n');
+            }
+        }
     }
 
     /**
@@ -565,8 +580,8 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         if (trackedReps >= 8) {
             // Assume if the tracked number of reps is 12 or more, the user may benefit from lower
             // reps and heavier weight.
-            minReps = 7;
-            maxReps = 5;
+            minReps = 5;
+            maxReps = 7;
         }
         if (trackedReps <= 5) {
             // Assume if the tracked number of reps is 5 or less, the user may benefit from higher
@@ -589,23 +604,24 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
     }
 
     private double randomRpeGenerator(double trackedRpe) {
-        double maxRpe;
-        double minRpe;
+        int maxRpe;
+        int minRpe;
 
         if (trackedRpe >= 7.0) {
             // Assume that the user may be over training and lower the RPE.
-            minRpe = 6.0;
-            maxRpe = 6.5;
+            double rpe = 6.0;
+            return rpe;
+
         } else {
             // Assume that the user may be under training and raise the RPE.
-            minRpe = 7.0;
-            maxRpe = 9.0;
+            minRpe = 7;
+            maxRpe = 9;
+
+            // Randomly generate the rpe within a range determined by what RPE did not benefit the user.
+            int rpe = ThreadLocalRandom.current().nextInt(minRpe, maxRpe + 1);
+
+            return Double.valueOf(rpe);
         }
-
-        // Randomly generate the rpe within a range determined by what RPE did not benefit the user.
-        double rpe = ThreadLocalRandom.current().nextDouble(minRpe, maxRpe + 1);
-
-        return rpe;
     }
 
     private void signInAlert() {
