@@ -1,12 +1,8 @@
 package com.example.fitnessapp;
 
-import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,18 +10,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class ExerciseRecyclerViewAdapter extends RecyclerView.Adapter<ExerciseRecyclerViewAdapter
+public class ScheduledSetRecyclerAdapter extends RecyclerView.Adapter<ScheduledSetRecyclerAdapter
         .ViewHolder> {
-    private List<String> mData;
-    private LayoutInflater mInflater;
+    private List<ExerciseSet> mData;
+    private LayoutInflater mInflator;
     private ItemClickListener itemClickListener;
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView mExerciseName;
+        TextView mReps, mRpe;
 
         public ViewHolder(View view) {
             super(view);
-            mExerciseName = itemView.findViewById(R.id.exerciseName);
+            mReps = itemView.findViewById(R.id.reps);
+            mRpe = itemView.findViewById(R.id.rpe);
             itemView.setOnClickListener(this);
         }
 
@@ -37,24 +34,24 @@ public class ExerciseRecyclerViewAdapter extends RecyclerView.Adapter<ExerciseRe
         }
     }
 
-    public ExerciseRecyclerViewAdapter(List<String> data) {
+    public ScheduledSetRecyclerAdapter(List<ExerciseSet> data) {
         this.mData = data;
     }
 
     @NonNull
     @Override
-    public ExerciseRecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent,
-                                                                     int viewType) {
-        View view = mInflater.from(parent.getContext())
-                .inflate(R.layout.single_exercise, parent, false);
+    public ScheduledSetRecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent,
+                                                                    int viewType) {
+        View view = mInflator.from(parent.getContext())
+                .inflate(R.layout.scheduled_set, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ExerciseRecyclerViewAdapter.ViewHolder holder,
+    public void onBindViewHolder(@NonNull ScheduledSetRecyclerAdapter.ViewHolder holder,
                                  int position) {
-        String exerciseName = mData.get(position);
-        holder.mExerciseName.setText(exerciseName);
+        holder.mReps.setText(String.valueOf(mData.get(position).getReps()));
+        holder.mRpe.setText(String.valueOf(mData.get(position).getRpe()));
     }
 
     @Override
@@ -62,13 +59,9 @@ public class ExerciseRecyclerViewAdapter extends RecyclerView.Adapter<ExerciseRe
         return mData.size();
     }
 
-    public void updateData(List<String> data) {
+    public void updateData(List<ExerciseSet> data) {
         this.mData = data;
         notifyDataSetChanged();
-    }
-
-    public String getName(int position) {
-        return mData.get(position);
     }
 
     public interface ItemClickListener {

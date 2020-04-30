@@ -2,6 +2,7 @@ package com.example.fitnessapp;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -16,14 +17,20 @@ public interface ScheduledWorkoutDao {
     void insert(ScheduledWorkout scheduledWorkout);
 
     @Update(entity = ScheduledWorkout.class)
-    void update(ScheduledWorkout scheduledWorkout);
+    void update(ScheduledWorkout scheduledExercise);
 
-    @Query("SELECT * FROM scheduled_workouts")
+    @Query("SELECT * FROM scheduled_workout")
     LiveData<List<ScheduledWorkout>> getAll();
 
-    @Query("SELECT workout_name FROM scheduled_workouts WHERE date = :date")
-    List<String> Workout(String date);
+    @Query("SELECT DISTINCT exercise_name FROM scheduled_workout WHERE date = :date")
+    List<String> exerciseNames(String date);
 
-    @Query("SELECT * FROM scheduled_workouts")
-    List<ScheduledWorkout> ScheduledWorkouts();
+    @Query("SELECT date FROM scheduled_workout")
+    List<String> allDates();
+
+    @Query("SELECT * FROM scheduled_workout WHERE date = :date AND exercise_name = :name")
+    List<ScheduledWorkout> all(String date, String name);
+
+//    @Query("DELETE FROM scheduled_workout WHERE date = :date")
+//    void delete(String date);
 }

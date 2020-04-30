@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -60,6 +61,7 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
     FitnessRoomDatabase db;
     SavedWorkoutDao mSavedWorkoutDao;
     ExerciseSetsDao mExerciseSetsDao;
+    ScheduledWorkoutDao mScheduledWorkoutDao;
 
     ArrayAdapter<String> workoutNameAdapter;
 
@@ -112,12 +114,16 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
 
         mSavedWorkoutDao = db.savedWorkoutDao();
         mExerciseSetsDao = db.exerciseSetsDao();
+        mScheduledWorkoutDao = db.scheduledWorkoutDao();
 
         // Load dates to spinner of dates.
         loadDateSpinner();
 
         // Load workouts to spinner of saved workouts.
         loadWorkoutsSpinner();
+
+        // If today's date has a scheduled workout, alert the user.
+        scheduledWorkoutAlert();
 
         mWorkoutNameSpinner.setOnItemSelectedListener(this);
         mDateSpinner.setOnItemSelectedListener(this);
@@ -282,6 +288,62 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         if (!savedWorkouts.isEmpty()) {
             mWorkoutNameSpinner.setAdapter(workoutNameAdapter);
         }
+    }
+
+    private void scheduledWorkoutAlert() {
+        String today = (new Date(System.currentTimeMillis())).toString();
+        List<String> scheduledWorkoutDates = mScheduledWorkoutDao.allDates();
+
+        if (scheduledWorkoutDates.contains(today)) {
+            // If today's date exists inside the scheduled workout database, show the user today's
+            // workout in an alert.
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("You Scheduled a Workout for Today!");
+
+            // Set the alert message as today's workout description.
+            builder.setMessage(todaysWorkout(today));
+
+            builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            builder.create().show();
+        }
+    }
+
+    private String todaysWorkout(String today) {
+
+        List<String> scheduledExerciseNames = mScheduledWorkoutDao.exerciseNames(today);
+
+        // Initialize a StringBuilder for the event description.
+        StringBuilder descriptionBuilder = new StringBuilder();
+
+        for (String name : scheduledExerciseNames) {
+            // For each exercise name, append it to the string builder.
+            descriptionBuilder.append(name + '\n');
+            // Get attributes of each scheduled exercise set.
+            List<ScheduledWorkout> scheduledExercises = mScheduledWorkoutDao.all(today, name);
+            for (ScheduledWorkout exercise : scheduledExercises) {
+                int setNum = exercise.getSetNum();
+                int reps = exercise.getReps();
+                double rpe = exercise.getRpe();
+
+                // Append each set and their attributes to the string builder.
+                descriptionBuilder.append("Set " + setNum + ": " + reps + " rep(s) at RPE " + rpe);
+
+                if ((setNum) == (scheduledExercises.size())) {
+                    // If the last set is being appended, make two break lines.
+                    descriptionBuilder.append("\n\n");
+                } else {
+                    descriptionBuilder.append('\n');
+                }
+            }
+        }
+
+        return descriptionBuilder.toString();
     }
 
     private void shareWorkout() {

@@ -43,7 +43,7 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
 
     Button friendButton;
     Button declineRequestButton;
-    TextView username, email, friendsSince;
+    TextView username, email, friendsSince, sharedWorkoutsHeader;
     ImageView profilePicture;
     RecyclerView dateRecyclerView;
 
@@ -103,6 +103,7 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
             friendsSince = findViewById(R.id.friendsSince);
             dateRecyclerView = findViewById(R.id.listOfDates);
             profilePicture = findViewById(R.id.profilePicture);
+            sharedWorkoutsHeader = findViewById(R.id.sharedWorkoutsHeader);
 
             // Set the text of the button to "Add Friend" as it is initially "Sign Out."
             friendButton = findViewById(R.id.multipleUseButton);
@@ -114,6 +115,8 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
             // Initially set date recycler view to gone, so that shared workouts can't
             // be viewed by non friends.
             dateRecyclerView.setVisibility(View.GONE);
+            sharedWorkoutsHeader.setVisibility(View.GONE);
+
 
             setText();
             friendButton.setOnClickListener(this);
@@ -252,6 +255,7 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                             friendButton.setText("Remove Friend");
                             // Set shared workouts to visible.
                             dateRecyclerView.setVisibility(View.VISIBLE);
+                            sharedWorkoutsHeader.setVisibility(View.VISIBLE);
                         }
                     }
                 });
@@ -378,6 +382,7 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                                         friendButton.setText("Add Friend");
                                         friendsSince.setVisibility(View.GONE);
                                         dateRecyclerView.setVisibility(View.GONE);
+                                        sharedWorkoutsHeader.setVisibility(View.GONE);
                                     }
                                 });
                     }
@@ -414,6 +419,7 @@ public class OtherUser extends AppCompatActivity implements View.OnClickListener
                                     // Set the decline request button to gone.
                                     declineRequestButton.setVisibility(View.GONE);
                                     dateRecyclerView.setVisibility(View.VISIBLE);
+                                    sharedWorkoutsHeader.setVisibility(View.VISIBLE);
                                 }
                             }
                         });
