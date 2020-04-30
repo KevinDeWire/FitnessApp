@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,7 +15,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,8 +38,9 @@ import com.google.firebase.iid.InstanceIdResult;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
-import java.util.EventListener;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -51,7 +50,7 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
     ExerciseRecyclerViewAdapter mAdapter;
 
     RecyclerView recyclerView;
-    Button mAddExerciseButton, mSaveForReuseButton, mShareButton;
+    Button mAddExerciseButton, mSaveForReuseButton, mShareButton, mRecommendedWorkoutsButton;
     Spinner mDateSpinner, mWorkoutNameSpinner;
 
     List<String> exerciseNames = new ArrayList<>();
@@ -72,6 +71,7 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
     CollectionReference sharedWorkoutReference;
 
     private static final String TAG = "Sign in";
+    private static final int DAYS_IN_A_WEEK = 7;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +93,7 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         mSaveForReuseButton = findViewById(R.id.saveForLater);
         mWorkoutNameSpinner = findViewById(R.id.workoutSelection);
         mShareButton = findViewById(R.id.shareButton);
+        mRecommendedWorkoutsButton = findViewById(R.id.recommendedWorkouts);
 
         db = FitnessRoomDatabase.getDatabase(this);
 
@@ -104,6 +105,7 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
         mAddExerciseButton.setOnClickListener(this);
         mSaveForReuseButton.setOnClickListener(this);
         mShareButton.setOnClickListener(this);
+        mRecommendedWorkoutsButton.setOnClickListener(this);
         mAdapter.setClickListener(this);
 
         if (firebaseUser != null) {
@@ -143,6 +145,10 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
             case R.id.shareButton:
                 // Share workout with friends via Firebase.
                 shareWorkout();
+                break;
+            case R.id.recommendedWorkouts:
+                // Display recommended workouts.
+                recommendationAlert();
                 break;
         }
     }
@@ -426,6 +432,86 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                 });
     }
 
+    private void recommendationAlert() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Today's Recommended Workout");
+
+        // Set message to recommended workouts.
+        builder.setMessage(recommendedWorkouts());
+
+        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.create().show();
+    }
+
+    private String recommendedWorkouts() {
+        exerciseNames = mExerciseSetsDao.allNames();
+        StringBuilder recommendation = new StringBuilder();
+
+        for (String name : exerciseNames) {
+            List<ExerciseSets> trackedSets = mExerciseSetsDao.trackedSets(name);
+
+            // Order the tracked sets by recent to oldest date.
+            Collections.sort(trackedSets, new Comparator<ExerciseSets>() {
+                @Override
+                public int compare(ExerciseSets o1, ExerciseSets o2) {
+                    return o2.getDate().compareTo(o1.getDate());
+                }
+            });
+
+            // The workout should be recommended the next week.
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(Date.valueOf(trackedSets.get(0).getDate()));
+            calendar.add(Calendar.DATE, DAYS_IN_A_WEEK);
+
+            Date dayToRecommend = new Date(calendar.getTimeInMillis());
+
+            if (mDateSpinner.getSelectedItem().toString().equals(dayToRecommend.toString())) {
+                // Progression from the last workout session = Most recent one rep max - second most
+                // recent one rep max.
+                double progression =
+                        trackedSets.get(0).getOneRepMax() - trackedSets.get(1).getOneRepMax();
+
+                if (trackedSets.size() >= 2) {
+                    List<ExerciseSets> sets = mExerciseSetsDao.allOnDate(trackedSets.get(1)
+                            .getDate(), name);
+                    if (progression > 0) {
+                        // If the progression is positive, inform the user of the workouts that were
+                        // effective.
+                        recommendation.append(name + '\n');
+
+                        for (ExerciseSets set : sets) {
+                            int setNum = set.getSetNum() + 1;
+                            int reps = set.getReps();
+                            double rpe = set.getRpe();
+                            double suggestedWeight = trackedSets.get(0).getWeight() + 5;
+                            // Suggest a 5 lb increase in weight.
+                            String metric = set.getMetric();
+
+                            recommendation.
+                                    append("Set " + setNum + ": " + reps + " rep(s) at RPE " + rpe
+                                            + ", Suggested weight: " + suggestedWeight + " "
+                                            + metric);
+
+                            if ((setNum) == (sets.size())) {
+                                recommendation.append("\n\n");
+                            } else {
+                                recommendation.append('\n');
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return recommendation.toString();
+    }
+
     private void signInAlert() {
         // Build a dialog that prompts the user to sign in if they click share but are not signed
         // in.
@@ -598,6 +684,18 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                 String selectedDate = mDateSpinner.getSelectedItem().toString();
                 exerciseNames = mExerciseSetsDao.names(selectedDate);
                 mAdapter.updateData(exerciseNames);
+
+                String today = new Date(System.currentTimeMillis()).toString();
+
+                if (mDateSpinner.getSelectedItem().toString().equals(today)) {
+                    // If the spinner is selected on today's date, show the recommended workouts
+                    // button.
+                    mRecommendedWorkoutsButton.setVisibility(View.VISIBLE);
+                } else {
+                    // If the spinner is selected on any other date, make the recommended workouts
+                    // button disappear.
+                    mRecommendedWorkoutsButton.setVisibility(View.GONE);
+                }
                 break;
         }
     }

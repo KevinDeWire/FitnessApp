@@ -87,4 +87,5 @@
     <string name="add_saved_workout">Add Saved Workout</string>
     <string name="exercises_title">Exercises</string>
     <string name="add_to_calendar">Add To Calendar</string>
+    <string name="recommended_workout">Recommended Workouts</string>
 </resources>
