@@ -480,36 +480,43 @@ public class ExerciseLog extends AppCompatActivity implements View.OnClickListen
                 if (trackedSets.size() >= 2) {
                     List<ExerciseSets> sets = mExerciseSetsDao.allOnDate(trackedSets.get(1)
                             .getDate(), name);
+
                     if (progression > 0) {
-                        // If the progression is positive, inform the user of the workouts that were
-                        // effective.
-                        recommendation.append(name + '\n');
-
-                        for (ExerciseSets set : sets) {
-                            int setNum = set.getSetNum() + 1;
-                            int reps = set.getReps();
-                            double rpe = set.getRpe();
-                            double suggestedWeight = trackedSets.get(0).getWeight() + 5;
-                            // Suggest a 5 lb increase in weight.
-                            String metric = set.getMetric();
-
-                            recommendation.
-                                    append("Set " + setNum + ": " + reps + " rep(s) at RPE " + rpe
-                                            + ", Suggested weight: " + suggestedWeight + " "
-                                            + metric);
-
-                            if ((setNum) == (sets.size())) {
-                                recommendation.append("\n\n");
-                            } else {
-                                recommendation.append('\n');
-                            }
-                        }
+                        // If the progression is positive, call the positive recommendation
+                        // function.
+                        positiveRecommendation(trackedSets, sets, recommendation, name);
                     }
                 }
             }
         }
 
         return recommendation.toString();
+    }
+
+    private void positiveRecommendation(List<ExerciseSets> trackedSets, List<ExerciseSets> sets,
+                                        StringBuilder recommendation, String name) {
+        // If the progression is positive, inform the user of the workouts that were
+        // effective.
+        recommendation.append(name + '\n');
+
+        for (ExerciseSets set : sets) {
+            int setNum = set.getSetNum() + 1;
+            int reps = set.getReps();
+            double rpe = set.getRpe();
+            double suggestedWeight = trackedSets.get(0).getWeight() + 5;
+            // Suggest a 5 lb increase in weight.
+            String metric = set.getMetric();
+            recommendation.
+                    append("Set " + setNum + ": " + reps + " rep(s) at RPE " + rpe
+                            + ", Suggested weight: " + suggestedWeight + " "
+                            + metric);
+
+            if ((setNum) == (sets.size())) {
+                recommendation.append("\n\n");
+            } else {
+                recommendation.append('\n');
+            }
+        }
     }
 
     private void signInAlert() {
