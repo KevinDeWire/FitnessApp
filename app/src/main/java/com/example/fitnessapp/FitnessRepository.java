@@ -21,6 +21,15 @@ public class FitnessRepository {
         mActiveTimeDao = db.activeTimeDao();
         mAllActiveTimes = mActiveTimeDao.getAll();
     }
+
+    FitnessRepository(ActivityMonitorService service){
+        FitnessRoomDatabase db = FitnessRoomDatabase.getDatabase(service);
+        mStepCountDao = db.stepCountDao();
+        mAllStepCounts = mStepCountDao.getAll();
+        mActiveTimeDao = db.activeTimeDao();
+        mAllActiveTimes = mActiveTimeDao.getAll();
+    }
+
     // STEP COUNT
     LiveData<List<StepCount>> getAllStepCounts(){
         return mAllStepCounts;

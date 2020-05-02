@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -21,8 +22,8 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    Calendar cal = Calendar.getInstance();
-    SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+//    Calendar cal = Calendar.getInstance();
+//    SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
     String mCurrentDate;
 
     public static final String PrefFile = "com.example.fitnessapp.PREFERENCES";
@@ -73,7 +74,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         friendButton.setOnClickListener(this);
         stepCounterButton.setOnClickListener(this);
 
-        mCurrentDate = format1.format(cal.getTime());
+        long milliseconds = System.currentTimeMillis();
+        mCurrentDate = new Date(milliseconds).toString();
 
         StepCountDisplay(mCurrentDate);
 

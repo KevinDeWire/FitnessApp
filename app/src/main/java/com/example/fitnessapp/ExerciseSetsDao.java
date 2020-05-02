@@ -38,8 +38,8 @@ public interface ExerciseSetsDao {
     @Query("SELECT DISTINCT exercise_name FROM exercise_sets WHERE date > :date")
     List<String> ChartExercises(String date);
 
-    @Query("SELECT DISTINCT date FROM exercise_sets WHERE exercise_name = :exercise")
-    List<String> ChartDates(String exercise);
+    @Query("SELECT DISTINCT date FROM exercise_sets WHERE exercise_name = :exercise AND date > :date")
+    List<String> ChartDates(String exercise, String date);
 
     @Query("SELECT MAX(weight) from exercise_sets WHERE date = :date AND exercise_name = :exercise")
     double ChartWeights(String date, String exercise);

@@ -19,7 +19,9 @@ import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.lifecycle.ViewModelProvider;
 
+import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -41,9 +43,9 @@ public class ActivityMonitorService extends Service implements SensorEventListen
     HandlerThread mHandlerThread = new HandlerThread("sensorThread");
     Handler handler;
 
-    Calendar cal = Calendar.getInstance();
-    SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-
+//    Calendar cal = Calendar.getInstance();
+//    SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+    FitnessRoomDatabase db;
     private StepCountDao mStepCountDao;
     private ActiveTimeDao mActiveTimeDao;
 
@@ -56,7 +58,7 @@ public class ActivityMonitorService extends Service implements SensorEventListen
         myEdit = sharedPreferences.edit();
         myEdit.apply();
 
-        FitnessRoomDatabase db = FitnessRoomDatabase.getDatabase(this);
+        db = FitnessRoomDatabase.getDatabase(this);
         mStepCountDao = db.stepCountDao();
         mActiveTimeDao = db.activeTimeDao();
 
@@ -127,17 +129,17 @@ public class ActivityMonitorService extends Service implements SensorEventListen
     private void UpdateActiveTime(long currentTimestamp) {
         long lastTimestamp = sharedPreferences.getLong("activityLastTimestamp", Long.MAX_VALUE);
         String lastDate = sharedPreferences.getString("activityLastDate", "1900-01-01");
-        String currentDate = format1.format(cal.getTime());
+        long milliseconds = System.currentTimeMillis();
+        String currentDate = new Date(milliseconds).toString();
         long totalTime = mActiveTimeDao.currentTime(currentDate);
         long currentTimestampSeconds = TimeUnit.NANOSECONDS.toSeconds(currentTimestamp);
         long timeChange = currentTimestampSeconds - lastTimestamp;
 
-        if (lastDate.compareTo(currentDate) != 0){
+        if (currentDate.compareTo(lastDate) > 0){
             lastDate = currentDate;
             currentTimestampSeconds = Long.MAX_VALUE;
-            ActiveTime activeTime = new ActiveTime(currentDate, 0);
             myEdit.putString("activityLastDate", lastDate);
-            mActiveTimeDao.insert(activeTime);
+            Initialize(currentDate);
         }
         else if (timeChange > 0 && timeChange <= 5){
             totalTime = totalTime + timeChange;
@@ -153,7 +155,8 @@ public class ActivityMonitorService extends Service implements SensorEventListen
     // STEP COUNT
     private void UpdateStepCount(float currentCountFloat) {
         String lastDate = sharedPreferences.getString("stepLastDate", "1900-01-01");
-        String currentDate = format1.format(cal.getTime());
+        long milliseconds = System.currentTimeMillis();
+        String currentDate = new Date(milliseconds).toString();
         int lastCount = sharedPreferences.getInt("stepLastCount", Integer.MAX_VALUE);
         int currentCount = (int) currentCountFloat;
         long totalSteps;
@@ -162,9 +165,9 @@ public class ActivityMonitorService extends Service implements SensorEventListen
         if (lastDate.compareTo(currentDate) != 0){
             lastDate = currentDate;
             currentCount = Integer.MAX_VALUE;
-            StepCount stepCount = new StepCount(currentDate, 0);
             myEdit.putString("stepLastDate", lastDate);
-            mStepCountDao.insert(stepCount);
+            Initialize(currentDate);
+
         }
         else if(newCount > 0){
             totalSteps= mStepCountDao.currentCount(currentDate);
@@ -193,6 +196,13 @@ public class ActivityMonitorService extends Service implements SensorEventListen
             assert manager != null;
             manager.createNotificationChannel(serviceChannel);
         }
+    }
+
+    void Initialize (String currentDate){
+        StepCount stepCountZero = new StepCount(currentDate, 0);
+        ActiveTime activeTimeZero = new ActiveTime(currentDate, 0);
+        mStepCountDao.insert(stepCountZero);
+        mActiveTimeDao.insert(activeTimeZero);
     }
 
 }

@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -35,8 +36,8 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
     ActiveTimeDao mActiveTimeDao;
     StepCountDao mStepCountDao;
 
-    Calendar cal = Calendar.getInstance();
-    SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+//    Calendar cal = Calendar.getInstance();
+//    SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
     String mCurrentDate;
 
     TextView activityMonitorText;
@@ -63,7 +64,8 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
         if (activityMonitorStarted) activityMonitorText.setText(R.string.monitor_true);
         else activityMonitorText.setText(R.string.monitor_false);
 
-        mCurrentDate = format1.format(cal.getTime());
+        long milliseconds = System.currentTimeMillis();
+        mCurrentDate = new Date(milliseconds).toString();
 
         mFitnessViewModel = new ViewModelProvider(this).get(FitnessViewModel.class);
         db = FitnessRoomDatabase.getDatabase(this);
@@ -102,12 +104,8 @@ public class ActivityMonitor extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onClick(View v) {
-
-
-
         activityMonitorStarted = sharedPreferences.getBoolean("activityMonitorStarted", false);
         boolean firstTime = sharedPreferences.getBoolean("firstTime", true);
-
         switch (v.getId()){
             case R.id.buttonStepStart:
                 if(!activityMonitorStarted){

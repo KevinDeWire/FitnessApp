@@ -20,6 +20,7 @@ public class FitnessViewModel extends AndroidViewModel {
         mAllStepCounts = mRepository.getAllStepCounts();
         mAllActiveTimes = mRepository.getAllActiveTimes();
     }
+
     // STEP COUNT
     LiveData<List<StepCount>> getAllStepCounts(){
         return mAllStepCounts;

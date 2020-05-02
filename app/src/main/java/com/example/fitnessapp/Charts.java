@@ -29,7 +29,6 @@ public class Charts extends AppCompatActivity implements View.OnClickListener{
     LinearLayoutManager HorizontalLayout;
     SnapHelper snapHelper = new LinearSnapHelper();
     Button mLast7DaysButton, mLast30DaysButton;
-    LocalDate mDate;
     FitnessRoomDatabase db;
     StepCountDao mStepCountDao;
     ActiveTimeDao mActiveTimeDao;
@@ -48,13 +47,7 @@ public class Charts extends AppCompatActivity implements View.OnClickListener{
         mLast7DaysButton = findViewById(R.id.buttonLast7Days);
         mLast30DaysButton = findViewById(R.id.buttonLast30Days);
 
-        chartRecyclerViewLayoutManager = new LinearLayoutManager(getApplicationContext());
-        chartRecyclerView.setLayoutManager(chartRecyclerViewLayoutManager);
-        mAdapter = new ChartAdapter(mChartData);
-        HorizontalLayout = new LinearLayoutManager(Charts.this, LinearLayoutManager.HORIZONTAL, false);
-        chartRecyclerView.setLayoutManager(HorizontalLayout);
-        chartRecyclerView.setAdapter(mAdapter);
-        snapHelper.attachToRecyclerView(chartRecyclerView);
+        RecyclerViewSetup();
 
         mLast7DaysButton.setOnClickListener(this);
         mLast30DaysButton.setOnClickListener(this);
@@ -64,6 +57,16 @@ public class Charts extends AppCompatActivity implements View.OnClickListener{
         mActiveTimeDao = db.activeTimeDao();
         mExerciseSetsDao = db.exerciseSetsDao();
 
+    }
+
+    public void RecyclerViewSetup(){
+        chartRecyclerViewLayoutManager = new LinearLayoutManager(getApplicationContext());
+        chartRecyclerView.setLayoutManager(chartRecyclerViewLayoutManager);
+        mAdapter = new ChartAdapter(mChartData);
+        HorizontalLayout = new LinearLayoutManager(Charts.this, LinearLayoutManager.HORIZONTAL, false);
+        chartRecyclerView.setLayoutManager(HorizontalLayout);
+        chartRecyclerView.setAdapter(mAdapter);
+        snapHelper.attachToRecyclerView(chartRecyclerView);
     }
 
     @Override
@@ -79,14 +82,18 @@ public class Charts extends AppCompatActivity implements View.OnClickListener{
     }
 
     private void Last7Days(){
-        mDate = LocalDate.now().minusDays(7);
-        mChartData = GetChartData(mDate.toString());
+        RecyclerViewSetup();
+        LocalDate dateMinus7;
+        dateMinus7 = LocalDate.now().minusDays(7);
+        mChartData = GetChartData(dateMinus7.toString());
         mAdapter.updateData(mChartData);
     }
 
     private void Last30Days(){
-        mDate = LocalDate.now().minusDays(30);
-        mChartData = GetChartData(mDate.toString());
+        RecyclerViewSetup();
+        LocalDate dateMinus30;
+        dateMinus30 = LocalDate.now().minusDays(30);
+        mChartData = GetChartData(dateMinus30.toString());
         mAdapter.updateData(mChartData);
     }
 
@@ -119,7 +126,7 @@ public class Charts extends AppCompatActivity implements View.OnClickListener{
         for (String exercise : exercises) {
             chartData = new ChartData();
             chartData.setExerciseName(exercise);
-            List<String> dates = mExerciseSetsDao.ChartDates(exercise);
+            List<String> dates = mExerciseSetsDao.ChartDates(exercise, date);
             chartData.setDates(dates);
             List<Double> maxWeights = new ArrayList<>();
             for (String d : dates) {

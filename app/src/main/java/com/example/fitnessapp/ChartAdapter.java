@@ -54,6 +54,10 @@ public class ChartAdapter extends RecyclerView.Adapter<ChartAdapter.ChartView> {
         LineData lineData = new LineData(getDataSet(position));
         holder.lineChart.setData(lineData);
         final ArrayList<String> dates = (ArrayList<String>) chartData.get(position).getDates();
+        if (dates.size() < 7)
+        {
+            holder.lineChart.getXAxis().setLabelCount(dates.size(), true);
+        }
         holder.lineChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(){
             @Override
             public String getFormattedValue(float value){
