@@ -23,7 +23,10 @@ public interface ExerciseSetsDao {
     @Query("SELECT * FROM exercise_sets")
     LiveData<List<ExerciseSets>> getAll();
 
-    @Query("SELECT * FROM exercise_sets WHERE date = :date and exercise_name = :exerciseName")
+    @Query("SELECT DISTINCT exercise_name FROM exercise_sets")
+    List<String> allNames();
+
+    @Query("SELECT * FROM exercise_sets WHERE date = :date AND exercise_name = :exerciseName")
     List<ExerciseSets> allOnDate(String date, String exerciseName);
 
     @Query("SELECT DISTINCT date FROM exercise_sets")
@@ -43,5 +46,8 @@ public interface ExerciseSetsDao {
 
     @Query("SELECT MAX(weight) from exercise_sets WHERE date = :date AND exercise_name = :exercise")
     double ChartWeights(String date, String exercise);
+
+   @Query("SELECT *, MAX(one_rep_max) FROM exercise_sets WHERE exercise_name = :exerciseName GROUP BY exercise_name, date")
+    List<ExerciseSets> trackedSets(String exerciseName);
 
 }

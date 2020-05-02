@@ -7,6 +7,7 @@
     android:orientation="vertical"
     tools:context=".ExerciseSetsActivity">
 
+
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,79 +22,94 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-   <include layout="@layout/exercise_set_header"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="5dp"
-        android:background="@color/gray" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/exerciseList"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:orientation="horizontal">
+        android:fitsSystemWindows="true"
+        android:gravity="center"
+        android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/enterWeight"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/weight_hint" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <Spinner
-            android:id="@+id/metricSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/weight_metric" />
+            <include layout="@layout/exercise_set_header" />
 
-        <EditText
-            android:id="@+id/enterReps"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/reps_hint" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@color/gray" />
 
-        <EditText
-            android:id="@+id/enterRpe"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/rpe_hint" />
-    </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/exerciseList"
+                android:layout_width="match_parent"
+                android:layout_height="400dp" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/addSetButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="0.5"
-            android:text="@string/add_set" />
+                <EditText
+                    android:id="@+id/enterWeight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/weight_hint" />
 
-        <Button
-            android:id="@+id/buttonRepCounter"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:text="@string/count_reps" />
+                <Spinner
+                    android:id="@+id/metricSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/weight_metric" />
 
-    </LinearLayout>
+                <EditText
+                    android:id="@+id/enterReps"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/reps_hint" />
 
-    <Button
-        android:id="@+id/saveWorkout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="@string/save_sets" />
+                <EditText
+                    android:id="@+id/enterRpe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/rpe_hint" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/addSetButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.5"
+                    android:text="@string/add_set" />
+
+                <Button
+                    android:id="@+id/buttonRepCounter"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:text="@string/count_reps" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/saveWorkout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/save_sets" />
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>
