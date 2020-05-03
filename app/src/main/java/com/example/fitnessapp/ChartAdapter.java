@@ -58,13 +58,7 @@ public class ChartAdapter extends RecyclerView.Adapter<ChartAdapter.ChartView> {
         {
             holder.lineChart.getXAxis().setLabelCount(dates.size(), true);
         }
-        holder.lineChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(){
-            @Override
-            public String getFormattedValue(float value){
-                int index = (int)value;
-                return dates.get(index);
-            }
-        });
+        holder.lineChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(dates));
         holder.lineChart.getXAxis().setLabelRotationAngle(-45f);
         holder.lineChart.getXAxis().setPosition(BOTTOM);
         holder.lineChart.getDescription().setEnabled(false);
